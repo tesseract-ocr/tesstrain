@@ -67,16 +67,16 @@ lists: $(ALL_LSTMF)
 radical-stroke.txt:
 	wget 'https://raw.githubusercontent.com/tesseract-ocr/langdata/master/radical-stroke.txt'
 
-proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).trainedata
+proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
 
-data/$(MODEL_NAME)/$(MODEL_NAME).trainedata: radical-stroke.txt data/unicharset
+data/$(MODEL_NAME)/$(MODEL_NAME).traineddata: radical-stroke.txt data/unicharset
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
 	  --script_dir . \
 	  --output_dir data/ \
 	  --lang $(MODEL_NAME)
 
-training: lists
+data/checkpoints/$(MODEL_NAME)_checkpoint: lists
 	mkdir -p checkpoints
 	lstmtraining \
 	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
@@ -86,6 +86,13 @@ training: lists
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
+
+data/$(MODEL_NAME).traineddata: data/checkpoints/$(MODEL_NAME)_checkpoint
+	lstmtraining \
+	--stop_training \
+	--continue_from $^ \
+	--traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
+	--model_output $@
 
 # Clean all
 clean:
