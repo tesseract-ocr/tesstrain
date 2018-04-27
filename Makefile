@@ -37,7 +37,6 @@ LSTMF_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.lstmf,')
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
 
-
 # Create unicharset
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
@@ -76,11 +75,11 @@ data/$(MODEL_NAME)/$(MODEL_NAME).traineddata: radical-stroke.txt data/unicharset
 	  --output_dir data/ \
 	  --lang $(MODEL_NAME)
 
-data/checkpoints/$(MODEL_NAME)_checkpoint: lists
-	mkdir -p checkpoints
+data/checkpoints/$(MODEL_NAME)_checkpoint: data/unicharset data/list.eval data/list.train
+	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
-	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/$(MODEL_NAME)/$(MODEL_NAME).unicharset`]" \
+	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
@@ -94,7 +93,7 @@ data/$(MODEL_NAME).traineddata: data/checkpoints/$(MODEL_NAME)_checkpoint
 	--traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
 	--model_output $@
 
-# Clean all
+# Clean all generated files
 clean:
 	rm -rf data/train/*.box
 	rm -rf data/train/*.lstmf
@@ -102,3 +101,4 @@ clean:
 	rm -rf data/list.*
 	rm -rf data/$(MODEL_NAME)
 	rm -rf data/unicharset
+	rm -rf data/checkpoints

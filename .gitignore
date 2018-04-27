@@ -2,3 +2,5 @@ data/train/*
 data/all-*
 data/list.*
 data/unicharset
+dta19-reduced
+dta19-reduced.tar.gz
