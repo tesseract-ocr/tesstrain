@@ -8,16 +8,19 @@ help:
 	@echo ""
 	@echo "  Targets"
 	@echo ""
-	@echo "    data/unicharset  Create unicharset"
-	@echo "    lists            Create lists of lstmf files for training and eval"
+	@echo "    unicharset  Create unicharset"
+	@echo "    boxes       Create boxes"
+	@echo "    lists       Create lists of lstmf filenames for training and eval"
+	@echo "    lstmf       Create lstmf"
+	@echo "    training    Start training"
+	@echo "    clean       Clean all generated files"
 	@echo ""
 	@echo "  Variables"
 	@echo ""
 	@echo "    TRAIN        Train directory"
-	@echo "    RATIO_TRAIN  Ratio of train / eval training data"
+	@echo "    RATIO_EVAL   Ratio of train / eval training data"
 	@echo "    BOX_FILES    Box files"
 	@echo "    LSTMF_FILES  lstmf files"
-	@echo "    MODEL_NAME   model_name"
 
 # END-EVAL
 
@@ -38,30 +41,40 @@ ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
 
 # Create unicharset
-data/unicharset: $(ALL_BOXES)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
-	rm -f "$(ALL_BOXES)"
+unicharset: data/unicharset
 
-$(ALL_BOXES): $(BOX_FILES)
+# Create boxes
+boxes: $(ALL_BOXES)
 
-$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
-	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
-	cat "$@" >> $(ALL_BOXES)
-
-$(TRAIN)/%.lstmf: $(TRAIN)/%.box
-	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* lstm.train && echo "$@" >> $(ALL_LSTMF)
-
-$(ALL_LSTMF): $(LSTMF_FILES)
-	cat "$@" | sort -R > /tmp/sortfoobla
-	mv /tmp/sortfoobla "$@"
-
-# Create lists of lstmf files for training and eval
-lists: $(ALL_LSTMF)
+# Create lists of lstmf filenames for training and eval
+lists: lstmf
 	no=`cat $(ALL_LSTMF) | wc -l` \
 	   no_train=`echo "$$no * $(RATIO_TRAIN) / 1" | bc` \
 	   no_eval=`echo "$$no * $(RATIO_EVAL) / 1" | bc`; \
 	   head -n "$$no_train" $(ALL_LSTMF) > data/list.train; \
 	   head -n "$$no_eval" $(ALL_LSTMF) > data/list.eval;
+
+# Create lstmf
+lstmf: $(ALL_LSTMF)
+
+# Start training
+training: data/$(MODEL_NAME).traineddata
+
+data/unicharset: $(ALL_BOXES)
+	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
+	rm -f "$(ALL_BOXES)"
+
+$(ALL_BOXES): $(BOX_FILES)
+	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
+
+$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
+	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
+
+$(ALL_LSTMF): $(LSTMF_FILES)
+	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
+
+$(TRAIN)/%.lstmf: $(TRAIN)/%.box
+	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* lstm.train
 
 radical-stroke.txt:
 	wget 'https://raw.githubusercontent.com/tesseract-ocr/langdata/master/radical-stroke.txt'
