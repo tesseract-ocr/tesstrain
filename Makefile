@@ -77,6 +77,7 @@ data/$(MODEL_NAME)/$(MODEL_NAME).trainedata: radical-stroke.txt data/unicharset
 	  --lang $(MODEL_NAME)
 
 training: lists
+	mkdir -p checkpoints
 	lstmtraining \
 	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/$(MODEL_NAME)/$(MODEL_NAME).unicharset`]" \
