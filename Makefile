@@ -26,7 +26,7 @@ TRAIN := data/train
 
 # Ratio of train / eval training data
 RATIO_TRAIN := 0.9
-RATIO_EVAL := 0.1
+RATIO_EVAL := $(shell echo "1.0 - $(RATIO_TRAIN)"|bc)
 
 # Box files
 BOX_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.box,')
