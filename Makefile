@@ -17,6 +17,7 @@ help:
 	@echo "    RATIO_TRAIN  Ratio of train / eval training data"
 	@echo "    BOX_FILES    Box files"
 	@echo "    LSTMF_FILES  lstmf files"
+	@echo "    MODEL_NAME   model_name"
 
 # END-EVAL
 
@@ -64,7 +65,7 @@ lists: $(ALL_LSTMF)
 	   head -n "$$no_eval" $(ALL_LSTMF) > data/list.eval;
 
 radical-stroke.txt:
-	wget 'https://raw.githubusercontent.com/tesseract-ocr/langdata/master/radical-stroke.txt' > "$@"
+	wget 'https://raw.githubusercontent.com/tesseract-ocr/langdata/master/radical-stroke.txt'
 
 proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).trainedata
 
@@ -76,6 +77,7 @@ data/$(MODEL_NAME)/$(MODEL_NAME).trainedata: radical-stroke.txt data/unicharset
 	  --lang $(MODEL_NAME)
 
 training: lists
+	mkdir -p checkpoints
 	lstmtraining \
 	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/$(MODEL_NAME)/$(MODEL_NAME).unicharset`]" \
