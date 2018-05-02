@@ -1,4 +1,5 @@
 <!-- BEGIN-MARKDOWN-TOC -->
+* [Setup leptonica / tesseract](#setup-leptonica--tesseract)
 * [1. Generierung Tif](#1-generierung-tif)
 * [2. Generierung Box-Files](#2-generierung-box-files)
 * [3. Generierung Codec](#3-generierung-codec)
@@ -13,6 +14,36 @@
 
 See also ocr-d.github.io/PhilTag-2018
 
+## Build leptonica / tesseract
+
+### Leptonica
+
+```
+mkdir -p _build
+cd _build
+wget http://www.leptonica.org/source/leptonica-1.75.3.tar.gz
+tar xf leptonica-1.75.3.tar.gz
+cd leptonica-1.75.3
+./configure
+make
+sudo make install
+```
+
+### Tesseract
+
+```
+mkdir -p _build
+cd _build
+git clone --depth=1 https://github.com/tesseract-ocr/tesseract
+cd tesseract
+sh autogen.sh
+./configure --prefix=/usr
+make
+make training
+sudo make install training-install
+```
+
+https://bingrao.github.io/blog/post/2017/07/16/Install-Tesseract-4.0-in-ubuntun-16.04.html
 
 ## 1. Generierung Tif
 
