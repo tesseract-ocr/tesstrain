@@ -9,9 +9,7 @@ help:
 	@echo "  Targets"
 	@echo ""
 	@echo "    unicharset  Create unicharset"
-	@echo "    boxes       Create boxes"
 	@echo "    lists       Create lists of lstmf filenames for training and eval"
-	@echo "    lstmf       Create lstmf"
 	@echo "    training    Start training"
 	@echo "    clean       Clean all generated files"
 	@echo ""
@@ -43,26 +41,19 @@ ALL_LSTMF = data/all-lstmf
 # Create unicharset
 unicharset: data/unicharset
 
-# Create boxes
-boxes: $(ALL_BOXES)
-
 # Create lists of lstmf filenames for training and eval
-lists: lstmf
+lists: $(ALL_LSTMF)
 	no=`cat $(ALL_LSTMF) | wc -l` \
 	   no_train=`echo "$$no * $(RATIO_TRAIN) / 1" | bc` \
 	   no_eval=`echo "$$no * $(RATIO_EVAL) / 1" | bc`; \
 	   head -n "$$no_train" $(ALL_LSTMF) > data/list.train; \
 	   head -n "$$no_eval" $(ALL_LSTMF) > data/list.eval;
 
-# Create lstmf
-lstmf: $(ALL_LSTMF)
-
 # Start training
 training: data/$(MODEL_NAME).traineddata
 
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
-	rm -f "$(ALL_BOXES)"
 
 $(ALL_BOXES): $(BOX_FILES)
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
