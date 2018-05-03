@@ -59,10 +59,6 @@ help:
 # Ratio of train / eval training data
 RATIO_TRAIN := 0.9
 
-BOX_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.box,')
-
-LSTMF_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.lstmf,')
-
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
 
@@ -88,13 +84,13 @@ training: data/$(MODEL_NAME).traineddata
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 
-$(ALL_BOXES): $(BOX_FILES)
+$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
 
 $(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
 	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(LSTMF_FILES)
+$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
 $(TRAIN)/%.lstmf: $(TRAIN)/%.box
@@ -112,7 +108,6 @@ data/$(MODEL_NAME)/$(MODEL_NAME).traineddata: $(LANGDATA) data/unicharset
 
 data/checkpoints/$(MODEL_NAME)_checkpoint: unicharset lists proto-model
 	mkdir -p data/checkpoints
-	which lstmtraining
 	lstmtraining \
 	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
@@ -178,8 +173,8 @@ $(TESSDATA)/eng.traineddata:
 
 # Clean all generated files
 clean:
-	rm -rf data/train/*.box
-	rm -rf data/train/*.lstmf
+	find data/train -name '*.box' -delete
+	find data/train -name '*.lstmf' -delete
 	rm -rf data/all-*
 	rm -rf data/list.*
 	rm -rf data/$(MODEL_NAME)
