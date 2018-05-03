@@ -21,6 +21,10 @@ Images must be TIFF and have the extension `.tif`.
 Transcriptions must be single-line plain text and have the same name as the
 line image but with `.tif` replaced by `.gt.txt`.
 
+The repository contains a ZIP archive with sample ground truth, see
+[ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/train` and run
+`make training`.
+
 ## Train
 
 ```
