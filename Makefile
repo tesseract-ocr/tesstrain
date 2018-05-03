@@ -6,7 +6,10 @@ PATH := $(LOCAL)/bin:$(PATH)
 TESSDATA =  $(LOCAL)/share/tessdata 
 LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 
-# No of cores to use
+# Name of the model to be built
+MODEL_NAME = foo
+
+# No of cores to use for compiling leptonica/tesseract
 CORES = 4
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
@@ -21,8 +24,8 @@ LANGDATA_VERSION := master
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _fast
 
-# Name of the model to be built
-MODEL_NAME = foo
+# Train directory
+TRAIN := data/train
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
@@ -42,29 +45,22 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
-	@echo "    CORES              No of cores to use"
+	@echo "    MODEL_NAME         Name of the model to be built"
+	@echo "    CORES              No of cores to use for compiling leptonica/tesseract"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    LANGDATA_VERSION   Tesseract langdata version. Default: $(LANGDATA_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    MODEL_NAME         Name of the model to be built"
 	@echo "    TRAIN              Train directory"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data"
-	@echo "    BOX_FILES          Box files"
-	@echo "    LSTMF_FILES        lstmf files"
 
 # END-EVAL
-
-# Train directory
-TRAIN := data/train
 
 # Ratio of train / eval training data
 RATIO_TRAIN := 0.9
 
-# Box files
 BOX_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.box,')
 
-# lstmf files
 LSTMF_FILES = $(shell find data/train -name '*.tif' |sed 's,\.tif,.lstmf,')
 
 ALL_BOXES = data/all-boxes
