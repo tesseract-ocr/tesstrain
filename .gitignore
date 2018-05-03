@@ -4,3 +4,11 @@ data/list.*
 data/unicharset
 dta19-reduced
 dta19-reduced.tar.gz
+*.built
+tesseract-*
+leptonica-*
+*.BAK
+/usr
+data/checkpoints
+9ae97508aed1e5508458f1181b08501f984bf4e2.zip
+langdata-*
