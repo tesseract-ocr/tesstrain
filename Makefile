@@ -146,6 +146,7 @@ tesseract: tesseract.built tesseract-langs
 tesseract.built: tesseract-$(TESSERACT_VERSION)
 	cd $< && \
 		sh autogen.sh && \
+		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
 		LEPTONICA_CFLAGS="-I$(LOCAL)/include/leptonica" \
 			./configure --prefix=$(LOCAL) && \
 		LDFLAGS="-L$(LOCAL)/lib"\
