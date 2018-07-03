@@ -3,14 +3,21 @@ export
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
-TESSDATA =  $(LOCAL)/share/tessdata 
-LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
+HOME := /home/ubuntu
+TESSDATA =  $(HOME)/tessdata_best
+LANGDATA = $(HOME)/langdata
 
 # Name of the model to be built
 MODEL_NAME = foo
 
+# Name of the model to continue from
+CONTINUE_FROM = frk
+
 # No of cores to use for compiling leptonica/tesseract
 CORES = 4
+
+# Normalization Mode - see src/training/language_specific.sh for details 
+NORM_MODE = 2
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
 LEPTONICA_VERSION := 1.75.3
@@ -57,7 +64,7 @@ help:
 # END-EVAL
 
 # Ratio of train / eval training data
-RATIO_TRAIN := 0.9
+RATIO_TRAIN := 0.90
 
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
@@ -82,19 +89,22 @@ data/list.eval: $(ALL_LSTMF)
 training: data/$(MODEL_NAME).traineddata
 
 data/unicharset: $(ALL_BOXES)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
-
+	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
+	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
+	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
-
-$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
-	./generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" |tee "$@"
+	
+$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%-gt.txt
+	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*-gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
 $(TRAIN)/%.lstmf: $(TRAIN)/%.box
-	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* lstm.train
+	tesseract $(TRAIN)/$*.tif $(TRAIN)/$*   --psm 6 lstm.train
+	
 
 # Build the proto model
 proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
