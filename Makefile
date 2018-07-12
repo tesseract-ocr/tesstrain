@@ -3,21 +3,17 @@ export
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
-HOME := /home/ubuntu
-TESSDATA =  $(HOME)/tessdata_best
-LANGDATA = $(HOME)/langdata
+TESSDATA =  $(LOCAL)/share/tessdata 
+LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 
-# Name of the model to be built
+# Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
-# Name of the model to continue from
-CONTINUE_FROM = frk
+# Name of the model to continue from. Default: $(CONTINUE_FROM)
+CONTINUE_FROM = $(MODEL_NAME)
 
-# No of cores to use for compiling leptonica/tesseract
+# No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
-
-# Normalization Mode - see src/training/language_specific.sh for details 
-NORM_MODE = 2
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
 LEPTONICA_VERSION := 1.75.3
@@ -31,8 +27,17 @@ LANGDATA_VERSION := master
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _fast
 
-# Train directory
+# Train directory. Default: $(TRAIN)
 TRAIN := data/train
+
+# Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
+NORM_MODE = 2
+
+# Page segmentation mode. Default: $(PSM)
+PSM = 6
+
+# Ratio of train / eval training data. Default: $(RATIO_TRAIN)
+RATIO_TRAIN := 0.90
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
@@ -52,19 +57,19 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
-	@echo "    MODEL_NAME         Name of the model to be built"
-	@echo "    CORES              No of cores to use for compiling leptonica/tesseract"
+	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: $(CONTINUE_FROM)"
+	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    LANGDATA_VERSION   Tesseract langdata version. Default: $(LANGDATA_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    TRAIN              Train directory"
-	@echo "    RATIO_TRAIN        Ratio of train / eval training data"
+	@echo "    TRAIN              Train directory. Default: $(TRAIN)"
+	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
+	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
+	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 
 # END-EVAL
-
-# Ratio of train / eval training data
-RATIO_TRAIN := 0.90
 
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
@@ -103,7 +108,7 @@ $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
 $(TRAIN)/%.lstmf: $(TRAIN)/%.box
-	tesseract $(TRAIN)/$*.tif $(TRAIN)/$*   --psm 6 lstm.train
+	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
 	
 
 # Build the proto model
