@@ -6,10 +6,13 @@ PATH := $(LOCAL)/bin:$(PATH)
 TESSDATA =  $(LOCAL)/share/tessdata 
 LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 
-# Name of the model to be built
+# Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
-# No of cores to use for compiling leptonica/tesseract
+# Name of the model to continue from. Default: $(CONTINUE_FROM)
+CONTINUE_FROM = $(MODEL_NAME)
+
+# No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
@@ -24,8 +27,17 @@ LANGDATA_VERSION := master
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _fast
 
-# Train directory
+# Train directory. Default: $(TRAIN)
 TRAIN := data/train
+
+# Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
+NORM_MODE = 2
+
+# Page segmentation mode. Default: $(PSM)
+PSM = 6
+
+# Ratio of train / eval training data. Default: $(RATIO_TRAIN)
+RATIO_TRAIN := 0.90
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
@@ -45,19 +57,19 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
-	@echo "    MODEL_NAME         Name of the model to be built"
-	@echo "    CORES              No of cores to use for compiling leptonica/tesseract"
+	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: $(CONTINUE_FROM)"
+	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    LANGDATA_VERSION   Tesseract langdata version. Default: $(LANGDATA_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    TRAIN              Train directory"
-	@echo "    RATIO_TRAIN        Ratio of train / eval training data"
+	@echo "    TRAIN              Train directory. Default: $(TRAIN)"
+	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
+	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
+	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 
 # END-EVAL
-
-# Ratio of train / eval training data
-RATIO_TRAIN := 0.9
 
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
@@ -82,19 +94,22 @@ data/list.eval: $(ALL_LSTMF)
 training: data/$(MODEL_NAME).traineddata
 
 data/unicharset: $(ALL_BOXES)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
-
+	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
+	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
+	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
-
-$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
-	./generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" |tee "$@"
+	
+$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%-gt.txt
+	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*-gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
 $(TRAIN)/%.lstmf: $(TRAIN)/%.box
-	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* lstm.train
+	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
+	
 
 # Build the proto model
 proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
