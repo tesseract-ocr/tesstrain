@@ -11,6 +11,10 @@ To build leptonica and tesseract, additional data and install it to a subdirecto
   make leptonica tesseract langdata
 ```
 
+Tesseract will be built from the git repository, which requires CMake,
+autotools (including autotools-archive) and some additional libraries for the training tools. See the
+[installation notes in the tesseract repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
+
 ## Provide ground truth
 
 Place ground truth consisting of line images and transcriptions in the folder
