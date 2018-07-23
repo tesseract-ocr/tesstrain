@@ -101,8 +101,8 @@ data/unicharset: $(ALL_BOXES)
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
 	
-$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%-gt.txt
-	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*-gt.txt" > "$@"
+$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
+	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
