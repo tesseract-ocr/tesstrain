@@ -88,7 +88,7 @@ data/list.train: $(ALL_LSTMF)
 data/list.eval: $(ALL_LSTMF)
 	total=`cat $(ALL_LSTMF) | wc -l` \
 	   no=`echo "($$total - $$total * $(RATIO_TRAIN)) / 1" | bc`; \
-	   tail -n "+$$no" $(ALL_LSTMF) > "$@"
+	   tail -n "$$no" $(ALL_LSTMF) > "$@"
 
 # Start training
 training: data/$(MODEL_NAME).traineddata
