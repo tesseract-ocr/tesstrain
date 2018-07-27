@@ -3,7 +3,7 @@ export
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
-TESSDATA =  $(LOCAL)/share/tessdata 
+TESSDATA =  $(LOCAL)/share/tessdata
 LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 
 # Name of the model to be built. Default: $(MODEL_NAME)
@@ -97,10 +97,10 @@ data/unicharset: $(ALL_BOXES)
 	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
 	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
-	
+
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
-	
+
 $(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
 	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
 
@@ -109,7 +109,6 @@ $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
 
 $(TRAIN)/%.lstmf: $(TRAIN)/%.box
 	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
-	
 
 # Build the proto model
 proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
