@@ -9,8 +9,8 @@ LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
-# Name of the model to continue from. Default: $(CONTINUE_FROM)
-CONTINUE_FROM = $(MODEL_NAME)
+# Name of the model to continue from. Default: '$(CONTINUE_FROM)'
+CONTINUE_FROM = 
 
 # No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
@@ -19,7 +19,7 @@ CORES = 4
 LEPTONICA_VERSION := 1.75.3
 
 # Tesseract commit. Default: $(TESSERACT_VERSION)
-TESSERACT_VERSION := 9ae97508aed1e5508458f1181b08501f984bf4e2
+TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
 
 # Tesseract langdata version. Default: $(LANGDATA_VERSION)
 LANGDATA_VERSION := master
@@ -93,10 +93,15 @@ data/list.eval: $(ALL_LSTMF)
 # Start training
 training: data/$(MODEL_NAME).traineddata
 
+ifdef CONTINUE_FROM
 data/unicharset: $(ALL_BOXES)
 	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
 	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+else
+data/unicharset: $(ALL_BOXES)
+	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
+endif
 
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
 	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
