@@ -9,8 +9,8 @@ LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
-# Name of the model to continue from. Default: '$(CONTINUE_FROM)'
-CONTINUE_FROM = 
+# Name of the model to continue from. Default: '$(START_MODEL)'
+START_MODEL = 
 
 LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
 
@@ -63,7 +63,7 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
-	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: '$(CONTINUE_FROM)'"
+	@echo "    START_MODEL      Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the protomodel"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
@@ -99,11 +99,11 @@ data/list.eval: $(ALL_LSTMF)
 # Start training
 training: data/$(MODEL_NAME).traineddata
 
-ifdef CONTINUE_FROM
+ifdef START_MODEL
 data/unicharset: $(ALL_BOXES)
-	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  $(TESSDATA)/$(START_MODEL).
 	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
-	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	merge_unicharsets $(TESSDATA)/$(START_MODEL).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
@@ -135,6 +135,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
+	  --continue_from $(START_MODEL) \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
