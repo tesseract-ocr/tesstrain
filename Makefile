@@ -12,6 +12,11 @@ MODEL_NAME = foo
 # Name of the model to continue from. Default: '$(CONTINUE_FROM)'
 CONTINUE_FROM = 
 
+LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
+
+# Name of the protomodel
+PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
+
 # No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
 
@@ -58,7 +63,8 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
-	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: $(CONTINUE_FROM)"
+	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: '$(CONTINUE_FROM)'"
+	@echo "    PROTO_MODEL        Name of the protomodel"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
@@ -116,19 +122,19 @@ $(TRAIN)/%.lstmf: $(TRAIN)/%.box
 	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
 
 # Build the proto model
-proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
+proto-model: $(PROTO_MODEL)
 
-data/$(MODEL_NAME)/$(MODEL_NAME).traineddata: $(LANGDATA) data/unicharset
+$(PROTO_MODEL): $(LANGDATA) data/unicharset
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
 	  --script_dir $(LANGDATA) \
 	  --output_dir data/ \
 	  --lang $(MODEL_NAME)
 
-data/checkpoints/$(MODEL_NAME)_checkpoint: unicharset lists proto-model
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
-	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
+	  --traineddata $(PROTO_MODEL) \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
@@ -136,11 +142,11 @@ data/checkpoints/$(MODEL_NAME)_checkpoint: unicharset lists proto-model
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
 
-data/$(MODEL_NAME).traineddata: data/checkpoints/$(MODEL_NAME)_checkpoint
+data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
-	--continue_from $^ \
-	--traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 
 # Build leptonica
