@@ -29,6 +29,11 @@ The repository contains a ZIP archive with sample ground truth, see
 [ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/train` and run
 `make training`.
 
+**NOTE:** If you want to generate line images for transcription from a full
+page, see tips in [issue 7](https://github.com/OCR-D/ocrd-train/issues/7) and
+in particular [@Shreeshrii's shell
+script](https://github.com/OCR-D/ocrd-train/issues/7#issuecomment-419714852).
+
 ## Train
 
 ```
@@ -60,14 +65,17 @@ Run `make help` to see all the possible targets and variables:
 
   Variables
 
-    MODEL_NAME         Name of the model to be built
-    CORES              No of cores to use for compiling leptonica/tesseract
+    MODEL_NAME         Name of the model to be built. Default: foo
+    CONTINUE_FROM      Name of the model to continue from. Default: 
+    CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
     LEPTONICA_VERSION  Leptonica version. Default: 1.75.3
-    TESSERACT_VERSION  Tesseract commit. Default: 9ae97508aed1e5508458f1181b08501f984bf4e2
+    TESSERACT_VERSION  Tesseract commit. Default: fd492062d08a2f55001a639f2015b8524c7e9ad4
     LANGDATA_VERSION   Tesseract langdata version. Default: master
     TESSDATA_REPO      Tesseract model repo to use. Default: _fast
-    TRAIN              Train directory
-    RATIO_TRAIN        Ratio of train / eval training data
+    TRAIN              Train directory. Default: data/train
+    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
+    PSM                Page segmentation mode. Default: 6
+    RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
 ```
 
 <!-- END-EVAL -->
