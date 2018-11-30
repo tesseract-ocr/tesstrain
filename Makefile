@@ -101,9 +101,10 @@ training: data/$(MODEL_NAME).traineddata
 
 ifdef START_MODEL
 data/unicharset: $(ALL_BOXES)
-	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  $(TESSDATA)/$(START_MODEL).
+	mkdir -p data/$(START_MODEL)
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
 	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
-	merge_unicharsets $(TESSDATA)/$(START_MODEL).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
@@ -127,21 +128,35 @@ proto-model: $(PROTO_MODEL)
 $(PROTO_MODEL): $(LANGDATA) data/unicharset
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
-	  --script_dir $(LANGDATA) \
+	  --script_dir data/ \
 	  --output_dir data/ \
 	  --lang $(MODEL_NAME)
 
+ifdef START_MODEL
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-	  --continue_from $(START_MODEL) \
+          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
+else
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	mkdir -p data/checkpoints
+	lstmtraining \
+	  --traineddata $(PROTO_MODEL) \
+	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
+	  --model_output data/checkpoints/$(MODEL_NAME) \
+	  --learning_rate 20e-4 \
+	  --train_listfile data/list.train \
+	  --eval_listfile data/list.eval \
+	  --max_iterations 10000
+endif
 
 data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
