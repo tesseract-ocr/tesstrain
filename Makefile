@@ -215,8 +215,8 @@ $(TESSDATA)/eng.traineddata:
 
 # Clean all generated files
 clean:
-	find data/train -name '*.box' -delete
-	find data/train -name '*.lstmf' -delete
+	find $(TRAIN) -name '*.box' -delete
+	find $(TRAIN) -name '*.lstmf' -delete
 	rm -rf data/all-*
 	rm -rf data/list.*
 	rm -rf data/$(MODEL_NAME)
