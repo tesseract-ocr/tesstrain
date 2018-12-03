@@ -9,8 +9,13 @@ LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
-# Name of the model to continue from. Default: '$(CONTINUE_FROM)'
-CONTINUE_FROM = 
+# Name of the model to continue from. Default: '$(START_MODEL)'
+START_MODEL = 
+
+LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
+
+# Name of the protomodel
+PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
 
 # No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
@@ -58,7 +63,8 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
-	@echo "    CONTINUE_FROM      Name of the model to continue from. Default: $(CONTINUE_FROM)"
+	@echo "    START_MODEL      Name of the model to continue from. Default: '$(START_MODEL)'"
+	@echo "    PROTO_MODEL        Name of the protomodel"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
@@ -93,11 +99,12 @@ data/list.eval: $(ALL_LSTMF)
 # Start training
 training: data/$(MODEL_NAME).traineddata
 
-ifdef CONTINUE_FROM
+ifdef START_MODEL
 data/unicharset: $(ALL_BOXES)
-	combine_tessdata -u $(TESSDATA)/$(CONTINUE_FROM).traineddata  $(TESSDATA)/$(CONTINUE_FROM).
+	mkdir -p data/$(START_MODEL)
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
 	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
-	merge_unicharsets $(TESSDATA)/$(CONTINUE_FROM).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
@@ -116,31 +123,46 @@ $(TRAIN)/%.lstmf: $(TRAIN)/%.box
 	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
 
 # Build the proto model
-proto-model: data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
+proto-model: $(PROTO_MODEL)
 
-data/$(MODEL_NAME)/$(MODEL_NAME).traineddata: $(LANGDATA) data/unicharset
+$(PROTO_MODEL): $(LANGDATA) data/unicharset
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
-	  --script_dir $(LANGDATA) \
+	  --script_dir data/ \
 	  --output_dir data/ \
 	  --lang $(MODEL_NAME)
 
-data/checkpoints/$(MODEL_NAME)_checkpoint: unicharset lists proto-model
+ifdef START_MODEL
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
-	  --traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
+	  --traineddata $(PROTO_MODEL) \
+          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
+else
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	mkdir -p data/checkpoints
+	lstmtraining \
+	  --traineddata $(PROTO_MODEL) \
+	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
+	  --model_output data/checkpoints/$(MODEL_NAME) \
+	  --learning_rate 20e-4 \
+	  --train_listfile data/list.train \
+	  --eval_listfile data/list.eval \
+	  --max_iterations 10000
+endif
 
-data/$(MODEL_NAME).traineddata: data/checkpoints/$(MODEL_NAME)_checkpoint
+data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
-	--continue_from $^ \
-	--traineddata data/$(MODEL_NAME)/$(MODEL_NAME).traineddata \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 
 # Build leptonica
