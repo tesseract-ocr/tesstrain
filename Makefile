@@ -4,7 +4,6 @@ SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
 TESSDATA =  $(LOCAL)/share/tessdata
-LANGDATA = $(PWD)/langdata-$(LANGDATA_VERSION)
 
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
@@ -14,7 +13,7 @@ START_MODEL =
 
 LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
 
-# Name of the protomodel
+# Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
 
 # No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
@@ -25,9 +24,6 @@ LEPTONICA_VERSION := 1.75.3
 
 # Tesseract commit. Default: $(TESSERACT_VERSION)
 TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
-
-# Tesseract langdata version. Default: $(LANGDATA_VERSION)
-LANGDATA_VERSION := master
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _fast
@@ -57,18 +53,16 @@ help:
 	@echo "    leptonica        Build leptonica"
 	@echo "    tesseract        Build tesseract"
 	@echo "    tesseract-langs  Download tesseract-langs"
-	@echo "    langdata         Download langdata"
 	@echo "    clean            Clean all generated files"
 	@echo ""
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
-	@echo "    PROTO_MODEL        Name of the protomodel"
+	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
-	@echo "    LANGDATA_VERSION   Tesseract langdata version. Default: $(LANGDATA_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
@@ -125,7 +119,7 @@ $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
 # Build the proto model
 proto-model: $(PROTO_MODEL)
 
-$(PROTO_MODEL): $(LANGDATA) data/unicharset
+$(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
 	  --script_dir data/ \
@@ -165,6 +159,9 @@ data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 
+data/radical-stroke.txt:
+	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
+
 # Build leptonica
 leptonica: leptonica.built
 
@@ -202,13 +199,6 @@ tesseract-$(TESSERACT_VERSION):
 
 # Download tesseract-langs
 tesseract-langs: $(TESSDATA)/eng.traineddata
-
-# Download langdata
-langdata: $(LANGDATA)
-
-$(LANGDATA):
-	wget 'https://github.com/tesseract-ocr/langdata/archive/$(LANGDATA_VERSION).zip'
-	unzip $(LANGDATA_VERSION).zip
 
 $(TESSDATA)/eng.traineddata:
 	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
