@@ -32,8 +32,8 @@ LANGDATA_VERSION := master
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _fast
 
-# Train directory. Default: $(TRAIN)
-TRAIN := data/train
+# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
+GROUND_TRUTH_DIR := data/ground-truth
 
 # Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
 NORM_MODE = 2
@@ -63,14 +63,14 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
-	@echo "    START_MODEL      Name of the model to continue from. Default: '$(START_MODEL)'"
+	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the protomodel"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    LANGDATA_VERSION   Tesseract langdata version. Default: $(LANGDATA_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    TRAIN              Train directory. Default: $(TRAIN)"
+	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
@@ -103,24 +103,24 @@ ifdef START_MODEL
 data/unicharset: $(ALL_BOXES)
 	mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
-	unicharset_extractor --output_unicharset "$(TRAIN)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
-	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(TRAIN)/my.unicharset  "$@"
+	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
+	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
-$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(TRAIN)/*.tif)))
-	find $(TRAIN) -name '*.box' -exec cat {} \; > "$@"
+$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+	find $(GROUND_TRUTH_DIR) -name '*.box' -exec cat {} \; > "$@"
 
-$(TRAIN)/%.box: $(TRAIN)/%.tif $(TRAIN)/%.gt.txt
-	python generate_line_box.py -i "$(TRAIN)/$*.tif" -t "$(TRAIN)/$*.gt.txt" > "$@"
+$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
+	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(TRAIN)/*.tif)))
-	find $(TRAIN) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
+$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
-$(TRAIN)/%.lstmf: $(TRAIN)/%.box
-	tesseract $(TRAIN)/$*.tif $(TRAIN)/$* --psm $(PSM) lstm.train
+$(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
+	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
 
 # Build the proto model
 proto-model: $(PROTO_MODEL)
@@ -215,8 +215,8 @@ $(TESSDATA)/eng.traineddata:
 
 # Clean all generated files
 clean:
-	find $(TRAIN) -name '*.box' -delete
-	find $(TRAIN) -name '*.lstmf' -delete
+	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
 	rm -rf data/all-*
 	rm -rf data/list.*
 	rm -rf data/$(MODEL_NAME)
