@@ -40,6 +40,9 @@ PSM = 6
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
+# Minimum number of GT files. Default: $(MIN_GT_FILES)
+MIN_GT_FILES := 10
+
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -68,6 +71,7 @@ help:
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
+	@echo "    MIN_GT_FILES       Minimum number of GT files. Default: $(MIN_GT_FILES)"
 
 # END-EVAL
 
@@ -111,6 +115,11 @@ $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.tx
 	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+	no=$$(find $(GROUND_TRUTH_DIR) -name '*.lstmf'|wc -l); \
+	   if (( no < $(MIN_GT_FILES) ));then \
+	       echo "Not enough ground truth provided: $$no < $(MIN_GT_FILES)"; \
+	       exit 1; \
+	   fi
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
 $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
