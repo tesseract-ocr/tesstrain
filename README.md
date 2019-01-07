@@ -1,24 +1,42 @@
 # ocrd-train
 
-> Training workflow for Tesseract 4 as a Makefile for dependency tracking and
-  building the required software from source.
+> Training workflow for Tesseract 4 as a Makefile for dependency tracking and building the required software from source.
 
 ## Install
 
-To build leptonica and tesseract, additional data and install it to a subdirectory `./usr` in the repo:
+### leptonica, tesseract
+
+You will need a recent version (>= 4.0.0beta1) of tesseract built with the
+training tools and matching leptonica bindings.
+[Build](https://github.com/tesseract-ocr/tesseract/wiki/Compiling)
+[instructions](https://github.com/tesseract-ocr/tesseract/wiki/Compiling-%E2%80%93-GitInstallation)
+and more can be found in the [Tesseract project
+wiki](https://github.com/tesseract-ocr/tesseract/wiki/).
+
+Alternatively, you can build leptonica and tesseract within this project and install it to a subdirectory `./usr` in the repo:
 
 ```sh
-  make leptonica tesseract langdata
+  make leptonica tesseract
 ```
 
 Tesseract will be built from the git repository, which requires CMake,
-autotools (including autotools-archive) and some additional libraries for the training tools. See the
-[installation notes in the tesseract repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
+autotools (including autotools-archive) and some additional libraries for the
+training tools. See the [installation notes in the tesseract
+repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
+
+### language data
+
+Tesseract expects some configuration data (a file `fadical-stroke.txt`). To fetch it:
+
+``` sh
+  make langdata
+```
 
 ## Provide ground truth
 
 Place ground truth consisting of line images and transcriptions in the folder
-`data/train` for training and `data/eval` for evaluation.
+`data/ground-truth`. This list of files will be split into training and
+evaluation data, the ratio is defined by the `RATIO_TRAIN` variable.
 
 Images must be TIFF and have the extension `.tif`.
 
@@ -26,7 +44,7 @@ Transcriptions must be single-line plain text and have the same name as the
 line image but with `.tif` replaced by `.gt.txt`.
 
 The repository contains a ZIP archive with sample ground truth, see
-[ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/train` and run
+[ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/ground-truth` and run
 `make training`.
 
 **NOTE:** If you want to generate line images for transcription from a full
@@ -75,6 +93,7 @@ Run `make help` to see all the possible targets and variables:
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
     PSM                Page segmentation mode. Default: 6
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
+    MIN_GT_FILES       Minimum number of GT files. Default: 10
 ```
 
 <!-- END-EVAL -->
