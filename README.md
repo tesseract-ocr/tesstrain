@@ -24,6 +24,8 @@ autotools (including autotools-archive) and some additional libraries for the
 training tools. See the [installation notes in the tesseract
 repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
 
+<!-- radical-stroke will be fetched as requirement to proto-model, kba Wed Jan 30 10:58:10 CET 2019
+
 ### language data
 
 Tesseract expects some configuration data (a file `fadical-stroke.txt`). To fetch it:
@@ -31,6 +33,8 @@ Tesseract expects some configuration data (a file `fadical-stroke.txt`). To fetc
 ``` sh
   make langdata
 ```
+
+-->
 
 ## Provide ground truth
 
