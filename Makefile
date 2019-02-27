@@ -133,7 +133,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-      --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --train_listfile data/list.train \
