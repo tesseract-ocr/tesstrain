@@ -101,15 +101,16 @@ data/unicharset: $(ALL_BOXES)
 	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
+	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 endif
 
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
 	find $(GROUND_TRUTH_DIR) -name '*.box' -exec cat {} \; > "$@"
 
-$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
+$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif 
+	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(START_MODEL) --psm 6 wordstrbox > "$@"
 
+lstmf: $(ALL_LSTMF)
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
@@ -124,6 +125,7 @@ $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	  --input_unicharset data/unicharset \
 	  --script_dir data/ \
 	  --output_dir data/ \
+	  --pass_through_recoder \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
@@ -131,14 +133,12 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+      --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
-	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
-	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
-	  --max_iterations 10000
+	  --max_iterations 400
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
@@ -212,3 +212,4 @@ clean:
 	rm -rf data/$(MODEL_NAME)
 	rm -rf data/unicharset
 	rm -rf data/checkpoints
+	
