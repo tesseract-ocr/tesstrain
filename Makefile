@@ -26,7 +26,7 @@ LEPTONICA_VERSION := 1.75.3
 TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
-TESSDATA_REPO = _fast
+TESSDATA_REPO = _best
 
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
