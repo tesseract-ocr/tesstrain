@@ -31,7 +31,7 @@ TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
 
-# Training Type - Impact, Plus, Layer
+# Finetune Training Type - Impact, Plus, Layer
 FINETUNE_TYPE =
 
 # Normalization mode for unicharset_extractor and Pass through Recoder for combine_lang_model
@@ -54,7 +54,7 @@ endif
 PSM = 6
 
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
-RATIO_TRAIN := 0.80
+RATIO_TRAIN := 0.90
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
