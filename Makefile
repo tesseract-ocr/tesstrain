@@ -3,7 +3,10 @@ export
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
-TESSDATA =  $(LOCAL)/share/tessdata
+TESSDATA_BEST = ~/tessdata_best
+
+# Tesseract model repo to use. Default: $(TESSDATA_REPO)
+TESSDATA_REPO = _best
 
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
@@ -11,7 +14,7 @@ MODEL_NAME = foo
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL = 
 
-LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
+LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE)_checkpoint
 
 # Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
@@ -25,20 +28,33 @@ LEPTONICA_VERSION := 1.75.3
 # Tesseract commit. Default: $(TESSERACT_VERSION)
 TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
 
-# Tesseract model repo to use. Default: $(TESSDATA_REPO)
-TESSDATA_REPO = _fast
-
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
 
-# Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
-NORM_MODE = 2
+# Training Type - Impact, Plus, Layer
+FINETUNE_TYPE =
+
+# Normalization mode for unicharset_extractor and Pass through Recoder for combine_lang_model
+ifeq ($(LANG_TYPE),Indic)
+    NORM_MODE =2
+    RECODER=--pass_through_recoder
+    BOX_METHOD=WordStrBox
+else
+ifeq ($(LANG_TYPE),RTL)
+    NORM_MODE =2
+    RECODER=--pass_through_recoder --lang_is_rtl
+    BOX_METHOD=WordStrBox
+else
+    NORM_MODE =1
+    RECODER=
+endif
+endif
 
 # Page segmentation mode. Default: $(PSM)
 PSM = 6
 
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
-RATIO_TRAIN := 0.90
+RATIO_TRAIN := 0.80
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
@@ -94,22 +110,33 @@ data/list.eval: $(ALL_LSTMF)
 training: data/$(MODEL_NAME).traineddata
 
 ifdef START_MODEL
+$(TESSDATA_BEST)/$(START_MODEL).traineddata:
+	cd $(TESSDATA_BEST) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
 data/unicharset: $(ALL_BOXES)
 	mkdir -p data/$(START_MODEL)
-	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
+	combine_tessdata -u $(TESSDATA_BEST)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
 data/unicharset: $(ALL_BOXES)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
+	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 endif
 
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
 	find $(GROUND_TRUTH_DIR) -name '*.box' -exec cat {} \; > "$@"
 
-$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
+ifeq ($(BOX_METHOD),WordStrBox)
+    $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
+	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(MODEL_NAME) --psm 6 wordstrbox 
+	mv "$(GROUND_TRUTH_DIR)/$*.box" "$(GROUND_TRUTH_DIR)/$*.wordstrbox" 
+	sed -i -e "s/ \#.*/\#/g"  $(GROUND_TRUTH_DIR)/$*.wordstrbox
+	paste --delimiters="\0"  $(GROUND_TRUTH_DIR)/$*.wordstrbox  $(GROUND_TRUTH_DIR)/$*.gt.txt > "$@"
+else
+    $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
 	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
+endif
 
+lstmf: $(ALL_LSTMF)
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
 
@@ -124,21 +151,78 @@ $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	  --input_unicharset data/unicharset \
 	  --script_dir data/ \
 	  --output_dir data/ \
+	  $(RECODER) \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
+ifeq ($(FINETUNE_TYPE),Impact)
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	mkdir -p data/checkpoints
+	lstmtraining \
+	  --debug_level -1 \
+	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
+	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
+	  --model_output data/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
+	  --train_listfile data/list.train \
+	  --max_iterations 400
+	lstmeval \
+	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile data/list.eval \
+	  --verbosity 0
+data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
+	--model_output $@
+endif
+ifeq ($(FINETUNE_TYPE),Plus)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --old_traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
-	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
-	  --model_output data/checkpoints/$(MODEL_NAME) \
-	  --learning_rate 20e-4 \
+	  --model_output data/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
+	  --train_listfile data/list.train \
+	  --eval_listfile data/list.eval \
+	  --max_iterations 3600
+	lstmeval \
+	  --traineddata $(PROTO_MODEL) \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile data/list.eval \
+	  --verbosity 0
+data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
+	--model_output $@
+endif
+ifeq ($(FINETUNE_TYPE),Layer)
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	mkdir -p data/checkpoints
+	lstmtraining \
+	  --traineddata $(PROTO_MODEL) \
+	  --append_index 5 --net_spec '[Lfx192 O1c1]' \
+	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
+	  --model_output data/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
+	lstmeval \
+	  --traineddata $(PROTO_MODEL) \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile data/list.eval \
+	  --verbosity 0
+data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
+	--model_output $@
+endif
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
@@ -150,14 +234,20 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
 	  --max_iterations 10000
-endif
-
+	lstmeval \
+	  --traineddata $(PROTO_MODEL) \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile data/list.eval \
+	  --verbosity 0
 data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
+endif
+
+
 
 data/radical-stroke.txt:
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
@@ -198,10 +288,10 @@ tesseract-$(TESSERACT_VERSION):
 	unzip $(TESSERACT_VERSION).zip
 
 # Download tesseract-langs
-tesseract-langs: $(TESSDATA)/eng.traineddata
+tesseract-langs: $(TESSDATA_BEST)/eng.traineddata
 
-$(TESSDATA)/eng.traineddata:
-	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
+$(TESSDATA_BEST)/eng.traineddata:
+	cd $(TESSDATA_BEST) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
 
 # Clean all generated files
 clean:
