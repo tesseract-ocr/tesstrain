@@ -127,10 +127,9 @@ $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif
 
 ifeq ($(BOX_METHOD),WordStrBox)
     $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(MODEL_NAME) --psm 6 -c tessedit_create_wordstrbox=1
- 
+	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(MODEL_NAME) --psm 6 -c tessedit_create_wordstrbox=1 
 	mv "$(GROUND_TRUTH_DIR)/$*.box" "$(GROUND_TRUTH_DIR)/$*.wordstrbox" 
-	sed -i -e "s/ \#.*/\#/g"  $(GROUND_TRUTH_DIR)/$*.wordstrbox
+	sed -i -e "s/ \#.*/ \#/g"  $(GROUND_TRUTH_DIR)/$*.wordstrbox
 	paste --delimiters="\0"  $(GROUND_TRUTH_DIR)/$*.wordstrbox  $(GROUND_TRUTH_DIR)/$*.gt.txt > "$@"
 else
     $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
