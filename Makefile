@@ -105,7 +105,7 @@ data/unicharset: $(ALL_BOXES)
 endif
 
 $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.box' -exec cat {} \; > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
 $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
 	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
