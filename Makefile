@@ -139,8 +139,7 @@ $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	mkdir -p $(OUTPUT_DIR)
 	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
-	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
 	tesseract $*.tif $* --psm $(PSM) lstm.train
