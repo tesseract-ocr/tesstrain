@@ -31,6 +31,9 @@ TESSDATA_REPO = _best
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
 
+# Max iterations. Default: $(MAX_ITERATIONS)
+MAX_ITERATIONS := 10000
+
 # Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
 NORM_MODE = 2
 
@@ -68,6 +71,7 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
@@ -142,7 +146,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
-	  --max_iterations 10000
+	  --max_iterations $(MAX_ITERATIONS)
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
@@ -153,7 +157,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
-	  --max_iterations 10000
+	  --max_iterations $(MAX_ITERATIONS)
 endif
 
 data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
