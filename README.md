@@ -96,6 +96,7 @@ Run `make help` to see all the possible targets and variables:
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
     PSM                Page segmentation mode. Default: 6
+    RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
 ```
 

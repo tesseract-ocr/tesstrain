@@ -37,6 +37,9 @@ NORM_MODE = 2
 # Page segmentation mode. Default: $(PSM)
 PSM = 6
 
+# Random seed for shuffling of the training data. Default: $(RANDOM_SEED)
+RANDOM_SEED := 0
+
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
@@ -67,6 +70,7 @@ help:
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
+	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 
 # END-EVAL
@@ -111,7 +115,7 @@ $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.tx
 	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort -R -o "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort -R --random-source=<(echo $(RANDOM_SEED)) > "$@"
 
 $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
 	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
