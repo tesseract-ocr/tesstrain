@@ -131,7 +131,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
