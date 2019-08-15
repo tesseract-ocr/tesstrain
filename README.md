@@ -94,6 +94,7 @@ Run `make help` to see all the possible targets and variables:
     TESSERACT_VERSION  Tesseract commit. Default: fd492062d08a2f55001a639f2015b8524c7e9ad4
     TESSDATA_REPO      Tesseract model repo to use. Default: _fast
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
+    MAX_ITERATIONS     Max iterations. Default: 10000
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
     PSM                Page segmentation mode. Default: 6
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
