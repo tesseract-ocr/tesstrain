@@ -1,5 +1,8 @@
 export
 
+# Make sure that sort always uses the same sort order.
+LC_ALL := C
+
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
@@ -119,7 +122,7 @@ $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.tx
 	python3 generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort -R --random-source=<(echo $(RANDOM_SEED)) > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | sort -R --random-source=<(echo $(RANDOM_SEED)) > "$@"
 
 $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
 	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
