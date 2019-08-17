@@ -122,7 +122,9 @@ $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.tx
 	python3 generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | sort -R --random-source=<(echo $(RANDOM_SEED)) > "$@"
+	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
+	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
 
 $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
 	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
