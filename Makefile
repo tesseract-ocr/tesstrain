@@ -198,12 +198,9 @@ tesseract.built: tesseract-$(TESSERACT_VERSION)
 	cd $< && \
 		sh autogen.sh && \
 		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
-		LEPTONICA_CFLAGS="-I$(LOCAL)/include/leptonica" \
 			./configure --prefix=$(LOCAL) && \
 		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) && \
-		make install && \
-		make -j$(CORES) training-install && \
+			make -j$(CORES) install training-install && \
 		date > "$@"
 
 tesseract-$(TESSERACT_VERSION):
