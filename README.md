@@ -95,6 +95,7 @@ Run `make help` to see all the possible targets and variables:
     TESSDATA_REPO      Tesseract model repo to use. Default: _fast
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
     MAX_ITERATIONS     Max iterations. Default: 10000
+    NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
     PSM                Page segmentation mode. Default: 6
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
