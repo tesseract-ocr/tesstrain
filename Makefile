@@ -12,7 +12,7 @@ TESSDATA =  $(LOCAL)/share/tessdata
 MODEL_NAME = foo
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
-START_MODEL = 
+START_MODEL =
 
 LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
 
@@ -117,13 +117,13 @@ data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
-$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+$(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
 $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
 	python3 generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+$(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
 	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
