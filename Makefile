@@ -137,8 +137,8 @@ proto-model: $(PROTO_MODEL)
 $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
-	  --script_dir data/ \
-	  --output_dir data/ \
+	  --script_dir data \
+	  --output_dir data \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
