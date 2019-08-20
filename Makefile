@@ -82,6 +82,8 @@ help:
 
 # END-EVAL
 
+.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
+
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
 
