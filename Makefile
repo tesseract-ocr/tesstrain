@@ -23,10 +23,10 @@ PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
 CORES = 4
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
-LEPTONICA_VERSION := 1.75.3
+LEPTONICA_VERSION := 1.78.0
 
 # Tesseract commit. Default: $(TESSERACT_VERSION)
-TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
+TESSERACT_VERSION := 4.1.0
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
