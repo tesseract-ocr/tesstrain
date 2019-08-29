@@ -12,7 +12,7 @@ TESSDATA =  $(LOCAL)/share/tessdata
 MODEL_NAME = foo
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
-START_MODEL = 
+START_MODEL =
 
 LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
 
@@ -82,6 +82,8 @@ help:
 
 # END-EVAL
 
+.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
+
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
 
@@ -115,19 +117,19 @@ data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
-$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+$(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
-$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	python3 generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
+%.box: %.tif %.gt.txt
+	python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+$(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
 	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
 
-$(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
-	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
+%.lstmf: %.box
+	tesseract $*.tif $* --psm $(PSM) lstm.train
 
 # Build the proto model
 proto-model: $(PROTO_MODEL)
@@ -135,8 +137,8 @@ proto-model: $(PROTO_MODEL)
 $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
-	  --script_dir data/ \
-	  --output_dir data/ \
+	  --script_dir data \
+	  --output_dir data \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
@@ -198,12 +200,9 @@ tesseract.built: tesseract-$(TESSERACT_VERSION)
 	cd $< && \
 		sh autogen.sh && \
 		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
-		LEPTONICA_CFLAGS="-I$(LOCAL)/include/leptonica" \
 			./configure --prefix=$(LOCAL) && \
 		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) && \
-		make install && \
-		make -j$(CORES) training-install && \
+			make -j$(CORES) install training-install && \
 		date > "$@"
 
 tesseract-$(TESSERACT_VERSION):
