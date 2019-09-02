@@ -49,9 +49,6 @@ RANDOM_SEED := 0
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
-# Minimum number of GT files. Default: $(MIN_GT_FILES)
-MIN_GT_FILES := 10
-
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -82,7 +79,6 @@ help:
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
-	@echo "    MIN_GT_FILES       Minimum number of GT files. Default: $(MIN_GT_FILES)"
 
 # END-EVAL
 
@@ -129,8 +125,8 @@ $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	no=$$(find $(GROUND_TRUTH_DIR) -name '*.lstmf'|wc -l); \
-	   if (( no < $(MIN_GT_FILES) ));then \
-	       echo "Not enough ground truth provided: $$no < $(MIN_GT_FILES)"; \
+	   if (( no * (1 - $(RATIO_TRAIN)) < 1  ));then \
+	       echo "!! ERROR !! Not enough ground truth provided: $$no < $$(( no * (1 - $(RATIO_TRAIN)))"; \
 	       exit 1; \
 	   fi
 	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
