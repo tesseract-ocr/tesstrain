@@ -1,5 +1,8 @@
 export
 
+## Make sure that sort always uses the same sort order.
+LC_ALL := C
+
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
@@ -9,7 +12,7 @@ TESSDATA =  $(LOCAL)/share/tessdata
 MODEL_NAME = foo
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
-START_MODEL = 
+START_MODEL =
 
 LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
 
@@ -20,22 +23,28 @@ PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
 CORES = 4
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
-LEPTONICA_VERSION := 1.75.3
+LEPTONICA_VERSION := 1.78.0
 
 # Tesseract commit. Default: $(TESSERACT_VERSION)
-TESSERACT_VERSION := fd492062d08a2f55001a639f2015b8524c7e9ad4
+TESSERACT_VERSION := 4.1.0
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
-TESSDATA_REPO = _fast
+TESSDATA_REPO = _best
 
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
+
+# Max iterations. Default: $(MAX_ITERATIONS)
+MAX_ITERATIONS := 10000
 
 # Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
 NORM_MODE = 2
 
 # Page segmentation mode. Default: $(PSM)
 PSM = 6
+
+# Random seed for shuffling of the training data. Default: $(RANDOM_SEED)
+RANDOM_SEED := 0
 
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
@@ -68,12 +77,16 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
+	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 	@echo "    MIN_GT_FILES       Minimum number of GT files. Default: $(MIN_GT_FILES)"
 
 # END-EVAL
+
+.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
 
 ALL_BOXES = data/all-boxes
 ALL_LSTMF = data/all-lstmf
@@ -108,22 +121,24 @@ data/unicharset: $(ALL_BOXES)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
-$(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.box' -exec cat {} \; > "$@"
+$(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
+	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
-$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	python generate_line_box.py -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
+%.box: %.tif %.gt.txt
+	python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
+$(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	no=$$(find $(GROUND_TRUTH_DIR) -name '*.lstmf'|wc -l); \
 	   if (( no < $(MIN_GT_FILES) ));then \
 	       echo "Not enough ground truth provided: $$no < $(MIN_GT_FILES)"; \
 	       exit 1; \
 	   fi
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
+	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
+	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
 
-$(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
-	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
+%.lstmf: %.box
+	tesseract $*.tif $* --psm $(PSM) lstm.train
 
 # Build the proto model
 proto-model: $(PROTO_MODEL)
@@ -131,8 +146,8 @@ proto-model: $(PROTO_MODEL)
 $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset data/unicharset \
-	  --script_dir data/ \
-	  --output_dir data/ \
+	  --script_dir data \
+	  --output_dir data \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
@@ -140,14 +155,14 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-          --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --net_spec "[1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c`head -n1 data/unicharset`]" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
-	  --max_iterations 10000
+	  --max_iterations $(MAX_ITERATIONS)
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
@@ -158,7 +173,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
 	  --eval_listfile data/list.eval \
-	  --max_iterations 10000
+	  --max_iterations $(MAX_ITERATIONS)
 endif
 
 data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
@@ -194,12 +209,9 @@ tesseract.built: tesseract-$(TESSERACT_VERSION)
 	cd $< && \
 		sh autogen.sh && \
 		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
-		LEPTONICA_CFLAGS="-I$(LOCAL)/include/leptonica" \
 			./configure --prefix=$(LOCAL) && \
 		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) && \
-		make install && \
-		make -j$(CORES) training-install && \
+			make -j$(CORES) install training-install && \
 		date > "$@"
 
 tesseract-$(TESSERACT_VERSION):
