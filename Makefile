@@ -1,6 +1,6 @@
 export
 
-# Make sure that sort always uses the same sort order.
+## Make sure that sort always uses the same sort order.
 LC_ALL := C
 
 SHELL := /bin/bash
@@ -38,7 +38,7 @@ GROUND_TRUTH_DIR := data/ground-truth
 MAX_ITERATIONS := 10000
 
 # Network specification. Default: $(NET_SPEC)
-NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
+NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c###]
 
 # Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
 NORM_MODE = 2
@@ -154,7 +154,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
-	  --net_spec "$(subst c1,c`head -n1 data/unicharset`,$(NET_SPEC))" \
+	  --net_spec "$(subst c###,c`head -n1 data/unicharset`,$(NET_SPEC))" \
 	  --model_output data/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile data/list.train \
