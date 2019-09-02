@@ -145,8 +145,6 @@ $(PROTO_MODEL): data/unicharset data/radical-stroke.txt
 	  --output_dir data \
 	  --lang $(MODEL_NAME)
 
-#      19 [1,48,0,1Ct3,3,16Mp3,3Lfys64Lfx96Lrx96Lfx512O1c1]
-
 ifdef START_MODEL
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
