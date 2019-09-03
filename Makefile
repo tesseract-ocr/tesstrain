@@ -99,19 +99,20 @@ ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 unicharset: $(OUTPUT_DIR)/unicharset
 
 # Create lists of lstmf filenames for training and eval
-lists: $(ALL_LSTMF) $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
+lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
 
+$(OUTPUT_DIR)/list.eval \
 $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 	mkdir -p $(OUTPUT_DIR)
-	total=`cat $(ALL_LSTMF) | wc -l` \
-	   no=`echo "$$total * $(RATIO_TRAIN) / 1" | bc`; \
-	   head -n "$$no" $(ALL_LSTMF) > "$@"
-
-$(OUTPUT_DIR)/list.eval: $(ALL_LSTMF)
-	mkdir -p $(OUTPUT_DIR)
-	total=`cat $(ALL_LSTMF) | wc -l` \
-	   no=`echo "($$total - $$total * $(RATIO_TRAIN)) / 1" | bc`; \
-	   tail -n "$$no" $(ALL_LSTMF) > "$@"
+	total=$$(wc -l < $(ALL_LSTMF)); \
+	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
+	  test "$$train" = "0" && \
+	    echo "Error: missing ground truth for training" && exit 1; \
+	  eval=$$(echo "$$total - $$train" | bc); \
+	  test "$$eval" = "0" && \
+	    echo "Error: missing ground truth for evaluation" && exit 1; \
+	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
 
 # Start training
 training: $(OUTPUT_DIR).traineddata
