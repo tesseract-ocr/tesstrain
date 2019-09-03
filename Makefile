@@ -11,13 +11,16 @@ TESSDATA =  $(LOCAL)/share/tessdata
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
+# Output directory for generated files. Default: $(OUTPUT_DIR)
+OUTPUT_DIR = data/$(MODEL_NAME)
+
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL =
 
-LAST_CHECKPOINT = data/checkpoints/$(MODEL_NAME)_checkpoint
+LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)_checkpoint
 
 # Name of the proto model. Default: '$(PROTO_MODEL)'
-PROTO_MODEL = data/$(MODEL_NAME)/$(MODEL_NAME).traineddata
+PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
 
 # No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
 CORES = 4
@@ -77,6 +80,7 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
@@ -88,46 +92,51 @@ help:
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
 
-ALL_BOXES = data/all-boxes
-ALL_LSTMF = data/all-lstmf
+ALL_BOXES = $(OUTPUT_DIR)/all-boxes
+ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
-unicharset: data/unicharset
+unicharset: $(OUTPUT_DIR)/unicharset
 
 # Create lists of lstmf filenames for training and eval
-lists: $(ALL_LSTMF) data/list.train data/list.eval
+lists: $(ALL_LSTMF) $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
 
-data/list.train: $(ALL_LSTMF)
+$(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
+	mkdir -p $(OUTPUT_DIR)
 	total=`cat $(ALL_LSTMF) | wc -l` \
 	   no=`echo "$$total * $(RATIO_TRAIN) / 1" | bc`; \
 	   head -n "$$no" $(ALL_LSTMF) > "$@"
 
-data/list.eval: $(ALL_LSTMF)
+$(OUTPUT_DIR)/list.eval: $(ALL_LSTMF)
+	mkdir -p $(OUTPUT_DIR)
 	total=`cat $(ALL_LSTMF) | wc -l` \
 	   no=`echo "($$total - $$total * $(RATIO_TRAIN)) / 1" | bc`; \
 	   tail -n "$$no" $(ALL_LSTMF) > "$@"
 
 # Start training
-training: data/$(MODEL_NAME).traineddata
+training: $(OUTPUT_DIR).traineddata
 
 ifdef START_MODEL
-data/unicharset: $(ALL_BOXES)
+$(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
 	mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
-data/unicharset: $(ALL_BOXES)
+$(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
+	mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
 $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
+	mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
 %.box: %.tif %.gt.txt
 	python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
+	mkdir -p $(OUTPUT_DIR)
 	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
 	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
@@ -138,40 +147,40 @@ $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*
 # Build the proto model
 proto-model: $(PROTO_MODEL)
 
-$(PROTO_MODEL): data/unicharset data/radical-stroke.txt
+$(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
 	combine_lang_model \
-	  --input_unicharset data/unicharset \
+	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir data \
 	  --output_dir data \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	mkdir -p data/checkpoints
+	mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --net_spec "$(subst c###,c`head -n1 data/unicharset`,$(NET_SPEC))" \
-	  --model_output data/checkpoints/$(MODEL_NAME) \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
-	  --train_listfile data/list.train \
-	  --eval_listfile data/list.eval \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	mkdir -p data/checkpoints
+	mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --net_spec "$(subst c1,c`head -n1 data/unicharset`,$(NET_SPEC))" \
-	  --model_output data/checkpoints/$(MODEL_NAME) \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
-	  --train_listfile data/list.train \
-	  --eval_listfile data/list.eval \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
 endif
 
-data/$(MODEL_NAME).traineddata: $(LAST_CHECKPOINT)
+$(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
@@ -223,8 +232,4 @@ $(TESSDATA)/eng.traineddata:
 clean:
 	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
-	rm -rf data/all-*
-	rm -rf data/list.*
-	rm -rf data/$(MODEL_NAME)
-	rm -rf data/unicharset
-	rm -rf data/checkpoints
+	rm -rf $(OUTPUT_DIR)
