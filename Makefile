@@ -45,10 +45,10 @@ MAX_ITERATIONS := 10000
 # Network specification for training from scratch. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
 
-# Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)`
+# Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)'
 FINETUNE_TYPE =
 
-# Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)`
+# Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
 
 # Normalization mode - 2, 1 - for unicharset_extractor and Pass through Recoder for combine_lang_model
@@ -92,6 +92,7 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
@@ -99,10 +100,10 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
-	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations for training from scratch. Default: $(MAX_ITERATIONS)"
-	@echo "    NET_SPEC           Network specification  for training from scratch. Default: $(NET_SPEC)"
-	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
+	@echo "    NET_SPEC           Network specification for training from scratch. Default: $(NET_SPEC)"
+	@echo "    FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)'"
+	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"

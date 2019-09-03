@@ -87,6 +87,7 @@ Run `make help` to see all the possible targets and variables:
   Variables
 
     MODEL_NAME         Name of the model to be built. Default: foo
+    OUTPUT_DIR         Output directory for generated files. Default: data/foo
     START_MODEL        Name of the model to continue from. Default: ''
     PROTO_MODEL        Name of the proto model. Default: 'data/foo/foo.traineddata'
     CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
@@ -94,10 +95,10 @@ Run `make help` to see all the possible targets and variables:
     TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
     TESSDATA_REPO      Tesseract model repo to use. Default: _best
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
-    OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
-    MAX_ITERATIONS     Max iterations. Default: 10000
-    NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
-    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
+    MAX_ITERATIONS     Max iterations for training from scratch. Default: 10000
+    NET_SPEC           Network specification for training from scratch. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
+    FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: ''
+    LANG_TYPE          Language Type - Indic, RTL or blank. Default: ''
     PSM                Page segmentation mode. Default: 6
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
