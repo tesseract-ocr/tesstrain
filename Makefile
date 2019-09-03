@@ -1,5 +1,8 @@
 export
 
+# Make sure that sort always uses the same sort order.
+LC_ALL := C
+
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
@@ -53,6 +56,9 @@ endif
 # Page segmentation mode. Default: $(PSM)
 PSM = 6
 
+# Random seed for shuffling of the training data. Default: $(RANDOM_SEED)
+RANDOM_SEED := 50
+
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
@@ -83,6 +89,7 @@ help:
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
+	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 
 # END-EVAL
@@ -127,7 +134,7 @@ $(ALL_BOXES): $(sort $(patsubst %.tif,%.box,$(wildcard $(GROUND_TRUTH_DIR)/*.tif
 
 ifeq ($(BOX_METHOD),WordStrBox)
     $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(MODEL_NAME) --psm 6 -c tessedit_create_wordstrbox=1 
+	tesseract "$(GROUND_TRUTH_DIR)/$*.tif" "$(GROUND_TRUTH_DIR)/$*" -l $(MODEL_NAME) --psm 6 -c tessedit_create_wordstrbox=1
 	mv "$(GROUND_TRUTH_DIR)/$*.box" "$(GROUND_TRUTH_DIR)/$*.wordstrbox" 
 	sed -i -e "s/ \#.*/ \#/g"  $(GROUND_TRUTH_DIR)/$*.wordstrbox
 	paste --delimiters="\0"  $(GROUND_TRUTH_DIR)/$*.wordstrbox  $(GROUND_TRUTH_DIR)/$*.gt.txt > "$@"
@@ -138,7 +145,8 @@ endif
 
 lstmf: $(ALL_LSTMF)
 $(ALL_LSTMF): $(sort $(patsubst %.tif,%.lstmf,$(wildcard $(GROUND_TRUTH_DIR)/*.tif)))
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -exec echo {} \; | sort -R -o "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
+	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
 
 $(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
 	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
@@ -159,7 +167,7 @@ ifeq ($(FINETUNE_TYPE),Impact)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p data/checkpoints
 	lstmtraining \
-	  --debug_level -1 \
+	  --debug_interval -1 \
 	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
 	  --model_output data/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
