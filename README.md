@@ -94,6 +94,7 @@ Run `make help` to see all the possible targets and variables:
     TESSERACT_VERSION  Tesseract commit. Default: fd492062d08a2f55001a639f2015b8524c7e9ad4
     TESSDATA_REPO      Tesseract model repo to use. Default: _fast
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
+    OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
     NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2

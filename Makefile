@@ -11,6 +11,7 @@ TESSDATA =  $(LOCAL)/share/tessdata
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
+# Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = data/$(MODEL_NAME)
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
@@ -79,6 +80,7 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
