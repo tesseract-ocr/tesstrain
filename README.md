@@ -90,16 +90,15 @@ Run `make help` to see all the possible targets and variables:
     START_MODEL        Name of the model to continue from. Default: ''
     PROTO_MODEL        Name of the proto model. Default: 'data/foo/foo.traineddata'
     CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
-    LEPTONICA_VERSION  Leptonica version. Default: 1.75.3
-    TESSERACT_VERSION  Tesseract commit. Default: fd492062d08a2f55001a639f2015b8524c7e9ad4
-    TESSDATA_REPO      Tesseract model repo to use. Default: _fast
+    LEPTONICA_VERSION  Leptonica version. Default: 1.78.0
+    TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
+    TESSDATA_REPO      Tesseract model repo to use. Default: _best
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
     MAX_ITERATIONS     Max iterations. Default: 10000
     NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: 2
     PSM                Page segmentation mode. Default: 6
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
-    MIN_GT_FILES       Minimum number of GT files. Default: 10
 ```
 
 <!-- END-EVAL -->
