@@ -90,9 +90,9 @@ Run `make help` to see all the possible targets and variables:
     START_MODEL        Name of the model to continue from. Default: ''
     PROTO_MODEL        Name of the proto model. Default: 'data/foo/foo.traineddata'
     CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
-    LEPTONICA_VERSION  Leptonica version. Default: 1.75.3
+    LEPTONICA_VERSION  Leptonica version. Default: 1.78.0
     TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
-    TESSDATA_REPO      Tesseract model repo to use. Default: _fast
+    TESSDATA_REPO      Tesseract model repo to use. Default: _best
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
     OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
