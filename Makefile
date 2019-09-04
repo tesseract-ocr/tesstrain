@@ -39,16 +39,16 @@ TESSDATA_REPO = _best
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := data/ground-truth
 
-# Max iterations for training from scratch. Default: $(MAX_ITERATIONS)
+# Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
 
 # Network specification for training from scratch. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c1]
 
-# Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)'
+# Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)`
 FINETUNE_TYPE =
 
-# Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
+# Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)`
 LANG_TYPE ?=
 
 # Normalization mode - 2, 1 - for unicharset_extractor and Pass through Recoder for combine_lang_model
@@ -92,7 +92,6 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
-	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
@@ -100,10 +99,10 @@ help:
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations for training from scratch. Default: $(MAX_ITERATIONS)"
-	@echo "    NET_SPEC           Network specification for training from scratch. Default: $(NET_SPEC)"
-	@echo "    FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: '$(FINETUNE_TYPE)'"
-	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
+	@echo "    NET_SPEC           Network specification  for training from scratch. Default: $(NET_SPEC)"
+	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
@@ -119,7 +118,7 @@ ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 unicharset: $(OUTPUT_DIR)/unicharset
 
 # Create lists of lstmf filenames for training and eval
-lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
+lists: $(ALL_LSTMF)  $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
 
 $(OUTPUT_DIR)/list.eval \
 $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
@@ -143,6 +142,7 @@ $(TESSDATA_BEST)/$(START_MODEL).traineddata:
 $(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
 	mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA_BEST)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
+	mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
@@ -155,18 +155,18 @@ $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 	mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
-%.box: %.tif %.gt.txt
-	python3 generate_wordstr_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
+$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
+	export PYTHONIOENCODING=utf8
+	python3 generate_wordstr_box.py  -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 lstmf: $(ALL_LSTMF)
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	mkdir -p $(OUTPUT_DIR)
-# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
 	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
 
-%.lstmf: %.box
-	tesseract $*.tif $* --psm $(PSM) lstm.train
+$(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
+	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) lstm.train
 
 # Build the proto model
 proto-model: $(PROTO_MODEL)
@@ -189,7 +189,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
-	  --max_iterations 400
+	  --max_iterations $(MAX_ITERATIONS)
 	lstmeval \
 	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	  --model $(LAST_CHECKPOINT) \
@@ -212,7 +212,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations 3600
+	  --max_iterations $(MAX_ITERATIONS)
 	lstmeval \
 	  --traineddata $(PROTO_MODEL) \
 	  --model $(LAST_CHECKPOINT) \
@@ -235,7 +235,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(FINETUNE_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations 10000
+	  --max_iterations $(MAX_ITERATIONS)
 	lstmeval \
 	  --traineddata $(PROTO_MODEL) \
 	  --model $(LAST_CHECKPOINT) \
@@ -316,6 +316,6 @@ $(TESSDATA_BEST)/eng.traineddata:
 
 # Clean all generated files
 clean:
-	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
 	rm -rf $(OUTPUT_DIR)
+
