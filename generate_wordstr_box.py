@@ -35,3 +35,5 @@ for line in lines:
     if line.strip():
         print(u"%s %d %d %d %d 0 #%s" % ("WordStr", 0, 0, width, height, line))
         print(u"%s %d %d %d %d 0" % ("\t", width, height, width+1, height+1))
+
+        
