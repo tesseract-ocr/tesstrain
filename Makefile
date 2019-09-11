@@ -1,4 +1,4 @@
-export
+export PYTHONIOENCODING=utf8
 
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
@@ -8,7 +8,7 @@ LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
 TESSDATA =  $(LOCAL)/share/tessdata
 TESSDATA_BEST = ~/tessdata_best
-SCRIPT_DIR = ~/langdata_lstm
+SCRIPT_DIR = data
 
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
@@ -16,14 +16,26 @@ MODEL_NAME = foo
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = data/$(MODEL_NAME)
 
+# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
+GROUND_TRUTH_DIR := data/ground-truth
+
+# Directory with font files for generating box-tiff pairs using text2image. Default: $(FONTS_DIR)
+FONTS_DIR = /usr/share/fonts
+
+# List of font names for generating box-tiff pairs using text2image. Default: $(FONTS_LIST)
+FONTS_LIST =
+
+#Training text for generating box-tiff pairs using text2image. Default: $(TRAINING_TEXT)
+TRAINING_TEXT =
+
 # Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
-WORDLIST_FILE=$(SCRIPT_DIR)/$(MODEL_NAME)/$(MODEL_NAME).wordlist
+WORDLIST_FILE = $(GROUND_TRUTH_DIR)/$(MODEL_NAME).wordlist
 
 # Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)
-NUMBERS_FILE=$(SCRIPT_DIR)/$(MODEL_NAME)/$(MODEL_NAME).numbers
+NUMBERS_FILE = $(GROUND_TRUTH_DIR)/$(MODEL_NAME).numbers
 
 # Punc file for Punctuation dawg. Default: $(PUNC_FILE)
-PUNC_FILE=$(SCRIPT_DIR)/$(MODEL_NAME)/$(MODEL_NAME).punc
+PUNC_FILE = $(GROUND_TRUTH_DIR)/$(MODEL_NAME).punc
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL =
@@ -44,9 +56,6 @@ TESSERACT_VERSION := 4.1.0
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
-
-# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
-GROUND_TRUTH_DIR := data/ground-truth
 
 # Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
@@ -125,6 +134,24 @@ help:
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
+ifdef TRAINING_TEXT
+$(ALL_GT): $(FONTS_LIST) $(TRAINING_TEXT)
+	while read -r fontname; do \
+		LINENUM=0; \
+		while read -r trainline; do \
+			((LINENUM = LINENUM + 1)); \
+			echo "$$trainline" >tmp.txt; \
+			OMP_THREAD_LIMIT=1   text2image  --strip_unrenderable_words --xsize=2500 --ysize=152  --leading=32 --margin=12  --char_spacing=0.0 --exposure=0  --max_pages=0  --fonts_dir=$(FONTS_DIR) --font="$$fontname" --text=tmp.txt  --outputbase="$(GROUND_TRUTH_DIR)/$${fontname// /_}-$$LINENUM.exp0"; \
+		done <$(TRAINING_TEXT); \
+	done <$(FONTS_LIST); \
+	mkdir -p data/$(MODEL_NAME); \
+	cp "$$TRAINING_TEXT"  "$$ALL_GT"
+else
+$(ALL_GT): $(patsubst $(GROUND_TRUTH_DIR)/%.tif,$(GROUND_TRUTH_DIR)/%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
+	mkdir -p $(OUTPUT_DIR)
+	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs -I{} sh -c "cat {}; echo ''" | sort -u > "$@"
+endif
+
 ifdef START_MODEL
 startmodelfiles: $(TESSDATA_BEST)/$(START_MODEL).traineddata data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset data/$(START_MODEL)/$(MODEL_NAME).lstm
 
@@ -147,12 +174,12 @@ endif
 unicharset: $(OUTPUT_DIR)/unicharset
 
 ifeq ($(BUILD_TYPE),Plus)
-$(OUTPUT_DIR)/unicharset: $(ALL_GT)
+$(OUTPUT_DIR)/unicharset:  $(ALL_GT)
 	mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
-$(OUTPUT_DIR)/unicharset: $(ALL_GT)
+$(OUTPUT_DIR)/unicharset:  $(ALL_GT)
 	mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
@@ -176,12 +203,8 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 # Start training
 training:  startmodelfiles $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
 
-$(ALL_GT): $(patsubst $(GROUND_TRUTH_DIR)/%.tif,$(GROUND_TRUTH_DIR)/%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
-	mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs -I{} sh -c "cat {}; echo ''" | sort -u > "$@"
-
+.PRECIOUS: $(GROUND_TRUTH_DIR)/%.box
 $(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	export PYTHONIOENCODING=utf8
 	python3 generate_wordstr_box.py  -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
@@ -211,7 +234,7 @@ ifeq ($(BUILD_TYPE),Impact)
 $(LAST_CHECKPOINT): unicharset lists 
 	mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
-	  --debug_interval 0 \
+	  --debug_interval -1 \
 	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
@@ -344,6 +367,10 @@ $(TESSDATA_BEST)/eng.traineddata:
 	cd $(TESSDATA_BEST) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
 
 # Clean all generated files
+cleanbox:
+	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+cleanlstmf:
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
 clean:
 	rm -rf $(OUTPUT_DIR)
 
