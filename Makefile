@@ -131,6 +131,8 @@ help:
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
 
+.PRECIOUS: $(GROUND_TRUTH_DIR)/%.box $(GROUND_TRUTH_DIR)/%.lstmf
+
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
@@ -142,15 +144,52 @@ $(ALL_GT): $(FONTS_LIST) $(TRAINING_TEXT)
 			((LINENUM = LINENUM + 1)); \
 			echo "$$trainline" >tmp.txt; \
 			OMP_THREAD_LIMIT=1   text2image  --strip_unrenderable_words --xsize=2500 --ysize=152  --leading=32 --margin=12  --char_spacing=0.0 --exposure=0  --max_pages=0  --fonts_dir=$(FONTS_DIR) --font="$$fontname" --text=tmp.txt  --outputbase="$(GROUND_TRUTH_DIR)/$${fontname// /_}-$$LINENUM.exp0"; \
-		done <$(TRAINING_TEXT); \
-	done <$(FONTS_LIST); \
-	mkdir -p data/$(MODEL_NAME); \
-	cp "$$TRAINING_TEXT"  "$$ALL_GT"
+		done < $(TRAINING_TEXT); \
+	done < $(FONTS_LIST); \
+	mkdir -p $(OUTPUT_DIR); \
+	cp "$(TRAINING_TEXT)"  "$(ALL_GT)"
 else
 $(ALL_GT): $(patsubst $(GROUND_TRUTH_DIR)/%.tif,$(GROUND_TRUTH_DIR)/%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs -I{} sh -c "cat {}; echo ''" | sort -u > "$@"
+
+$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
+	python3 generate_wordstr_box.py  -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
 endif
+
+
+# Create unicharset
+unicharset: $(OUTPUT_DIR)/unicharset
+
+ifeq ($(BUILD_TYPE),Plus)
+$(OUTPUT_DIR)/unicharset:  $(ALL_GT) 
+	mkdir -p $(OUTPUT_DIR)
+	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
+	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
+else
+$(OUTPUT_DIR)/unicharset:  $(ALL_GT) 
+	mkdir -p $(OUTPUT_DIR)
+	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
+endif
+
+# Create lists of lstmf filenames for training and eval
+lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
+
+$(OUTPUT_DIR)/list.eval \
+$(OUTPUT_DIR)/list.train:  $(ALL_LSTMF)
+	mkdir -p $(OUTPUT_DIR)
+	total=$$(wc -l < $(ALL_LSTMF)); \
+	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
+	  test "$$train" = "0" && \
+	    echo "Error: missing ground truth for training" && exit 1; \
+	  eval=$$(echo "$$total - $$train" | bc); \
+	  test "$$eval" = "0" && \
+	    echo "Error: missing ground truth for evaluation" && exit 1; \
+	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+
+# Start training
+training:  startmodelfiles  $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
 
 ifdef START_MODEL
 startmodelfiles: $(TESSDATA_BEST)/$(START_MODEL).traineddata data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset data/$(START_MODEL)/$(MODEL_NAME).lstm
@@ -170,50 +209,13 @@ startmodelfiles:
 	echo "No START_MODEL"
 endif
 
-# Create unicharset
-unicharset: $(OUTPUT_DIR)/unicharset
-
-ifeq ($(BUILD_TYPE),Plus)
-$(OUTPUT_DIR)/unicharset:  $(ALL_GT)
-	mkdir -p $(OUTPUT_DIR)
-	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
-	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
-else
-$(OUTPUT_DIR)/unicharset:  $(ALL_GT)
-	mkdir -p $(OUTPUT_DIR)
-	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
-endif
-
-# Create lists of lstmf filenames for training and eval
-lists: $(ALL_LSTMF)  $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
-
-$(OUTPUT_DIR)/list.eval \
-$(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
-	mkdir -p $(OUTPUT_DIR)
-	total=$$(wc -l < $(ALL_LSTMF)); \
-	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
-	  test "$$train" = "0" && \
-	    echo "Error: missing ground truth for training" && exit 1; \
-	  eval=$$(echo "$$total - $$train" | bc); \
-	  test "$$eval" = "0" && \
-	    echo "Error: missing ground truth for evaluation" && exit 1; \
-	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
-
-# Start training
-training:  startmodelfiles $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
-
-.PRECIOUS: $(GROUND_TRUTH_DIR)/%.box
-$(GROUND_TRUTH_DIR)/%.box: $(GROUND_TRUTH_DIR)/%.tif $(GROUND_TRUTH_DIR)/%.gt.txt
-	python3 generate_wordstr_box.py  -i "$(GROUND_TRUTH_DIR)/$*.tif" -t "$(GROUND_TRUTH_DIR)/$*.gt.txt" > "$@"
-
+lstmf: $(GROUND_TRUTH_DIR)/%.lstmf $(ALL_LSTMF)
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | sort | \
-	  sort -R --random-source=<(openssl enc -aes-256-ctr -pass pass:"$(RANDOM_SEED)" -nosalt </dev/zero 2>/dev/null) > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
-$(GROUND_TRUTH_DIR)/%.lstmf: $(GROUND_TRUTH_DIR)/%.box
-	tesseract $(GROUND_TRUTH_DIR)/$*.tif $(GROUND_TRUTH_DIR)/$* --psm $(PSM) --dpi 300 lstm.train
+%.lstmf: %.box
+	tesseract $*.tif $* --psm $(PSM) --dpi 300 lstm.train
 
 # Build the proto model
 proto-model: $(PROTO_MODEL)
@@ -234,7 +236,7 @@ ifeq ($(BUILD_TYPE),Impact)
 $(LAST_CHECKPOINT): unicharset lists 
 	mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
-	  --debug_interval -1 \
+	  --debug_interval 0 \
 	  --traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
@@ -248,6 +250,7 @@ $(LAST_CHECKPOINT): unicharset lists
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
+	--convert_to_int \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(TESSDATA_BEST)/$(START_MODEL).traineddata \
 	--model_output $@
@@ -271,6 +274,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
+	--convert_to_int \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
@@ -294,6 +298,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
+	--convert_to_int \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
@@ -318,6 +323,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
+	--convert_to_int \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
