@@ -23,7 +23,7 @@ args = arg_parser.parse_args()
 #
 
 # https://stackoverflow.com/questions/6805311/combining-devanagari-characters
-# Letters are category Lo (Letter, Other), vowel signs are category Mc (Mark, Spacing Combining), 
+# Letters are category Lo (Letter, Other), vowel signs are category Mc (Mark, Spacing Combining),
 # virama is category Mn (Mark, Nonspacing) and spaces are category Zs (Separator, Space).
 
 def splitclusters(s):
@@ -34,7 +34,7 @@ def splitclusters(s):
     """
 # http://pyright.blogspot.com/2009/12/pythons-unicodedata-module.html
 # The combining code is typically zero.  The virama gets its own special code of nine.
-# i.e. unicodedata.category=Mn unicodedata.combining=9 
+# i.e. unicodedata.category=Mn unicodedata.combining=9
 # (Could be used to extend for other Indic languages).
 
     virama = u'\N{DEVANAGARI SIGN VIRAMA}'
