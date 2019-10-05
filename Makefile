@@ -134,7 +134,7 @@ $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
 
 %.box: %.tif %.gt.txt
-	python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	mkdir -p $(OUTPUT_DIR)
