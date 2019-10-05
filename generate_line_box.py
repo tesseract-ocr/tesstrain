@@ -36,9 +36,9 @@ for line in lines:
             char = line[i]
             prev_char = line[i-1]
             if unicodedata.combining(char):
-                print(u"%s %d %d %d %d 0" % ((prev_char + char), 0, 0, width, height))
+                print(u"%s %d %d %d %d 0" % ((prev_char.encode('utf-8') + char.encode('utf-8')), 0, 0, width, height))
             elif not unicodedata.combining(prev_char):
-                print(u"%s %d %d %d %d 0" % (prev_char, 0, 0, width, height))
+                print(u"%s %d %d %d %d 0" % (prev_char.encode('utf-8'), 0, 0, width, height))
         if not unicodedata.combining(line[-1]):
-            print(u"%s %d %d %d %d 0" % (line[-1], 0, 0, width, height))
+            print(u"%s %d %d %d %d 0" % (line[-1].encode('utf-8'), 0, 0, width, height))
         print(u"%s %d %d %d %d 0" % ("\t", width, height, width+1, height+1))
