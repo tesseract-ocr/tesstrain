@@ -103,14 +103,15 @@ lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
 
 $(OUTPUT_DIR)/list.eval \
 $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
-	mkdir -p $(OUTPUT_DIR)
-	total=$$(wc -l < $(ALL_LSTMF)); \
+	@mkdir -p $(OUTPUT_DIR)
+	@total=$$(wc -l < $(ALL_LSTMF)); \
 	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
 	  test "$$train" = "0" && \
 	    echo "Error: missing ground truth for training" && exit 1; \
 	  eval=$$(echo "$$total - $$train" | bc); \
 	  test "$$eval" = "0" && \
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
+	  set -x; \
 	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
 	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
 
@@ -119,26 +120,25 @@ training: $(OUTPUT_DIR).traineddata
 
 ifdef START_MODEL
 $(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
-	mkdir -p data/$(START_MODEL)
+	@mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
 	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
 $(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
-	mkdir -p $(OUTPUT_DIR)
+	@mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
 endif
 
 $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
-	mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
+	@mkdir -p $(OUTPUT_DIR)
+	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat | sort | uniq > "$@"
 
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
-	mkdir -p $(OUTPUT_DIR)
-	# https://www.gnu.org/software/coreutils/manual/html_node/Random-sources.html#Random-sources
+	@mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
@@ -156,7 +156,7 @@ $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
 
 ifdef START_MODEL
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	mkdir -p $(OUTPUT_DIR)/checkpoints
+	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
@@ -169,7 +169,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --max_iterations $(MAX_ITERATIONS)
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	mkdir -p $(OUTPUT_DIR)/checkpoints
+	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
