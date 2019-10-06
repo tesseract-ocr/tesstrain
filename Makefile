@@ -132,7 +132,7 @@ endif
 
 $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat | sort | uniq > "$@"
 
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
