@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import io
 import argparse
+import io
 import unicodedata
 from PIL import Image
 
@@ -60,7 +60,8 @@ with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
 
 for line in lines:
-    if line.strip():
+    line = unicodedata.normalize('NFC', line.strip())
+    if line:
         for syllable in (splitclusters(line)):
             print("%s 0 0 %d %d 0" % (syllable, width, height))
             print("\t 0 0 %d %d 0" % (width, height))
