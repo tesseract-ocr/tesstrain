@@ -52,9 +52,8 @@ def splitclusters(s):
     if cluster:
         yield cluster
 
-# load image
-with open(args.image, "rb") as f:
-    width, height = Image.open(f).size
+# Get image size.
+width, height = Image.open(args.image).size
 
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
