@@ -1,4 +1,4 @@
-# ocrd-train
+# tesstrain
 
 > Training workflow for Tesseract 4 as a Makefile for dependency tracking and building the required software from source.
 
