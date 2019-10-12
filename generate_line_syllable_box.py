@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import io
 import argparse
+import io
 import unicodedata
 from PIL import Image
 
@@ -52,16 +52,16 @@ def splitclusters(s):
     if cluster:
         yield cluster
 
-# load image
-with open(args.image, "rb") as f:
-    width, height = Image.open(f).size
+# Get image size.
+width, height = Image.open(args.image).size
 
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
 
 for line in lines:
-    if line.strip():
+    line = unicodedata.normalize('NFC', line.strip())
+    if line:
         for syllable in (splitclusters(line)):
-            print(u"%s %d %d %d %d 0" % (syllable, 0, 0, width, height))
-            print(u"%s %d %d %d %d 0" % ("\t", width, height, width+1, height+1))
+            print("%s 0 0 %d %d 0" % (syllable, width, height))
+            print("\t 0 0 %d %d 0" % (width, height))

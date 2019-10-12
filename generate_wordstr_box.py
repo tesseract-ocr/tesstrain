@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import io
 import argparse
+import io
 import unicodedata
 from PIL import Image, ImageChops, ImageOps
 
@@ -43,6 +43,7 @@ with io.open(args.txt, "r", encoding='utf-8') as f:
 
 # create WordStr line boxes for Indic & RTL
 for line in lines:
-    if line.strip():
-        print(u"%s %d %d %d %d 0 #%s" % ("WordStr", 0, 0, width, height, line))
-        print(u"%s %d %d %d %d 0" % ("\t", width, height, width+1, height+1))
+    line = unicodedata.normalize('NFC', line.strip())
+    if line:
+        print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
+        print("\t 0 0 %d %d 0" % (width, height))
