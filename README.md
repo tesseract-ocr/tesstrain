@@ -93,7 +93,7 @@ Run `make help` to see all the possible targets and variables:
     LEPTONICA_VERSION  Leptonica version. Default: 1.78.0
     TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
     TESSDATA_REPO      Tesseract model repo to use. Default: _best
-    TESSDATA           Path to the .traineddata directory to start finetuning from. Default: './usr/share/tessdata'
+    TESSDATA           Path to the .traineddata directory to start finetuning from. Default: ./usr/share/tessdata
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/ground-truth
     OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
