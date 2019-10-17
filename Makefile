@@ -6,6 +6,8 @@ LC_ALL := C
 SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
+
+# Path to the .traineddata directory to start finetuning from. Default: $(LOCAL)/share/tessdata
 TESSDATA =  $(LOCAL)/share/tessdata
 
 # Name of the model to be built. Default: $(MODEL_NAME)
@@ -79,6 +81,7 @@ help:
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
+	@echo "    TESSDATA           Path to the .traineddata directory to start finetuning from. Default: $(LOCAL)/share/tessdata
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
