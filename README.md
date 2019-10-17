@@ -58,10 +58,11 @@ Place ground truth consisting of line images and transcriptions in the folder
 `data/MODEL_NAME-ground-truth`. This list of files will be split into training and
 evaluation data, the ratio is defined by the `RATIO_TRAIN` variable.
 
-Images must be TIFF and have the extension `.tif`.
+Images must be TIFF and have the extension `.tif` or PNG and have the
+extension `.bin.png` or `.nrm.png`.
 
 Transcriptions must be single-line plain text and have the same name as the
-line image but with `.tif` replaced by `.gt.txt`.
+line image but with the image extension replaced by `.gt.txt`.
 
 The repository contains a ZIP archive with sample ground truth, see
 [ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/foo-ground-truth` and run
