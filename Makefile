@@ -7,7 +7,8 @@ SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
 
-# Path to the .traineddata directory with BEST traineddata to start finetuning from. Default: $(LOCAL)/share/tessdata
+# Path to the .traineddata directory with traineddata suitable for training 
+# (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata
 TESSDATA =  $(LOCAL)/share/tessdata
 
 # Name of the model to be built. Default: $(MODEL_NAME)
@@ -15,7 +16,6 @@ MODEL_NAME = foo
 
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = data/$(MODEL_NAME)
-
 
 # Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
 WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
@@ -25,6 +25,7 @@ NUMBERS_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).numbers
 
 # Punc file for Punctuation dawg. Default: $(PUNC_FILE)
 PUNC_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).punc
+
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL =
 
@@ -112,9 +113,8 @@ help:
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
-	@echo "    BUILD_TYPE      Training Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'"
+	@echo "    BUILD_TYPE         Training Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
-	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
