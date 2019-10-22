@@ -55,6 +55,12 @@ MAX_ITERATIONS := 10000
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
 
+# Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)
+LAYER_APPEND_INDEX := 5
+
+# Replace Layer Network specification. Default: $(LAYER_NET_SPEC)
+LAYER_NET_SPEC := [Lfx192 O1c1]
+
 # Training Build Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'
 BUILD_TYPE := Scratch
 
@@ -114,6 +120,8 @@ help:
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
+	@echo "    LAYER_NET_SPEC     Replace Layer Network specification. Default: $(LAYER_NET_SPEC)"
+	@echo "    LAYER_APPEND_INDEX Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)"
 	@echo "    BUILD_TYPE         Training Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
@@ -273,7 +281,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
-	  --append_index 3 --net_spec '[ Lfx96 Lrx96 Lfx192 O1c1]' \
+	  --append_index $(LAYER_APPEND_INDEX) --net_spec '$(LAYER_NET_SPEC)' \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
