@@ -7,7 +7,7 @@ SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
 
-# Path to the .traineddata directory to start finetuning from. Default: $(LOCAL)/share/tessdata
+# Path to the .traineddata directory with BEST traineddata to start finetuning from. Default: $(LOCAL)/share/tessdata
 TESSDATA =  $(LOCAL)/share/tessdata
 
 # Name of the model to be built. Default: $(MODEL_NAME)
@@ -16,10 +16,19 @@ MODEL_NAME = foo
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = data/$(MODEL_NAME)
 
+
+# Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
+WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
+
+# Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)
+NUMBERS_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).numbers
+
+# Punc file for Punctuation dawg. Default: $(PUNC_FILE)
+PUNC_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).punc
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL =
 
-LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)_checkpoint
+LAST_CHECKPOINT := $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE)_checkpoint
 
 # Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
@@ -37,7 +46,7 @@ TESSERACT_VERSION := 4.1.0
 TESSDATA_REPO = _best
 
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
-GROUND_TRUTH_DIR := data/ground-truth
+GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
@@ -45,8 +54,25 @@ MAX_ITERATIONS := 10000
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
 
-# Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)
-NORM_MODE = 2
+# Training Build Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'
+BUILD_TYPE := Scratch
+
+# Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
+LANG_TYPE ?=
+
+# Normalization mode - 2, 1 - for unicharset_extractor and Pass through Recoder for combine_lang_model
+ifeq ($(LANG_TYPE),Indic)
+	NORM_MODE =2
+	RECODER =--pass_through_recoder
+else
+ifeq ($(LANG_TYPE),RTL)
+	NORM_MODE =3
+	RECODER =--pass_through_recoder --lang_is_rtl
+else
+	NORM_MODE =1
+	RECODER=
+endif
+endif
 
 # Page segmentation mode. Default: $(PSM)
 PSM = 6
@@ -86,6 +112,8 @@ help:
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
+	@echo "    BUILD_TYPE      Training Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'"
+	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    NORM_MODE          Normalization Mode - see src/training/language_specific.sh for details. Default: $(NORM_MODE)"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
@@ -94,6 +122,8 @@ help:
 # END-EVAL
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
+
+.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE)_checkpoint $(GROUND_TRUTH_DIR)/%.box $(GROUND_TRUTH_DIR)/%.lstmf
 
 ALL_BOXES = $(OUTPUT_DIR)/all-boxes
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
@@ -119,14 +149,14 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
 
 # Start training
-training: $(OUTPUT_DIR).traineddata
+training: $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
 
 ifdef START_MODEL
 $(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
 	@mkdir -p data/$(START_MODEL)
-	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(START_MODEL)
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
 	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
-	merge_unicharsets data/$(START_MODEL)/$(START_MODEL).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
+	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
 $(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
 	@mkdir -p $(OUTPUT_DIR)
@@ -142,6 +172,7 @@ $(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
+                                                                                                                                                                  
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
@@ -154,41 +185,118 @@ $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir data \
+	  --numbers $(NUMBERS_FILE) \
+	  --puncs $(PUNC_FILE) \
+	  --words $(WORDLIST_FILE) \
 	  --output_dir data \
+	  $(RECODER) \
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
+ifeq ($(BUILD_TYPE),Impact)
+$(LAST_CHECKPOINT): unicharset lists
+	mkdir -p $(OUTPUT_DIR)/checkpoints
+	lstmtraining \
+	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --max_iterations $(MAX_ITERATIONS)
+	lstmeval \
+	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+	lstmeval \
+	  --model $(TESSDATA)/$(START_MODEL).traineddata \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(TESSDATA)/$(START_MODEL).traineddata \
+	--model_output $@
+endif
+ifeq ($(BUILD_TYPE),Plus)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --continue_from data/$(START_MODEL)/$(START_MODEL).lstm \
-	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
-	  --learning_rate 20e-4 \
+	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-else
-$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	@mkdir -p $(OUTPUT_DIR)/checkpoints
-	lstmtraining \
+	lstmeval \
 	  --traineddata $(PROTO_MODEL) \
-	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
-	  --learning_rate 20e-4 \
-	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --model $(LAST_CHECKPOINT) \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS)
-endif
-
-$(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
+	  --verbosity 0
+	lstmeval \
+	  --model $(TESSDATA)/$(START_MODEL).traineddata \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
+endif
+ifeq ($(BUILD_TYPE),Layer)
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	mkdir -p $(OUTPUT_DIR)/checkpoints
+	lstmtraining \
+	  --traineddata $(PROTO_MODEL) \
+	  --append_index 3 --net_spec '[ Lfx96 Lrx96 Lfx192 O1c1]' \
+	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --max_iterations $(MAX_ITERATIONS)
+	lstmeval \
+	  --traineddata $(PROTO_MODEL) \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+	lstmeval \
+	  --model $(TESSDATA)/$(START_MODEL).traineddata \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
+	--model_output $@
+endif
+else
+ifeq ($(BUILD_TYPE),Scratch)
+$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
+	@mkdir -p $(OUTPUT_DIR)/checkpoints
+	lstmtraining \
+	  --traineddata $(PROTO_MODEL) \
+	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
+	  --learning_rate 20e-4 \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --max_iterations $(MAX_ITERATIONS)
+	lstmeval \
+	  --traineddata $(PROTO_MODEL) \
+	  --model $(LAST_CHECKPOINT) \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --verbosity 0
+$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
+	lstmtraining \
+	--stop_training \
+	--continue_from $(LAST_CHECKPOINT) \
+	--traineddata $(PROTO_MODEL) \
+	--model_output $@
+endif
+endif
 
 data/radical-stroke.txt:
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
