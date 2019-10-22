@@ -203,7 +203,7 @@ $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
 ifdef START_MODEL
 ifeq ($(BUILD_TYPE),Impact)
 $(LAST_CHECKPOINT): unicharset lists
-	mkdir -p $(OUTPUT_DIR)/checkpoints
+	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
@@ -255,7 +255,7 @@ $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 endif
 ifeq ($(BUILD_TYPE),Layer)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	mkdir -p $(OUTPUT_DIR)/checkpoints
+	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
 	  --traineddata $(PROTO_MODEL) \
 	  --append_index $(LAYER_APPEND_INDEX) --net_spec '$(LAYER_NET_SPEC)' \
