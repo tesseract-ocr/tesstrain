@@ -134,7 +134,7 @@ help:
 
 .PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE)_checkpoint $(GROUND_TRUTH_DIR)/%.box $(GROUND_TRUTH_DIR)/%.lstmf
 
-ALL_BOXES = $(OUTPUT_DIR)/all-boxes
+ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
@@ -161,23 +161,23 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 training: $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
 
 ifdef START_MODEL
-$(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
+$(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
-	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_BOXES)"
+	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
 else
-$(OUTPUT_DIR)/unicharset: $(ALL_BOXES)
+$(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p $(OUTPUT_DIR)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_BOXES)"
+	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_GT)"
 endif
 
-$(ALL_BOXES): $(patsubst %.tif,%.box,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
+$(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.box' | xargs cat | sort | uniq > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs cat | sort | uniq > "$@"
 
 %.box: %.tif %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 generate_wordstr_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
