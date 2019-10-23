@@ -233,15 +233,6 @@ $(LAST_CHECKPOINT): unicharset lists
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --max_iterations $(MAX_ITERATIONS)
-	lstmeval \
-	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --model $(LAST_CHECKPOINT) \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
-	lstmeval \
-	  --model $(TESSDATA)/$(START_MODEL).traineddata \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
@@ -260,15 +251,6 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-	lstmeval \
-	  --traineddata $(PROTO_MODEL) \
-	  --model $(LAST_CHECKPOINT) \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
-	lstmeval \
-	  --model $(TESSDATA)/$(START_MODEL).traineddata \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
@@ -287,15 +269,6 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-	lstmeval \
-	  --traineddata $(PROTO_MODEL) \
-	  --model $(LAST_CHECKPOINT) \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
-	lstmeval \
-	  --model $(TESSDATA)/$(START_MODEL).traineddata \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
@@ -315,11 +288,6 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-	lstmeval \
-	  --traineddata $(PROTO_MODEL) \
-	  --model $(LAST_CHECKPOINT) \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --verbosity 0
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
