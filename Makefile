@@ -52,6 +52,9 @@ GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 # Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
 
+# Debug Interval. Default:  $(DEBUG_INTERVAL)
+DEBUG_INTERVAL := 0
+
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
 
@@ -119,6 +122,7 @@ help:
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
+	@echo "    DEBUG_INTERVAL     Debug Interval. Default: $(DEBUG_INTERVAL)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    LAYER_NET_SPEC     Replace Layer Network specification. Default: $(LAYER_NET_SPEC)"
 	@echo "    LAYER_APPEND_INDEX Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)"
@@ -181,7 +185,6 @@ $(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
-                                                                                                                                                                  
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
@@ -228,6 +231,7 @@ ifeq ($(BUILD_TYPE),Impact)
 $(LAST_CHECKPOINT): unicharset lists
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
+	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
@@ -244,6 +248,7 @@ ifeq ($(BUILD_TYPE),Plus)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
+	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
@@ -262,8 +267,9 @@ ifeq ($(BUILD_TYPE),Layer)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
+	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
-	  --append_index $(LAYER_APPEND_INDEX) --net_spec '$(LAYER_NET_SPEC)' \
+	  --append_index $(LAYER_APPEND_INDEX) --net_spec "$(LAYER_NET_SPEC)" \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
@@ -281,6 +287,7 @@ ifeq ($(BUILD_TYPE),Scratch)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
+	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
 	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
