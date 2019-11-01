@@ -33,7 +33,7 @@ def trim(im):
 # load image
 with open(args.image, "rb") as f:
     cropped = trim(Image.open(f))
-    img_with_border = ImageOps.expand(cropped,border=10,fill='white')
+    img_with_border = ImageOps.expand(cropped,border=1,fill='white')
     width, height = img_with_border.size
     img_with_border.save(args.image)
 
