@@ -74,13 +74,16 @@ LANG_TYPE ?=
 ifeq ($(LANG_TYPE),Indic)
 	NORM_MODE =2
 	RECODER =--pass_through_recoder
+	GENERATE_BOX_SCRIPT =generate_wordstr_box.py
 else
 ifeq ($(LANG_TYPE),RTL)
 	NORM_MODE =3
 	RECODER =--pass_through_recoder --lang_is_rtl
+	GENERATE_BOX_SCRIPT =generate_wordstr_box.py
 else
 	NORM_MODE =1
 	RECODER=
+	GENERATE_BOX_SCRIPT =generate_line_box.py
 endif
 endif
 
@@ -181,7 +184,7 @@ $(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs cat | sort | uniq > "$@"
 
 %.box: %.tif %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_wordstr_box.py -i "$*.tif" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
