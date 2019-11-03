@@ -78,6 +78,7 @@ Run `make help` to see all the possible targets and variables:
     unicharset       Create unicharset
     lists            Create lists of lstmf filenames for training and eval
     training         Start training
+    traineddata      Create best and fast .traineddata files from each .checkpoint file
     proto-model      Build the proto model
     leptonica        Build leptonica
     tesseract        Build tesseract
