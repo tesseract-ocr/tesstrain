@@ -66,7 +66,7 @@ help:
 	@echo "    unicharset       Create unicharset"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
 	@echo "    training         Start training"
-	@echo "    traineddata      Create .traineddata files from each checkpoint"
+	@echo "    traineddata      Create a .traineddata file from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    leptonica        Build leptonica"
 	@echo "    tesseract        Build tesseract"
@@ -150,12 +150,12 @@ $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*
 
 # Create traineddata files from checkpoints
 .PHONY: traineddata
-traineddata: $(patsubst %.checkpoint, %.traineddata, $(wildcard $(OUTPUT_DIR)/checkpoints/*.checkpoint))
+traineddata: $(patsubst %.checkpoint, %.traineddata, $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint))
 %.traineddata: %.checkpoint
 	lstmtraining \
           --stop_training \
           --continue_from $< \
-          --traineddata $(OUTPUT_DIR)/$(MODEL_NAME).traineddata \
+          --traineddata $(PROTO_MODEL) \
           --model_output $@
 
 # Build the proto model
