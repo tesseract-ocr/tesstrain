@@ -66,7 +66,7 @@ help:
 	@echo "    unicharset       Create unicharset"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
 	@echo "    training         Start training"
-	@echo "    traineddata      Create a .traineddata file from each .checkpoint file"
+	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    leptonica        Build leptonica"
 	@echo "    tesseract        Build tesseract"
@@ -148,14 +148,26 @@ $(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*
 %.lstmf: %.box
 	tesseract $*.tif $* --psm $(PSM) lstm.train
 
-# Create traineddata files from checkpoints
+# Create best and fast .traineddata files from each .checkpoint file
+CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
 .PHONY: traineddata
-traineddata: $(patsubst %.checkpoint, %.traineddata, $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint))
-%.traineddata: %.checkpoint
+traineddata: $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast
+traineddata: $(subst checkpoints,tessdata_best,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
+traineddata: $(subst checkpoints,tessdata_fast,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
+$(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast:
+	mkdir $@
+$(OUTPUT_DIR)/tessdata_best/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint
 	lstmtraining \
           --stop_training \
           --continue_from $< \
           --traineddata $(PROTO_MODEL) \
+          --model_output $@
+$(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint
+	lstmtraining \
+          --stop_training \
+          --continue_from $< \
+          --traineddata $(PROTO_MODEL) \
+          --convert_to_int \
           --model_output $@
 
 # Build the proto model
