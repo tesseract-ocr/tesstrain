@@ -64,9 +64,6 @@ LAYER_APPEND_INDEX := 5
 # Replace Layer Network specification. Default: $(LAYER_NET_SPEC)
 LAYER_NET_SPEC := [Lfx192 O1c1]
 
-# Training Build Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'
-BUILD_TYPE := Scratch
-
 # Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
 
@@ -129,7 +126,6 @@ help:
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    LAYER_NET_SPEC     Replace Layer Network specification. Default: $(LAYER_NET_SPEC)"
 	@echo "    LAYER_APPEND_INDEX Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)"
-	@echo "    BUILD_TYPE         Training Type - Impact, Plus, Layer or Scratch. Default: '$(BUILD_TYPE)'"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
@@ -230,43 +226,6 @@ $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
 	  --lang $(MODEL_NAME)
 
 ifdef START_MODEL
-ifeq ($(BUILD_TYPE),Impact)
-$(LAST_CHECKPOINT): unicharset lists
-	@mkdir -p $(OUTPUT_DIR)/checkpoints
-	lstmtraining \
-	  --debug_interval $(DEBUG_INTERVAL) \
-	  --traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
-	  --train_listfile $(OUTPUT_DIR)/list.train \
-	  --max_iterations $(MAX_ITERATIONS)
-$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
-	lstmtraining \
-	--stop_training \
-	--continue_from $(LAST_CHECKPOINT) \
-	--traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	--model_output $@
-endif
-ifeq ($(BUILD_TYPE),Plus)
-$(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
-	@mkdir -p $(OUTPUT_DIR)/checkpoints
-	lstmtraining \
-	  --debug_interval $(DEBUG_INTERVAL) \
-	  --traineddata $(PROTO_MODEL) \
-	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
-	  --train_listfile $(OUTPUT_DIR)/list.train \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS)
-$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
-	lstmtraining \
-	--stop_training \
-	--continue_from $(LAST_CHECKPOINT) \
-	--traineddata $(PROTO_MODEL) \
-	--model_output $@
-endif
-ifeq ($(BUILD_TYPE),Layer)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
@@ -284,9 +243,7 @@ $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
-endif
 else
-ifeq ($(BUILD_TYPE),Scratch)
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
 	lstmtraining \
@@ -304,7 +261,6 @@ $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
-endif
 endif
 
 data/radical-stroke.txt:
