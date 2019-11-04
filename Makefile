@@ -78,7 +78,7 @@ ifeq ($(LANG_TYPE),RTL)
 	RECODER =--pass_through_recoder --lang_is_rtl
 	GENERATE_BOX_SCRIPT =generate_wordstr_box.py
 else
-	NORM_MODE =1
+	NORM_MODE =2
 	RECODER=
 	GENERATE_BOX_SCRIPT =generate_line_box.py
 endif
