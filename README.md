@@ -110,6 +110,35 @@ Run `make help` to see all the possible targets and variables:
 
 <!-- END-EVAL -->
 
+### Make model files (traineddata)
+
+When the training is finished, it will write a `traineddata` file which can be used
+for text recognition with Tesseract. Note that this file does not include a
+dictionary. The `tesseract` executable therefore prints an warning.
+
+It is also possible to create additional `traineddata` files from intermediate
+training results (the so called checkpoints). This can even be done while the
+training is still running. Example:
+
+    # Add MODEL_NAME and OUTPUT_DIR like for the training.
+    make traineddata
+
+This will create two directories `tessdata_best` and `tessdata_fast` in `OUTPUT_DIR`
+with a best (double based) and fast (int based) model for each checkpoint.
+
+It is also possible to create models for selected checkpoints only. Examples:
+
+    # Make traineddata for the checkpoint files of the last three weeks.
+    make traineddata CHECKPOINT_FILES="$(find data/foo -name '*.checkpoint' -mtime -21)"
+
+    # Make traineddata for the last two checkpoint files.
+    make traineddata CHECKPOINT_FILES="$(ls -t data/foo/checkpoints/*.checkpoint | head -2)"
+
+    # Make traineddata for all checkpoint files with CER better than 1 %.
+    make traineddata CHECKPOINT_FILES="$(ls data/foo/checkpoints/*[^1-9]0.*.checkpoint)"
+
+Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` by the output directory if needed.
+
 ## License
 
 Software is provided under the terms of the `Apache 2.0` license.
