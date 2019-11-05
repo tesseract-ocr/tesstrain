@@ -17,13 +17,13 @@ MODEL_NAME = foo
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = data/$(MODEL_NAME)
 
-# Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
+# Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
 WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
 
-# Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)
+# Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)
 NUMBERS_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).numbers
 
-# Punc file for Punctuation dawg. Default: $(PUNC_FILE)
+# Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)
 PUNC_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).punc
 
 # Name of the model to continue from. Default: '$(START_MODEL)'
