@@ -58,12 +58,6 @@ DEBUG_INTERVAL := 0
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
 
-# Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)
-LAYER_APPEND_INDEX := 5
-
-# Replace Layer Network specification. Default: $(LAYER_NET_SPEC)
-LAYER_NET_SPEC := [Lfx192 O1c1]
-
 # Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
 
@@ -124,8 +118,6 @@ help:
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default: $(DEBUG_INTERVAL)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
-	@echo "    LAYER_NET_SPEC     Replace Layer Network specification. Default: $(LAYER_NET_SPEC)"
-	@echo "    LAYER_APPEND_INDEX Index for Layer to be replaced. Default: $(LAYER_APPEND_INDEX)"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
@@ -231,7 +223,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	lstmtraining \
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
-	  --append_index $(LAYER_APPEND_INDEX) --net_spec "$(LAYER_NET_SPEC)" \
+	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
