@@ -127,8 +127,6 @@ help:
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
 
-.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE)_checkpoint $(GROUND_TRUTH_DIR)/%.box $(GROUND_TRUTH_DIR)/%.lstmf
-
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
@@ -229,12 +227,6 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
-	lstmtraining \
-	--stop_training \
-	--continue_from $(LAST_CHECKPOINT) \
-	--traineddata $(PROTO_MODEL) \
-	--model_output $@
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
@@ -247,13 +239,14 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
+endif
+
 $(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
-endif
 
 data/radical-stroke.txt:
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
