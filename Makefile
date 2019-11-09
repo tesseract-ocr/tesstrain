@@ -125,6 +125,8 @@ help:
 
 # END-EVAL
 
+.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*_checkpoint
+
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs training unicharset
 
 ALL_GT = $(OUTPUT_DIR)/all-gt
@@ -155,13 +157,13 @@ BUILD_TYPE=Plus
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
-	unicharset_extractor --output_unicharset "$(GROUND_TRUTH_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
-	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(GROUND_TRUTH_DIR)/my.unicharset  "$@"
+	unicharset_extractor --output_unicharset "$(OUTPUT_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
+	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset  "$@"
 else
 BUILD_TYPE=
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p $(OUTPUT_DIR)
-	unicharset_extractor --output_unicharset "$@" --norm_mode 1 "$(ALL_GT)"
+	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
 
 # Start training
