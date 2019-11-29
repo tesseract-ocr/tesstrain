@@ -105,18 +105,22 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
+	@echo "    TESSDATA           Path to the .traineddata directory with traineddata suitable for training "
+	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata"
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
+	@echo "    WORDLIST_FILE      Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)"
+	@echo "    NUMBERS_FILE       Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)"
+	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    TESSDATA           Path to the .traineddata directory to start finetuning from. Default: $(LOCAL)/share/tessdata"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
-	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
-	@echo "    DEBUG_INTERVAL     Debug Interval. Default: $(DEBUG_INTERVAL)"
+	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
@@ -183,10 +187,12 @@ $(ALL_LSTMF):  $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '
 %.lstmf: %.box
 	tesseract $*.tif $* --psm $(PSM) lstm.train
 
-# Create best and fast .traineddata files from each .checkpoint file
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
 .PHONY: traineddata
+
+# Create best and fast .traineddata files from each .checkpoint file
 traineddata: $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast
+
 traineddata: $(subst checkpoints,tessdata_best,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
 traineddata: $(subst checkpoints,tessdata_fast,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
 $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast:
