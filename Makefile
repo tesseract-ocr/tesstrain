@@ -70,7 +70,7 @@ else
 ifeq ($(LANG_TYPE),RTL)
 	NORM_MODE =3
 	RECODER =--pass_through_recoder --lang_is_rtl
-	GENERATE_BOX_SCRIPT =generate_wordstr_box.py
+	GENERATE_BOX_SCRIPT =generate_wordstr_box_rtl.py
 else
 	NORM_MODE =2
 	RECODER=
