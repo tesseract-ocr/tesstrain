@@ -24,6 +24,10 @@ autotools (including autotools-archive) and some additional libraries for the
 training tools. See the [installation notes in the tesseract
 repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
 
+### python
+
+You need a recent version of Python 3.x and `pip`. For Image-Processing the Python-Library `Pillow` is used. If you don't have a global Installation, please use the provided Requirements-file `pip install -r requirements.txt`.
+
 <!-- radical-stroke will be fetched as requirement to proto-model, kba Wed Jan 30 10:58:10 CET 2019
 
 ### language data
