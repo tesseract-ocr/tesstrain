@@ -99,8 +99,6 @@ Run `make help` to see all the possible targets and variables:
     OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
     NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
-    LAYER_NET_SPEC     Replace Layer Network specification. Default: [Lfx192 O1c1]
-    LAYER_APPEND_INDEX Index for Layer to be replaced. Default: 5
     FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: ''
     LANG_TYPE          Language Type - Indic, RTL or blank. Default: ''
     PSM                Page segmentation mode. Default: 6
