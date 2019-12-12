@@ -29,7 +29,7 @@ PUNC_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).punc
 # Name of the model to continue from. Default: '$(START_MODEL)'
 START_MODEL =
 
-LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE)_checkpoint
+LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)_checkpoint
 
 # Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
@@ -157,21 +157,19 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
 
 ifdef START_MODEL
-BUILD_TYPE=Plus
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p data/$(START_MODEL)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
 	unicharset_extractor --output_unicharset "$(OUTPUT_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset  "$@"
 else
-BUILD_TYPE=
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
 
 # Start training
-training: $(OUTPUT_DIR)$(BUILD_TYPE).traineddata
+training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif'))
 	@mkdir -p $(OUTPUT_DIR)
@@ -233,11 +231,11 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
+$(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
@@ -250,12 +248,12 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
 	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)$(BUILD_TYPE) \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --learning_rate 20e-4 \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS)
-$(OUTPUT_DIR)$(BUILD_TYPE).traineddata: $(LAST_CHECKPOINT)
+$(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \

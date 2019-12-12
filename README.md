@@ -36,10 +36,21 @@ Tesseract expects some configuration data (a file `fadical-stroke.txt`). To fetc
 
 -->
 
+## Choose model name
+
+Choose a name for your model. By convention, Tesseract stack models including
+language-specific resources use (lowercase) three-letter codes defined in
+[ISO 639](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) with additional
+information separated by underscore. E.g., `chi_tra_vert` for **tra**ditional
+Chinese with **vert**ical typesetting. Language-independent (i.e. script-specific)
+models use the capitalized name of the script type as identifier. E.g.,
+`Hangul_vert` for Hangul script with vertical typesetting. In the following,
+the model name is referenced by `MODEL_NAME`.
+
 ## Provide ground truth
 
 Place ground truth consisting of line images and transcriptions in the folder
-`data/ground-truth`. This list of files will be split into training and
+`data/MODEL_NAME-ground-truth`. This list of files will be split into training and
 evaluation data, the ratio is defined by the `RATIO_TRAIN` variable.
 
 Images must be TIFF and have the extension `.tif`.
@@ -48,7 +59,7 @@ Transcriptions must be single-line plain text and have the same name as the
 line image but with `.tif` replaced by `.gt.txt`.
 
 The repository contains a ZIP archive with sample ground truth, see
-[ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/ground-truth` and run
+[ocrd-testset.zip](./ocrd-testset.zip). Extract it to `./data/foo-ground-truth` and run
 `make training`.
 
 **NOTE:** If you want to generate line images for transcription from a full
