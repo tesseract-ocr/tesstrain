@@ -16,6 +16,9 @@ arg_parser.add_argument('-t', '--txt', nargs='?', metavar='TXT', help='Line text
 # Image file
 arg_parser.add_argument('-i', '--image', nargs='?', metavar='IMAGE', help='Image file', required=True)
 
+# Reading direction
+arg_parser.add_argument('-r', '--rtl', action='store_true', default=False, help='RTL input')
+
 args = arg_parser.parse_args()
 
 #
@@ -44,6 +47,8 @@ with io.open(args.txt, "r", encoding='utf-8') as f:
 # create WordStr line boxes for Indic & RTL
 for line in lines:
     line = unicodedata.normalize('NFC', line.strip())
+    if args.rtl:
+        line = line[::-1]
     if line:
         print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
         print("\t 0 0 %d %d 0" % (width, height))
