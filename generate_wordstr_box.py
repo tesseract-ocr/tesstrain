@@ -3,6 +3,7 @@
 import argparse
 import io
 import unicodedata
+import bidi.algorithm
 from PIL import Image, ImageChops, ImageOps
 
 #
@@ -48,7 +49,9 @@ with io.open(args.txt, "r", encoding='utf-8') as f:
 for line in lines:
     line = unicodedata.normalize('NFC', line.strip())
     if args.rtl:
-        line = line[::-1]
+        # FIXME: This should not be necessary. Compare with e.g. kraken
+        line = line.translate(str.maketrans("()[]{}»«><", ")(][}{«»<>"))
+        line = bidi.algorithm.get_display(line)
     if line:
         print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
         print("\t 0 0 %d %d 0" % (width, height))
