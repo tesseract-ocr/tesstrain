@@ -171,13 +171,14 @@ endif
 # Start training
 training: $(OUTPUT_DIR).traineddata
 
-$(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif')) \
-	      $(patsubst %.bin.png,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.bin.png')) \
-	      $(patsubst %.nrm.png,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.nrm.png'))
+$(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 	@mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs cat | sort | uniq > "$@"
 
 .PRECIOUS: %.box
+%.box: %.png %.gt.txt
+	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.png" -t "$*.gt.txt" > "$@"
+
 %.box: %.bin.png %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.bin.png" -t "$*.gt.txt" > "$@"
 
@@ -187,14 +188,14 @@ $(ALL_GT): $(patsubst %.tif,%.gt.txt,$(shell find $(GROUND_TRUTH_DIR) -name '*.t
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(patsubst %.tif,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.tif')) \
-	      $(patsubst %.bin.png,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.bin.png')) \
-	      $(patsubst %.nrm.png,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.nrm.png'))
+$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 	@mkdir -p $(OUTPUT_DIR)
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
-	@if test -f "$*.bin.png"; then \
+	@if test -f "$*.png"; then \
+	  image="$*.png"; \
+	elif test -f "$*.bin.png"; then \
 	  image="$*.bin.png"; \
 	elif test -f "$*.nrm.png"; then \
 	  image="$*.nrm.png"; \
