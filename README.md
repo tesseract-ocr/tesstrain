@@ -59,7 +59,7 @@ Place ground truth consisting of line images and transcriptions in the folder
 evaluation data, the ratio is defined by the `RATIO_TRAIN` variable.
 
 Images must be TIFF and have the extension `.tif` or PNG and have the
-extension `.bin.png` or `.nrm.png`.
+extension `.png`, `.bin.png` or `.nrm.png`.
 
 Transcriptions must be single-line plain text and have the same name as the
 line image but with the image extension replaced by `.gt.txt`.
