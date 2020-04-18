@@ -79,7 +79,7 @@ endif
 endif
 
 # Page segmentation mode. Default: $(PSM)
-PSM = 6
+PSM = 13
 
 # Random seed for shuffling of the training data. Default: $(RANDOM_SEED)
 RANDOM_SEED := 0
