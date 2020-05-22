@@ -121,6 +121,7 @@ Run `make help` to see all the possible targets and variables:
     PSM                Page segmentation mode. Default: 6
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
+    TARGET_ERROR_RATE  Stop training if one of the error rates (word, char, etc.) gets below this value. Default: 0.01
 ```
 
 <!-- END-EVAL -->
