@@ -87,6 +87,9 @@ RANDOM_SEED := 0
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
+# Default Target Error Rate
+TARGET_ERROR_RATE := 0.01
+
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -126,6 +129,7 @@ help:
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
+	@echo "    TARGET_ERROR_RATE  Stop training if mean percent error rate reached. Default: $(TARGET_ERROR_RATE)"
 
 # END-EVAL
 
@@ -254,7 +258,8 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS)
+	  --max_iterations $(MAX_ITERATIONS) \
+	  --target_error_rate $(TARGET_ERROR_RATE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
@@ -272,7 +277,8 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --learning_rate 20e-4 \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS)
+	  --max_iterations $(MAX_ITERATIONS) \
+	  --target_error_rate $(TARGET_ERROR_RATE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	lstmtraining \
 	--stop_training \
