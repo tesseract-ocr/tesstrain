@@ -28,17 +28,18 @@ width, height = Image.open(args.image).size
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
+    if len(lines) > 1:
+        raise ValueError("ERROR: %s: Ground truth text file should contain exactly one line, not %s" % (args.txt, len(lines)))
+    line = unicodedata.normalize('NFC', lines[0].strip())
 
-for line in lines:
-    line = unicodedata.normalize('NFC', line.strip())
-    if line:
-        for i in range(1, len(line)):
-            char = line[i]
-            prev_char = line[i-1]
-            if unicodedata.combining(char):
-                print("%s 0 0 %d %d 0" % ((prev_char + char), width, height))
-            elif not unicodedata.combining(prev_char):
-                print("%s 0 0 %d %d 0" % (prev_char, width, height))
-        if not unicodedata.combining(line[-1]):
-            print("%s 0 0 %d %d 0" % (line[-1], width, height))
-        print("\t 0 0 %d %d 0" % (width, height))
+if line:
+    for i in range(1, len(line)):
+        char = line[i]
+        prev_char = line[i-1]
+        if unicodedata.combining(char):
+            print("%s 0 0 %d %d 0" % ((prev_char + char), width, height))
+        elif not unicodedata.combining(prev_char):
+            print("%s 0 0 %d %d 0" % (prev_char, width, height))
+    if not unicodedata.combining(line[-1]):
+        print("%s 0 0 %d %d 0" % (line[-1], width, height))
+    print("\t 0 0 %d %d 0" % (width, height))

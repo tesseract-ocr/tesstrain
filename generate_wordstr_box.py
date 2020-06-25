@@ -30,10 +30,11 @@ with open(args.image, "rb") as f:
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
+    if len(lines) > 1:
+        raise ValueError("ERROR: %s: Ground truth text file should contain exactly one line, not %s" % (args.txt, len(lines)))
+    line = unicodedata.normalize('NFC', lines[0].strip())
 
 # create WordStr line boxes for Indic & RTL
-for line in lines:
-    line = unicodedata.normalize('NFC', line.strip())
-    if line:
-        print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
-        print("\t 0 0 %d %d 0" % (width, height))
+if line:
+    print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
+    print("\t 0 0 %d %d 0" % (width, height))
