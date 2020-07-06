@@ -328,8 +328,17 @@ tesseract-langs: $(TESSDATA)/eng.traineddata
 $(TESSDATA)/eng.traineddata:
 	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
 
-# Clean all generated files
-clean:
+# Clean generated .box files
+clean-box:
 	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+
+# Clean generated .lstmf files
+clean-lstmf:
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
+
+# Clean generated ouptut files
+clean-output:
 	rm -rf $(OUTPUT_DIR)
+
+# Clean all generated files
+clean: clean-box clean-lstmf clean-output	
