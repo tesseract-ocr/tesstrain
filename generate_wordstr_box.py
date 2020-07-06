@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import bidi.algorithm
 import io
 import unicodedata
 from PIL import Image
@@ -35,5 +36,6 @@ with io.open(args.txt, "r", encoding='utf-8') as f:
 for line in lines:
     line = unicodedata.normalize('NFC', line.strip())
     if line:
+        line = bidi.algorithm.get_display(line)
         print("WordStr 0 0 %d %d 0 #%s" % (width, height, line))
         print("\t 0 0 %d %d 0" % (width, height))
