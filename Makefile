@@ -87,7 +87,7 @@ RANDOM_SEED := 0
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
-# Default Target Error Rate
+# Default Target Error Rate. Default: $(TARGET_ERROR_RATE)
 TARGET_ERROR_RATE := 0.01
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
@@ -104,6 +104,9 @@ help:
 	@echo "    leptonica        Build leptonica"
 	@echo "    tesseract        Build tesseract"
 	@echo "    tesseract-langs  Download tesseract-langs"
+	@echo "    clean-box        Clean generated .box files"
+	@echo "    clean-lstmf      Clean generated .lstmf files"
+	@echo "    clean-output     Clean generated output files"
 	@echo "    clean            Clean all generated files"
 	@echo ""
 	@echo "  Variables"
@@ -129,7 +132,7 @@ help:
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
-	@echo "    TARGET_ERROR_RATE  Stop training if mean percent error rate reached. Default: $(TARGET_ERROR_RATE)"
+	@echo "    TARGET_ERROR_RATE  Default Target Error Rate. Default: $(TARGET_ERROR_RATE)"
 
 # END-EVAL
 
