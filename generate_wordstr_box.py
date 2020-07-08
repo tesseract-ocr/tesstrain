@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import bidi.algorithm
 import io
 import unicodedata
+
+import bidi.algorithm
 from PIL import Image
 
 #
