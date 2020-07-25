@@ -55,6 +55,13 @@ MAX_ITERATIONS := 10000
 # Debug Interval. Default:  $(DEBUG_INTERVAL)
 DEBUG_INTERVAL := 0
 
+# Learning rate. Default: $(LEARNING_RATE)
+ifdef START_MODEL
+LEARNING_RATE := 0.0001
+else
+LEARNING_RATE := 0.002
+endif
+
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
 
@@ -87,7 +94,7 @@ RANDOM_SEED := 0
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
 
-# Default Target Error Rate
+# Default Target Error Rate. Default: $(TARGET_ERROR_RATE)
 TARGET_ERROR_RATE := 0.01
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
@@ -104,6 +111,9 @@ help:
 	@echo "    leptonica        Build leptonica"
 	@echo "    tesseract        Build tesseract"
 	@echo "    tesseract-langs  Download tesseract-langs"
+	@echo "    clean-box        Clean generated .box files"
+	@echo "    clean-lstmf      Clean generated .lstmf files"
+	@echo "    clean-output     Clean generated output files"
 	@echo "    clean            Clean all generated files"
 	@echo ""
 	@echo "  Variables"
@@ -124,12 +134,13 @@ help:
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
+	@echo "    LEARNING_RATE      Learning rate. Default: $(LEARNING_RATE)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
-	@echo "    TARGET_ERROR_RATE  Stop training if mean percent error rate reached. Default: $(TARGET_ERROR_RATE)"
+	@echo "    TARGET_ERROR_RATE  Default Target Error Rate. Default: $(TARGET_ERROR_RATE)"
 
 # END-EVAL
 
@@ -255,6 +266,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
 	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
+	  --learning_rate $(LEARNING_RATE) \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
@@ -272,9 +284,9 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	lstmtraining \
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
+	  --learning_rate $(LEARNING_RATE) \
 	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
-	  --learning_rate 20e-4 \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
@@ -328,8 +340,20 @@ tesseract-langs: $(TESSDATA)/eng.traineddata
 $(TESSDATA)/eng.traineddata:
 	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
 
-# Clean all generated files
-clean:
+# Clean generated .box files
+.PHONY: clean-box
+clean-box:
 	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+
+# Clean generated .lstmf files
+.PHONY: clean-lstmf
+clean-lstmf:
 	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
+
+# Clean generated output files
+.PHONY: clean-output
+clean-output:
 	rm -rf $(OUTPUT_DIR)
+
+# Clean all generated files
+clean: clean-box clean-lstmf clean-output	
