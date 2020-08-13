@@ -58,10 +58,11 @@ width, height = Image.open(args.image).size
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
+    if len(lines) == 1:
+        raise ValueError("ERROR: %s: Ground truth text file should contain exactly one line, not %s" % (args.txt, len(lines)))
+    line = unicodedata.normalize('NFC', lines[0].strip())
 
-for line in lines:
-    line = unicodedata.normalize('NFC', line.strip())
-    if line:
-        for syllable in (splitclusters(line)):
-            print("%s 0 0 %d %d 0" % (syllable, width, height))
-            print("\t 0 0 %d %d 0" % (width, height))
+if line:
+    for syllable in (splitclusters(line)):
+        print("%s 0 0 %d %d 0" % (syllable, width, height))
+        print("\t 0 0 %d %d 0" % (width, height))
