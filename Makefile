@@ -14,8 +14,11 @@ TESSDATA =  $(LOCAL)/share/tessdata
 # Name of the model to be built. Default: $(MODEL_NAME)
 MODEL_NAME = foo
 
+# Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)
+DATA_DIR = data
+
 # Output directory for generated files. Default: $(OUTPUT_DIR)
-OUTPUT_DIR = data/$(MODEL_NAME)
+OUTPUT_DIR = $(DATA_DIR)/$(MODEL_NAME)
 
 # Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
 WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
@@ -173,10 +176,10 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 
 ifdef START_MODEL
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
-	@mkdir -p data/$(START_MODEL)
-	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  data/$(START_MODEL)/$(MODEL_NAME)
+	@mkdir -p $(DATA_DIR)/$(START_MODEL)
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME)
 	unicharset_extractor --output_unicharset "$(OUTPUT_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
-	merge_unicharsets data/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset  "$@"
+	merge_unicharsets $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset  "$@"
 else
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
 	@mkdir -p $(OUTPUT_DIR)
@@ -247,14 +250,14 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 # Build the proto model
 proto-model: $(PROTO_MODEL)
 
-$(PROTO_MODEL): $(OUTPUT_DIR)/unicharset data/radical-stroke.txt
+$(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(DATA_DIR)/radical-stroke.txt
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
-	  --script_dir data \
+	  --script_dir $(DATA_DIR) \
 	  --numbers $(NUMBERS_FILE) \
 	  --puncs $(PUNC_FILE) \
 	  --words $(WORDLIST_FILE) \
-	  --output_dir data \
+	  --output_dir $(DATA_DIR) \
 	  $(RECODER) \
 	  --lang $(MODEL_NAME)
 
@@ -265,7 +268,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
 	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --continue_from data/$(START_MODEL)/$(MODEL_NAME).lstm \
+	  --continue_from $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm \
 	  --learning_rate $(LEARNING_RATE) \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
@@ -299,7 +302,7 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--model_output $@
 endif
 
-data/radical-stroke.txt:
+$(DATA_DIR)/radical-stroke.txt:
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
 
 # Build leptonica
