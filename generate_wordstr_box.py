@@ -32,7 +32,7 @@ with open(args.image, "rb") as f:
 # load gt
 with io.open(args.txt, "r", encoding='utf-8') as f:
     lines = f.read().strip().split('\n')
-    if len(lines) == 1:
+    if len(lines) != 1:
         raise ValueError("ERROR: %s: Ground truth text file should contain exactly one line, not %s" % (args.txt, len(lines)))
     line = unicodedata.normalize('NFC', lines[0].strip())
 
