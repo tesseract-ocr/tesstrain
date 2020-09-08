@@ -330,7 +330,9 @@ tesseract.built: tesseract-$(TESSERACT_VERSION)
 		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
 			./configure --prefix=$(LOCAL) && \
 		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) install training-install && \
+			make -j$(CORES) install && \
+		LDFLAGS="-L$(LOCAL)/lib"\
+			make -j$(CORES) training-install && \
 		date > "$@"
 
 tesseract-$(TESSERACT_VERSION):
