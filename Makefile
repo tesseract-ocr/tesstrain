@@ -41,7 +41,7 @@ PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
 CORES = 4
 
 # Leptonica version. Default: $(LEPTONICA_VERSION)
-LEPTONICA_VERSION := 1.78.0
+LEPTONICA_VERSION := 1.80.0
 
 # Tesseract commit. Default: $(TESSERACT_VERSION)
 TESSERACT_VERSION := 4.1.1
