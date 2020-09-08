@@ -311,8 +311,7 @@ leptonica: leptonica.built
 leptonica.built: leptonica-$(LEPTONICA_VERSION)
 	cd $< ; \
 		./configure --prefix=$(LOCAL) && \
-		make -j$(CORES) && \
-		make install && \
+		make -j$(CORES) install SUBDIRS=src && \
 		date > "$@"
 
 leptonica-$(LEPTONICA_VERSION): leptonica-$(LEPTONICA_VERSION).tar.gz
