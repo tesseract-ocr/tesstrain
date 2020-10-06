@@ -1,2 +1,7 @@
 Pillow>=6.2.1
 python-bidi>=0.4
+opencv-python>=4.2.0
+exifread>=2.1.0
+lxml>=4.5.0
+autopep8>=1.5.0
+pytest-cov>=2.9.0
