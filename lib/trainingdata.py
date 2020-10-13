@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """OCR create pairs"""
 
-import abc
 import os
+from abc import (
+    ABC,
+    abstractmethod
+)
 
 import exifread
 import lxml.etree as etree
@@ -15,7 +18,7 @@ XML_NS = {
     "page2013": "http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15"}
 
 
-class TrainingTextline(abc.ABC):
+class TrainingTextline(ABC):
     """
     Wrapper for Extraction of Image-Segment + Textline Pairs from ALTO-Data
     """
@@ -26,28 +29,31 @@ class TrainingTextline(abc.ABC):
         self.text_words = []
         self._set_text_words(element)
         self.textline_content = None
-        self._set_texline_content()
+        self._set_textline_content()
         (self.x_1, self.y_1, self.x_2, self.y_2) = self.as_box(element)
         self._inspect_content()
 
+    @abstractmethod
     def _set_id(self, element):
-        pass
+        """Set identifier for line"""
 
+    @abstractmethod
     def _set_text_words(self, element):
-        pass
+        """Determine words of line"""
 
-    def _set_texline_content(self):
-        pass
+    @abstractmethod
+    def _set_textline_content(self):
+        """Calculate box shape"""
 
-    @abc.abstractmethod
+    @abstractmethod
     def as_box(self, element):
         """Return shape points as bounding vox"""
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_next_element_height(self, element):
         """In case of sanitizing, get height of next element, i.e. word"""
 
-    @abc.abstractmethod
+    @abstractmethod
     def must_sanitize(self):
         """Whether to start textline height correction"""
 
@@ -85,7 +91,7 @@ class TrainingTextlineALTO(TrainingTextline):
     def _set_text_words(self, element):
         self.text_words = element.findall('alto:String', XML_NS)
 
-    def _set_texline_content(self):
+    def _set_textline_content(self):
         if self.text_words:
             self.textline_content = ' '.join(
                 [s.attrib['CONTENT'] for s in self.text_words])
@@ -116,7 +122,7 @@ class TrainingTextlinePage2013(TrainingTextline):
         self.text_words = element.findall(
             'page2013:TextEquiv/page2013:Unicode', XML_NS)
 
-    def _set_texline_content(self):
+    def _set_textline_content(self):
         if self.text_words:
             self.textline_content = ' '.join([w.text for w in self.text_words])
 
@@ -232,8 +238,6 @@ class TrainingData:
         if str(self.path_image_data).endswith(".tif"):
             (self.xdpi, self.ydpi) = TrainingData.read_dpi_from_tif(
                 self.path_image_data)
-        elif str(self.path_image_data).endswith(".jpg"):
-            pass
 
     @staticmethod
     def read_dpi_from_tif(path_image_data):
