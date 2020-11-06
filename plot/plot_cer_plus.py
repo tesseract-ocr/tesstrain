@@ -5,8 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-csvlinesstep=100
-maxCERtoDisplay=20
+csvlinesstep=10
+maxCERtoDisplay=10
 PlotTitle="Tesseract LSTM training and Evaluation Character Error Rates (0 to " + str(maxCERtoDisplay) + "%)"
 
 dataframe = pd.read_csv("plot_cer.csv",sep='\t', encoding='utf-8')
@@ -31,7 +31,7 @@ ax1.set_xticks(xticks)
 ax1.tick_params(axis='x', rotation=90, labelsize='small')
 ax1.grid(True)
 ax1.scatter(x, c, c='gold', s=50, label='Best model checkpoint CER')
-ax1.scatter(x, y, s=5, c='teal', label='Training CER at every 50 iterations')
+ax1.scatter(x, y, s=5, c='teal', label='Training CER every 100 iterations')
 ax1.plot(x, y, 'teal')
 
 ax1.plot(x, e, 'magenta')
