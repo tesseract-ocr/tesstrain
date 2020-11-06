@@ -1,0 +1,638 @@
+lstmtraining \
+  --debug_interval 0 \
+  --traineddata data/ocrd/ocrd.traineddata \
+  --old_traineddata /home/ubuntu/tessdata_best/frk.traineddata \
+  --continue_from data/frk/ocrd.lstm \
+  --learning_rate 0.0001 \
+  --model_output data/ocrd/checkpoints/ocrd \
+  --train_listfile data/ocrd/list.train \
+  --eval_listfile data/ocrd/list.eval \
+  --max_iterations 10000 \
+  --target_error_rate 0.01
+Loaded file data/frk/ocrd.lstm, unpacking...
+Warning: LSTMTrainer deserialized an LSTMRecognizer!
+Code range changed from 99 to 101!
+Num (Extended) outputs,weights in Series:
+  1,48,0,1:1, 0
+Num (Extended) outputs,weights in Series:
+  C3,3:9, 0
+  Ft16:16, 160
+Total weights = 160
+  [C3,3Ft16]:16, 160
+  Mp3,3:16, 0
+  Lfys64:64, 20736
+  Lfx96:96, 61824
+  Lrx96:96, 74112
+  Lfx384:384, 738816
+  Fc101:101, 38885
+Total weights = 934533
+Previous null char=98 mapped to 100
+Continuing from data/frk/ocrd.lstm
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0103_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0105_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0225_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0283_020.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0066_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0154_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0173_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0020_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0135_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0032_045.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0025_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0086_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0027_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0346_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0188_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0189_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0377_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0066_027.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0057_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0246_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0029_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0163_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0019_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0147_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0233_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0047_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0117_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0032_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0072_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0168_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0114_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0015_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0167_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0096_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0215_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0019_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0323_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0169_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0253_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0177_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0323_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0110_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0247_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0204_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0301_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0056_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0205_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0034_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0206_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0304_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0172_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0142_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0119_031.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0020_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0151_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0188_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0059_034.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0277_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0092_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0018_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0078_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0030_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0106_020.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0127_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0112_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0189_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0131_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0225_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0018_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0275_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0338_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0014_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0189_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0068_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0128_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0019_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0057_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0210_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0025_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0026_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0206_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0073_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0224_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0147_009.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0188_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0109_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0305_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0263_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0028_027.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0165_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0105_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0372_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0199_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0050_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0139_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0069_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0032_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0149_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0172_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0133_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0100_009.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0203_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0205_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0258_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0154_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0017_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0049_031.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0204_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0276_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0274_002.lstmf
+2 Percent improvement time=73, best error was 100 @ 0
+At iteration 73/100/100, Mean rms=1.165%, delta=2.339%, char train=6.625%, word train=17.285%, skip ratio=0%,  New best char error = 6.625 Transitioned to stage 1 wrote best model:data/ocrd/checkpoints/ocrd_6.625_73_100.checkpoint wrote checkpoint.
+
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0140_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0146_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0144_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0140_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0201_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0332_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0160_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0223_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0099_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0225_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0082_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0171_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0248_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0176_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0215_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0088_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0167_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0259_032.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0063_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0232_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0137_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0018_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0180_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0100_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0013_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0078_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0238_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0167_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0064_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0081_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0371_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0176_026.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0151_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0013_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0024_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0355_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0205_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0233_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0291_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0108_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0057_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0019_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0117_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0083_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0051_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0045_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0165_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0078_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0043_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0145_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0226_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0203_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0033_026.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0352_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0076_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0228_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0106_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0190_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0107_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0031_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0098_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0083_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0210_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0165_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0358_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0116_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0329_031.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0180_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0013_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0181_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0130_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0153_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0037_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0161_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0019_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0285_026.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0019_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0079_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0219_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0205_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_lieder_1827_0198_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0051_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0247_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0085_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0018_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0293_009.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0131_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0055_026.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0079_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0096_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0100_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0103_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0028_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0028_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0018_037.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0256_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0131_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0032_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0328_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0012_016.lstmf
+At iteration 145/200/200, Mean rms=1.142%, delta=2.282%, char train=6.91%, word train=17.158%, skip ratio=0%,  New worst char error = 6.91 wrote checkpoint.
+
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0184_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0279_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0091_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0024_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0050_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0394_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0080_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0135_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0075_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0051_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0099_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0244_028.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0135_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0156_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0201_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0144_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0084_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0060_030.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0051_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0026_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0134_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0285_020.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0143_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0040_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0084_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0120_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0029_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0176_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0055_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0077_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0337_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0022_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0137_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0013_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0272_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0299_030.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0102_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/saar_novellen_1877_0033_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0172_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/andreas_fenitschka_1898_0160_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0116_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0080_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0059_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0325_024.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0060_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0038_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0056_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0150_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0061_032.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0078_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0039_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0151_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0099_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0218_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0099_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_nachtstuecke01_1817_0240_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eschstruth_katz_1886_0066_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fiedler_kuenstlerische_1887_0140_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bismarck_erinnerungen02_1898_0191_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0012_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0142_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0341_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0230_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0034_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0243_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/bauer_buehnenleben_1871_0121_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0064_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/poersch_gewerkschaftsbewegung_1897_0036_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0238_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0016_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0233_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0248_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spielhagen_problematische02_1861_0170_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0332_007.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0205_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/clauren_liebe_1827_0097_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0056_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0173_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wackenroder_herzensergiessungen_1797_0147_006.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0087_027.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/schleiden_menschengeschlecht_1863_0059_020.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0025_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0062_005.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0287_011.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/fontane_irrungen_1888_0161_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0130_013.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0311_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0321_009.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/menzel_literatur01_1828_0096_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/storm_gedichte_1852_0104_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/meyer_gedichte_1882_0170_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0362_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/rosenkranz_aesthetik_1853_0061_025.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0105_008.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/gutzkow_wally_1835_0057_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0031_014.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/platen_gedichte_1828_0112_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/eichendorff_taugenichts_1826_0036_001.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/boerne_paris01_1832_0162_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0163_016.lstmf
+2 Percent improvement time=205, best error was 100 @ 0
+At iteration 205/300/300, Mean rms=1.051%, delta=2.007%, char train=6.558%, word train=15.628%, skip ratio=0%,  New best char error = 6.558 wrote checkpoint.
+
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/vischer_auch02_1879_0321_021.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_sinngedicht_1882_0102_010.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/keller_heinrich01_1854_0334_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/raschdorff_hochbau_1880_0022_027.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0175_017.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/hoffmann_elixiere01_1815_0266_004.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0165_015.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/wienbarg_feldzuege_1834_0245_023.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/paul_flegeljahre01_1804_0050_003.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/novalis_ofterdingen_1802_0103_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/alexis_ruhe01_1852_0035_019.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/heine_reisebilder02_1827_0175_009.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/lenau_gedichte_1832_0039_018.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/spyri_heidi_1880_0203_002.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/perthes_buchhandel_1816_0021_012.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/frapan_bittersuess_1891_0051_022.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/candidus_christus_1854_0036_016.lstmf
+Loaded 1/1 lines (1-1) of document data/ocrd-ground-truth/mueller_waldhornist_1821_0130_010.lstmf
+2 Percent improvement time=266, best error was 100 @ 0
+At iteration 266/400/400, Mean rms=0.967%, delta=1.737%, char train=5.788%, word train=13.876%, skip ratio=0%,  New best char error = 5.788 wrote best model:data/ocrd/checkpoints/ocrd_5.788_266_400.checkpoint wrote checkpoint.
+
+2 Percent improvement time=326, best error was 100 @ 0
+At iteration 326/500/500, Mean rms=0.94%, delta=1.645%, char train=5.559%, word train=13.44%, skip ratio=0%,  New best char error = 5.559 wrote best model:data/ocrd/checkpoints/ocrd_5.559_326_500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=378, best error was 100 @ 0
+At iteration 378/600/600, Mean rms=0.903%, delta=1.547%, char train=5.348%, word train=12.955%, skip ratio=0%,  New best char error = 5.348 wrote best model:data/ocrd/checkpoints/ocrd_5.348_378_600.checkpoint wrote checkpoint.
+
+2 Percent improvement time=425, best error was 100 @ 0
+At iteration 425/700/700, Mean rms=0.859%, delta=1.419%, char train=5%, word train=12.181%, skip ratio=0%,  New best char error = 5 wrote best model:data/ocrd/checkpoints/ocrd_5_425_700.checkpoint wrote checkpoint.
+
+2 Percent improvement time=480, best error was 100 @ 0
+At iteration 480/800/800, Mean rms=0.831%, delta=1.33%, char train=4.761%, word train=11.674%, skip ratio=0%,  New best char error = 4.761 wrote best model:data/ocrd/checkpoints/ocrd_4.761_480_800.checkpoint wrote checkpoint.
+
+2 Percent improvement time=529, best error was 100 @ 0
+At iteration 529/900/900, Mean rms=0.812%, delta=1.279%, char train=4.677%, word train=11.521%, skip ratio=0%,  New best char error = 4.677 wrote checkpoint.
+
+2 Percent improvement time=369, best error was 6.558 @ 205
+At iteration 574/1000/1000, Mean rms=0.784%, delta=1.203%, char train=4.454%, word train=11.042%, skip ratio=0%,  New best char error = 4.454 wrote best model:data/ocrd/checkpoints/ocrd_4.454_574_1000.checkpoint wrote checkpoint.
+
+2 Percent improvement time=413, best error was 6.558 @ 205
+At iteration 618/1100/1100, Mean rms=0.722%, delta=1.028%, char train=4.07%, word train=10.085%, skip ratio=0%,  New best char error = 4.07 wrote best model:data/ocrd/checkpoints/ocrd_4.07_618_1100.checkpoint wrote checkpoint.
+
+2 Percent improvement time=406, best error was 5.788 @ 266
+At iteration 672/1200/1200, Mean rms=0.672%, delta=0.877%, char train=3.69%, word train=9.299%, skip ratio=0%,  New best char error = 3.69 wrote best model:data/ocrd/checkpoints/ocrd_3.69_672_1200.checkpoint wrote checkpoint.
+
+2 Percent improvement time=383, best error was 5.559 @ 326
+At iteration 709/1300/1300, Mean rms=0.638%, delta=0.807%, char train=3.401%, word train=8.671%, skip ratio=0%,  New best char error = 3.401 wrote best model:data/ocrd/checkpoints/ocrd_3.401_709_1300.checkpoint wrote checkpoint.
+
+2 Percent improvement time=377, best error was 5.348 @ 378
+At iteration 755/1400/1400, Mean rms=0.617%, delta=0.763%, char train=3.296%, word train=8.484%, skip ratio=0%,  New best char error = 3.296 wrote checkpoint.
+
+2 Percent improvement time=423, best error was 5.348 @ 378
+At iteration 801/1500/1500, Mean rms=0.589%, delta=0.692%, char train=3.14%, word train=8.07%, skip ratio=0%,  New best char error = 3.14 wrote best model:data/ocrd/checkpoints/ocrd_3.14_801_1500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=457, best error was 5.348 @ 378
+At iteration 835/1600/1600, Mean rms=0.563%, delta=0.626%, char train=3.008%, word train=7.667%, skip ratio=0%,  New best char error = 3.008 wrote best model:data/ocrd/checkpoints/ocrd_3.008_835_1600.checkpoint wrote checkpoint.
+
+2 Percent improvement time=458, best error was 5 @ 425
+At iteration 883/1700/1700, Mean rms=0.549%, delta=0.604%, char train=2.944%, word train=7.513%, skip ratio=0%,  New best char error = 2.944 wrote checkpoint.
+
+2 Percent improvement time=505, best error was 5 @ 425
+At iteration 930/1800/1800, Mean rms=0.538%, delta=0.591%, char train=2.934%, word train=7.503%, skip ratio=0%,  New best char error = 2.934 wrote checkpoint.
+
+2 Percent improvement time=484, best error was 4.761 @ 480
+At iteration 964/1900/1900, Mean rms=0.515%, delta=0.537%, char train=2.746%, word train=7.076%, skip ratio=0%,  New best char error = 2.746 wrote best model:data/ocrd/checkpoints/ocrd_2.746_964_1900.checkpoint wrote checkpoint.
+
+2 Percent improvement time=527, best error was 4.761 @ 480
+At iteration 1007/2000/2000, Mean rms=0.506%, delta=0.531%, char train=2.74%, word train=7.024%, skip ratio=0%,  New best char error = 2.74 wrote checkpoint.
+
+2 Percent improvement time=517, best error was 4.677 @ 529
+At iteration 1046/2100/2100, Mean rms=0.492%, delta=0.503%, char train=2.634%, word train=6.741%, skip ratio=0%,  New best char error = 2.634 wrote best model:data/ocrd/checkpoints/ocrd_2.634_1046_2100.checkpoint wrote checkpoint.
+
+2 Percent improvement time=560, best error was 4.677 @ 529
+At iteration 1089/2200/2200, Mean rms=0.479%, delta=0.484%, char train=2.577%, word train=6.629%, skip ratio=0%,  New best char error = 2.577 wrote checkpoint.
+
+2 Percent improvement time=597, best error was 4.677 @ 529
+At iteration 1126/2300/2300, Mean rms=0.465%, delta=0.437%, char train=2.466%, word train=6.506%, skip ratio=0%,  New best char error = 2.466 wrote best model:data/ocrd/checkpoints/ocrd_2.466_1126_2300.checkpoint wrote checkpoint.
+
+2 Percent improvement time=585, best error was 4.454 @ 574
+At iteration 1159/2400/2400, Mean rms=0.454%, delta=0.424%, char train=2.399%, word train=6.317%, skip ratio=0%,  New best char error = 2.399 wrote checkpoint.
+
+2 Percent improvement time=634, best error was 4.454 @ 574
+At iteration 1208/2500/2500, Mean rms=0.447%, delta=0.41%, char train=2.331%, word train=6.293%, skip ratio=0%,  New best char error = 2.331 wrote best model:data/ocrd/checkpoints/ocrd_2.331_1208_2500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=661, best error was 4.454 @ 574
+At iteration 1235/2600/2600, Mean rms=0.438%, delta=0.397%, char train=2.218%, word train=6.096%, skip ratio=0%,  New best char error = 2.218 wrote best model:data/ocrd/checkpoints/ocrd_2.218_1235_2600.checkpoint wrote checkpoint.
+
+2 Percent improvement time=703, best error was 4.454 @ 574
+At iteration 1277/2700/2700, Mean rms=0.432%, delta=0.387%, char train=2.19%, word train=6.061%, skip ratio=0%,  New best char error = 2.19 wrote checkpoint.
+
+2 Percent improvement time=746, best error was 4.454 @ 574
+At iteration 1320/2800/2800, Mean rms=0.423%, delta=0.367%, char train=2.127%, word train=5.926%, skip ratio=0%,  New best char error = 2.127 wrote best model:data/ocrd/checkpoints/ocrd_2.127_1320_2800.checkpoint wrote checkpoint.
+
+2 Percent improvement time=731, best error was 4.07 @ 618
+At iteration 1349/2900/2900, Mean rms=0.415%, delta=0.358%, char train=2.07%, word train=5.865%, skip ratio=0%,  New best char error = 2.07 wrote checkpoint.
+
+2 Percent improvement time=773, best error was 4.07 @ 618
+At iteration 1391/3000/3000, Mean rms=0.409%, delta=0.344%, char train=2.023%, word train=5.766%, skip ratio=0%,  New best char error = 2.023 wrote best model:data/ocrd/checkpoints/ocrd_2.023_1391_3000.checkpoint wrote checkpoint.
+
+At iteration 1433/3100/3100, Mean rms=0.411%, delta=0.345%, char train=2.055%, word train=5.995%, skip ratio=0%,  New worst char error = 2.055 wrote checkpoint.
+
+2 Percent improvement time=847, best error was 4.07 @ 618
+At iteration 1465/3200/3200, Mean rms=0.398%, delta=0.323%, char train=1.964%, word train=5.739%, skip ratio=0%,  New best char error = 1.964 wrote checkpoint.
+
+2 Percent improvement time=884, best error was 4.07 @ 618
+At iteration 1502/3300/3300, Mean rms=0.396%, delta=0.321%, char train=1.952%, word train=5.743%, skip ratio=0%,  New best char error = 1.952 wrote best model:data/ocrd/checkpoints/ocrd_1.952_1502_3300.checkpoint wrote checkpoint.
+
+2 Percent improvement time=918, best error was 4.07 @ 618
+At iteration 1536/3400/3400, Mean rms=0.39%, delta=0.304%, char train=1.918%, word train=5.705%, skip ratio=0%,  New best char error = 1.918 wrote checkpoint.
+
+2 Percent improvement time=956, best error was 4.07 @ 618
+At iteration 1574/3500/3500, Mean rms=0.381%, delta=0.293%, char train=1.868%, word train=5.639%, skip ratio=0%,  New best char error = 1.868 wrote best model:data/ocrd/checkpoints/ocrd_1.868_1574_3500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=990, best error was 4.07 @ 618
+At iteration 1608/3600/3600, Mean rms=0.381%, delta=0.292%, char train=1.866%, word train=5.717%, skip ratio=0%,  New best char error = 1.866 wrote checkpoint.
+
+2 Percent improvement time=1020, best error was 4.07 @ 618
+At iteration 1638/3700/3700, Mean rms=0.373%, delta=0.277%, char train=1.808%, word train=5.563%, skip ratio=0%,  New best char error = 1.808 wrote best model:data/ocrd/checkpoints/ocrd_1.808_1638_3700.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1064, best error was 4.07 @ 618
+At iteration 1682/3800/3800, Mean rms=0.371%, delta=0.273%, char train=1.78%, word train=5.616%, skip ratio=0%,  New best char error = 1.78 wrote checkpoint.
+
+2 Percent improvement time=1090, best error was 4.07 @ 618
+At iteration 1708/3900/3900, Mean rms=0.366%, delta=0.266%, char train=1.759%, word train=5.517%, skip ratio=0%,  New best char error = 1.759 wrote checkpoint.
+
+2 Percent improvement time=1130, best error was 4.07 @ 618
+At iteration 1748/4000/4000, Mean rms=0.362%, delta=0.261%, char train=1.739%, word train=5.548%, skip ratio=0%,  New best char error = 1.739 wrote best model:data/ocrd/checkpoints/ocrd_1.739_1748_4000.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1170, best error was 4.07 @ 618
+At iteration 1788/4100/4100, Mean rms=0.359%, delta=0.256%, char train=1.728%, word train=5.521%, skip ratio=0%,  New best char error = 1.728 wrote checkpoint.
+
+At iteration 1813/4200/4200, Mean rms=0.353%, delta=0.242%, char train=1.753%, word train=5.419%, skip ratio=0%,  New worst char error = 1.753 wrote checkpoint.
+
+At iteration 1853/4300/4300, Mean rms=0.351%, delta=0.236%, char train=1.745%, word train=5.448%, skip ratio=0%,  New worst char error = 1.745 wrote checkpoint.
+
+At iteration 1893/4400/4400, Mean rms=0.354%, delta=0.242%, char train=1.78%, word train=5.655%, skip ratio=0%,  New worst char error = 1.78 wrote checkpoint.
+
+At iteration 1922/4500/4500, Mean rms=0.35%, delta=0.244%, char train=1.78%, word train=5.536%, skip ratio=0%,  New worst char error = 1.78 wrote checkpoint.
+
+At iteration 1959/4600/4600, Mean rms=0.346%, delta=0.241%, char train=1.755%, word train=5.543%, skip ratio=0%,  New worst char error = 1.755 wrote checkpoint.
+
+At iteration 1991/4700/4700, Mean rms=0.343%, delta=0.236%, char train=1.736%, word train=5.501%, skip ratio=0%,  New worst char error = 1.736 wrote checkpoint.
+
+2 Percent improvement time=1409, best error was 4.07 @ 618
+At iteration 2027/4800/4800, Mean rms=0.339%, delta=0.228%, char train=1.704%, word train=5.46%, skip ratio=0%,  New best char error = 1.704 wrote checkpoint.
+
+At iteration 2058/4900/4900, Mean rms=0.339%, delta=0.228%, char train=1.72%, word train=5.5%, skip ratio=0%,  New worst char error = 1.72 wrote checkpoint.
+
+2 Percent improvement time=1420, best error was 3.69 @ 672
+At iteration 2092/5000/5000, Mean rms=0.334%, delta=0.221%, char train=1.673%, word train=5.398%, skip ratio=0%,  New best char error = 1.673 wrote best model:data/ocrd/checkpoints/ocrd_1.673_2092_5000.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1463, best error was 3.69 @ 672
+At iteration 2135/5100/5100, Mean rms=0.333%, delta=0.215%, char train=1.664%, word train=5.407%, skip ratio=0%,  New best char error = 1.664 wrote checkpoint.
+
+2 Percent improvement time=1488, best error was 3.69 @ 672
+At iteration 2160/5200/5200, Mean rms=0.332%, delta=0.23%, char train=1.615%, word train=5.465%, skip ratio=0%,  New best char error = 1.615 wrote best model:data/ocrd/checkpoints/ocrd_1.615_2160_5200.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1525, best error was 3.69 @ 672
+At iteration 2197/5300/5300, Mean rms=0.328%, delta=0.225%, char train=1.576%, word train=5.381%, skip ratio=0%,  New best char error = 1.576 wrote checkpoint.
+
+2 Percent improvement time=1566, best error was 3.69 @ 672
+At iteration 2238/5400/5400, Mean rms=0.329%, delta=0.228%, char train=1.552%, word train=5.319%, skip ratio=0%,  New best char error = 1.552 wrote best model:data/ocrd/checkpoints/ocrd_1.552_2238_5400.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1591, best error was 3.69 @ 672
+At iteration 2263/5500/5500, Mean rms=0.324%, delta=0.214%, char train=1.488%, word train=5.27%, skip ratio=0%,  New best char error = 1.488 wrote best model:data/ocrd/checkpoints/ocrd_1.488_2263_5500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1629, best error was 3.69 @ 672
+At iteration 2301/5600/5600, Mean rms=0.322%, delta=0.212%, char train=1.444%, word train=5.151%, skip ratio=0%,  New best char error = 1.444 wrote checkpoint.
+
+2 Percent improvement time=1666, best error was 3.69 @ 672
+At iteration 2338/5700/5700, Mean rms=0.324%, delta=0.216%, char train=1.415%, word train=5.211%, skip ratio=0%,  New best char error = 1.415 wrote best model:data/ocrd/checkpoints/ocrd_1.415_2338_5700.checkpoint wrote checkpoint.
+
+At iteration 2367/5800/5800, Mean rms=0.323%, delta=0.236%, char train=1.417%, word train=5.085%, skip ratio=0%,  New worst char error = 1.417 wrote checkpoint.
+
+2 Percent improvement time=1692, best error was 3.401 @ 709
+At iteration 2401/5900/5900, Mean rms=0.321%, delta=0.234%, char train=1.376%, word train=5%, skip ratio=0%,  New best char error = 1.376 wrote checkpoint.
+
+2 Percent improvement time=1725, best error was 3.401 @ 709
+At iteration 2434/6000/6000, Mean rms=0.319%, delta=0.23%, char train=1.327%, word train=4.852%, skip ratio=0%,  New best char error = 1.327 wrote best model:data/ocrd/checkpoints/ocrd_1.327_2434_6000.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1716, best error was 3.296 @ 755
+At iteration 2471/6100/6100, Mean rms=0.316%, delta=0.23%, char train=1.251%, word train=4.682%, skip ratio=0%,  New best char error = 1.251 wrote best model:data/ocrd/checkpoints/ocrd_1.251_2471_6100.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1747, best error was 3.296 @ 755
+At iteration 2502/6200/6200, Mean rms=0.321%, delta=0.264%, char train=1.229%, word train=4.609%, skip ratio=0%,  New best char error = 1.229 wrote checkpoint.
+
+2 Percent improvement time=1780, best error was 3.296 @ 755
+At iteration 2535/6300/6300, Mean rms=0.317%, delta=0.262%, char train=1.152%, word train=4.394%, skip ratio=0%,  New best char error = 1.152 wrote best model:data/ocrd/checkpoints/ocrd_1.152_2535_6300.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1774, best error was 3.14 @ 801
+At iteration 2575/6400/6400, Mean rms=0.313%, delta=0.258%, char train=1.094%, word train=4.244%, skip ratio=0%,  New best char error = 1.094 wrote best model:data/ocrd/checkpoints/ocrd_1.094_2575_6400.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1801, best error was 3.14 @ 801
+At iteration 2602/6500/6500, Mean rms=0.311%, delta=0.258%, char train=1.057%, word train=4.149%, skip ratio=0%,  New best char error = 1.057 wrote best model:data/ocrd/checkpoints/ocrd_1.057_2602_6500.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1836, best error was 3.14 @ 801
+At iteration 2637/6600/6600, Mean rms=0.307%, delta=0.253%, char train=1.029%, word train=4.057%, skip ratio=0%,  New best char error = 1.029 wrote checkpoint.
+
+2 Percent improvement time=1843, best error was 3.008 @ 835
+At iteration 2678/6700/6700, Mean rms=0.308%, delta=0.258%, char train=1.005%, word train=4.008%, skip ratio=0%,  New best char error = 1.005 wrote best model:data/ocrd/checkpoints/ocrd_1.005_2678_6700.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1870, best error was 3.008 @ 835
+At iteration 2705/6800/6800, Mean rms=0.303%, delta=0.245%, char train=0.946%, word train=3.789%, skip ratio=0%,  New best char error = 0.946 wrote best model:data/ocrd/checkpoints/ocrd_0.946_2705_6800.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1810, best error was 2.934 @ 930
+At iteration 2740/6900/6900, Mean rms=0.301%, delta=0.246%, char train=0.921%, word train=3.734%, skip ratio=0%,  New best char error = 0.921 wrote checkpoint.
+
+2 Percent improvement time=1847, best error was 2.934 @ 930
+At iteration 2777/7000/7000, Mean rms=0.301%, delta=0.251%, char train=0.906%, word train=3.778%, skip ratio=0%,  New best char error = 0.906 wrote best model:data/ocrd/checkpoints/ocrd_0.906_2777_7000.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1878, best error was 2.934 @ 930
+At iteration 2808/7100/7100, Mean rms=0.297%, delta=0.253%, char train=0.888%, word train=3.665%, skip ratio=0%,  New best char error = 0.888 wrote checkpoint.
+
+2 Percent improvement time=1910, best error was 2.934 @ 930
+At iteration 2840/7200/7200, Mean rms=0.286%, delta=0.203%, char train=0.817%, word train=3.542%, skip ratio=0%,  New best char error = 0.817 wrote best model:data/ocrd/checkpoints/ocrd_0.817_2840_7200.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1936, best error was 2.934 @ 930
+At iteration 2866/7300/7300, Mean rms=0.283%, delta=0.201%, char train=0.813%, word train=3.513%, skip ratio=0%,  New best char error = 0.813 wrote checkpoint.
+
+2 Percent improvement time=1969, best error was 2.934 @ 930
+At iteration 2899/7400/7400, Mean rms=0.277%, delta=0.196%, char train=0.779%, word train=3.426%, skip ratio=0%,  New best char error = 0.779 wrote best model:data/ocrd/checkpoints/ocrd_0.779_2899_7400.checkpoint wrote checkpoint.
+
+At iteration 2927/7500/7500, Mean rms=0.276%, delta=0.196%, char train=0.779%, word train=3.397%, skip ratio=0%,  wrote checkpoint.
+
+2 Percent improvement time=1938, best error was 2.74 @ 1007
+At iteration 2945/7600/7600, Mean rms=0.271%, delta=0.191%, char train=0.74%, word train=3.279%, skip ratio=0%,  New best char error = 0.74 wrote best model:data/ocrd/checkpoints/ocrd_0.74_2945_7600.checkpoint wrote checkpoint.
+
+2 Percent improvement time=1967, best error was 2.74 @ 1007
+At iteration 2974/7700/7700, Mean rms=0.266%, delta=0.186%, char train=0.729%, word train=3.24%, skip ratio=0%,  New best char error = 0.729 wrote checkpoint.
+
+2 Percent improvement time=1985, best error was 2.74 @ 1007
+At iteration 2992/7800/7800, Mean rms=0.26%, delta=0.173%, char train=0.685%, word train=3.229%, skip ratio=0%,  New best char error = 0.685 wrote best model:data/ocrd/checkpoints/ocrd_0.685_2992_7800.checkpoint wrote checkpoint.
+
+2 Percent improvement time=2005, best error was 2.74 @ 1007
+At iteration 3012/7900/7900, Mean rms=0.256%, delta=0.168%, char train=0.661%, word train=3.153%, skip ratio=0%,  New best char error = 0.661 wrote best model:data/ocrd/checkpoints/ocrd_0.661_3012_7900.checkpoint wrote checkpoint.
+
+At iteration 3032/8000/8000, Mean rms=0.254%, delta=0.162%, char train=0.665%, word train=3.174%, skip ratio=0%,  New worst char error = 0.665 wrote checkpoint.
+
+At iteration 3050/8100/8100, Mean rms=0.252%, delta=0.171%, char train=0.688%, word train=3.134%, skip ratio=0%,  New worst char error = 0.688 wrote checkpoint.
+
+At iteration 3071/8200/8200, Mean rms=0.251%, delta=0.168%, char train=0.678%, word train=3.104%, skip ratio=0%,  New worst char error = 0.678 wrote checkpoint.
+
+At iteration 3085/8300/8300, Mean rms=0.25%, delta=0.163%, char train=0.679%, word train=3.186%, skip ratio=0%,  New worst char error = 0.679 wrote checkpoint.
+
+At iteration 3103/8400/8400, Mean rms=0.249%, delta=0.166%, char train=0.734%, word train=3.174%, skip ratio=0%,  New worst char error = 0.734 wrote checkpoint.
+
+At iteration 3121/8500/8500, Mean rms=0.246%, delta=0.155%, char train=0.7%, word train=3.059%, skip ratio=0%,  New worst char error = 0.7 wrote checkpoint.
+
+At iteration 3134/8600/8600, Mean rms=0.243%, delta=0.151%, char train=0.696%, word train=3.09%, skip ratio=0%,  New worst char error = 0.696 wrote checkpoint.
+
+At iteration 3152/8700/8700, Mean rms=0.24%, delta=0.148%, char train=0.704%, word train=3.09%, skip ratio=0%,  New worst char error = 0.704 wrote checkpoint.
+
+At iteration 3170/8800/8800, Mean rms=0.24%, delta=0.158%, char train=0.721%, word train=3.11%, skip ratio=0%,  New worst char error = 0.721 wrote checkpoint.
+
+At iteration 3185/8900/8900, Mean rms=0.238%, delta=0.157%, char train=0.711%, word train=3.122%, skip ratio=0%,  New worst char error = 0.711 wrote checkpoint.
+
+At iteration 3201/9000/9000, Mean rms=0.234%, delta=0.153%, char train=0.694%, word train=2.988%, skip ratio=0%,  New worst char error = 0.694 wrote checkpoint.
+
+2 Percent improvement time=2207, best error was 2.74 @ 1007
+At iteration 3214/9100/9100, Mean rms=0.229%, delta=0.133%, char train=0.643%, word train=2.85%, skip ratio=0%,  New best char error = 0.643 wrote checkpoint.
+
+2 Percent improvement time=2184, best error was 2.634 @ 1046
+At iteration 3230/9200/9200, Mean rms=0.225%, delta=0.13%, char train=0.615%, word train=2.768%, skip ratio=0%,  New best char error = 0.615 wrote best model:data/ocrd/checkpoints/ocrd_0.615_3230_9200.checkpoint wrote checkpoint.
+
+At iteration 3246/9300/9300, Mean rms=0.227%, delta=0.137%, char train=0.627%, word train=2.803%, skip ratio=0%,  New worst char error = 0.627 wrote checkpoint.
+
+At iteration 3258/9400/9400, Mean rms=0.226%, delta=0.162%, char train=0.668%, word train=2.705%, skip ratio=0%,  New worst char error = 0.668 wrote checkpoint.
+
+At iteration 3276/9500/9500, Mean rms=0.225%, delta=0.16%, char train=0.663%, word train=2.698%, skip ratio=0%,  New worst char error = 0.663 wrote checkpoint.
+
+At iteration 3285/9600/9600, Mean rms=0.224%, delta=0.162%, char train=0.644%, word train=2.582%, skip ratio=0%,  New worst char error = 0.644 wrote checkpoint.
+
+At iteration 3302/9700/9700, Mean rms=0.224%, delta=0.166%, char train=0.648%, word train=2.479%, skip ratio=0%,  New worst char error = 0.648 wrote checkpoint.
+
+2 Percent improvement time=2272, best error was 2.634 @ 1046
+At iteration 3318/9800/9800, Mean rms=0.219%, delta=0.142%, char train=0.588%, word train=2.307%, skip ratio=0%,  New best char error = 0.588 wrote best model:data/ocrd/checkpoints/ocrd_0.588_3318_9800.checkpoint wrote checkpoint.
+
+2 Percent improvement time=2242, best error was 2.577 @ 1089
+At iteration 3331/9900/9900, Mean rms=0.217%, delta=0.139%, char train=0.567%, word train=2.188%, skip ratio=0%,  New best char error = 0.567 wrote best model:data/ocrd/checkpoints/ocrd_0.567_3331_9900.checkpoint wrote checkpoint.
+
+2 Percent improvement time=2255, best error was 2.577 @ 1089
+At iteration 3344/10000/10000, Mean rms=0.214%, delta=0.137%, char train=0.546%, word train=2.114%, skip ratio=0%,  New best char error = 0.546 wrote best model:data/ocrd/checkpoints/ocrd_0.546_3344_10000.checkpoint wrote checkpoint.
+
+Finished! Error rate = 0.546
+lstmtraining \
+--stop_training \
+--continue_from data/ocrd/checkpoints/ocrd_checkpoint \
+--traineddata data/ocrd/ocrd.traineddata \
+--model_output data/ocrd.traineddata
+Loaded file data/ocrd/checkpoints/ocrd_checkpoint, unpacking...

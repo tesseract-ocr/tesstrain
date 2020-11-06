@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 csvlinesstep=100 # ticks after this many rows from csv file
-maxCERtoDisplay=110 # max value for y axis, use -1 as min value
+maxCERtoDisplay=70 # max value for y axis, use -1 as min value
 PlotTitle="Tesseract LSTM training and Evaluation Character Error Rates -1% to " + str(maxCERtoDisplay) + "%"
 
 dataframe = pd.read_csv("plot_cer.csv",sep='\t', encoding='utf-8')
@@ -46,7 +46,7 @@ ax1.scatter(x, c, c='teal', s=11, label='Best model checkpoint CER')
 annot_min('teal',x,c)
 ax1.plot(x, e, 'magenta')
 ax1.scatter(x, e, c='magenta', s=11, label='Evaluation CER')
-annot_min('magenta',x,e)
+#annot_min('magenta',x,e)
 
 plt.title(label=PlotTitle)
 plt.legend(loc='upper right')

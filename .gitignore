@@ -18,4 +18,3 @@ data/*.traineddata
 wackenroder_herzensergiessungen_*.gt.txt
 wackenroder_herzensergiessungen_*.tif
 master.zip
-plot/*.LOG
