@@ -12,4 +12,5 @@ python plot_cer_zoomout.py
 python plot_cer.py
 rm ${PREFIX}-plot*.png
 rename "s/plot/${PREFIX}-plot/" plot_cer*.png
+mv plot_cer.csv ${PREFIX}-plot_cer.csv
 
