@@ -156,6 +156,24 @@ It is also possible to create models for selected checkpoints only. Examples:
 
 Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` by the output directory if needed.
 
+## Plotting CER (experimental)
+
+Training and Evaluation CER can be plotted using matplotlib. A couple of scripts are provided
+as a starting point in `plot` subdirectory for plotting of different training scenarios. The training
+log is expected to be saved in `plot/TESSTRAIN.LOG`.
+
+As an example, use the training data provided in 
+[ocrd-testset.zip](./ocrd-testset.zip) to do training and generate the plots.
+Plotting can be done while training is running also to depict the training status till then.
+```
+unzip ocrd-testset.zip -d data/ocrd-ground-truth
+nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > plot/TESSTRAIN.LOG &
+```
+```
+cd ./plot
+./plot_cer.sh 
+```
+
 ## License
 
 Software is provided under the terms of the `Apache 2.0` license.
