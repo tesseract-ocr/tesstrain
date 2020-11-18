@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-"""Specifications for Generation of training data sets"""
+"""Specification for Generation of training data sets"""
 
 import os
 import pathlib
 import shutil
 
-import numpy as np
-import lxml.etree as etree
-
-from cv2 import cv2
-
-import pytest
-
 from sets.training_sets import (
-    TrainingData,
+    TrainingSets,
     XML_NS
 )
+
+from cv2 import (
+    cv2
+)
+import pytest
+import numpy as np
+import lxml.etree as etree
 
 RES_ROOT = os.path.join('tests', 'resources')
 
@@ -23,7 +23,7 @@ RES_ROOT = os.path.join('tests', 'resources')
 def generate_image(path_image, words, columns, rows, params=None):
     """Generate synthetic in-memory image data"""
 
-    arr_floats = np.random.rand(columns, rows) * 255
+    arr_floats = np.random.rand(rows, columns) * 255
     arr_ints = arr_floats.astype(np.uint8)
     if words:
         for word in words:
@@ -47,12 +47,12 @@ def extract_words(path_xml_data):
         strings = root.findall(f'.//{ns_prefix}:String', XML_NS)
         words = [((int(s.attrib['HPOS']), int(s.attrib['VPOS'])),
                   s.attrib['CONTENT']) for s in strings]
-    elif ns_prefix == 'page2013':
+    elif ns_prefix in ('page2013', 'page2019'):
         page_words = root.findall(f'.//{ns_prefix}:Word', XML_NS)
         for page_word in page_words:
-            txt = page_word.find('.//page2013:Unicode', XML_NS).text
+            txt = page_word.find(f'.//{ns_prefix}:Unicode', XML_NS).text
             p1 = page_word.find(
-                'page2013:Coords',
+                f'{ns_prefix}:Coords',
                 XML_NS).attrib['points'].split()[0]
             origin = (int(p1.split(',')[0]), int(p1.split(',')[1]))
             words.append((origin, txt))
@@ -60,7 +60,7 @@ def extract_words(path_xml_data):
     return words
 
 
-@pytest.fixture(name='input_alto_tif')
+@pytest.fixture(name='fixture_alto_tif')
 def _fixture_alto_tif(tmpdir):
     res_alto = os.path.join(RES_ROOT, 'xml', '1667522809_J_0073_0512.xml')
     path = tmpdir.mkdir('training').join('1667522809_J_0073_0512.xml')
@@ -81,17 +81,17 @@ def _fixture_alto_tif(tmpdir):
     generate_image(
         file_path,
         words=words,
-        rows=6619,
-        columns=9976,
+        columns=6619,
+        rows=9976,
         params=tif_params)
 
     return str(path)
 
 
-def test_create_trainingset_from_alto_and_tif(input_alto_tif):
-    """Create text-image pairs for tesstrain from given ALTO V3 and tif"""
+def test_create_sets_from_alto_and_tif(fixture_alto_tif):
+    """Create text-image pairs from ALTO V3 and TIF"""
 
-    path_input_dir = os.path.dirname(input_alto_tif)
+    path_input_dir = os.path.dirname(fixture_alto_tif)
     path_input_parent = pathlib.Path(path_input_dir).parent
     path_tif = os.path.join(
         path_input_parent,
@@ -99,91 +99,139 @@ def test_create_trainingset_from_alto_and_tif(input_alto_tif):
         '1667522809_J_0073_0512.tif')
     assert os.path.exists(path_tif)
 
-    training_data = TrainingData(input_alto_tif, path_tif)
+    training_data = TrainingSets(fixture_alto_tif, path_tif)
     data = training_data.create(min_chars=32, folder_out=path_input_dir)
 
     # assert
     assert len(data) == 225
-    path_items = [p for p in os.listdir(os.path.dirname(input_alto_tif))]
-    assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 225
-    assert len([txt for txt in path_items if str(
-        txt).endswith(".gt.txt")]) == 226
+    path_items = os.listdir(os.path.dirname(fixture_alto_tif))
+    tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
+    assert len(tifs) == 225
+    lines = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+
+    # one more txt since summery
+    assert len(lines) == 226
 
 
-@pytest.fixture(name='input_page2013_jpg')
+@pytest.fixture(name='fixture_page2013_jpg')
 def _fixture_page2013_jpg(tmpdir):
 
-    res = os.path.join(RES_ROOT, 'xml', '699723.xml')
-    path_page = tmpdir.mkdir('training').join('699723.xml')
+    res = os.path.join(RES_ROOT, 'xml', '288652.xml')
+    path_page = tmpdir.mkdir('training').join('288652.xml')
     shutil.copyfile(res, path_page)
 
     words = extract_words(path_page)
 
-    file_path = tmpdir.mkdir('images').join('699723.jpg')
+    file_path = tmpdir.mkdir('images').join('288652.jpg')
 
     # 2257x3062px
-    generate_image(file_path, words=words, rows=2257, columns=3062)
+    generate_image(file_path, words=words, columns=2091, rows=2938)
 
     return str(path_page)
 
 
+def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
+    """Create text-image pairs from PAGE2013 and JPG with defaults"""
 
-TXTLINE_699723_TL_1 = '، ةمن حالة إلى حالة ، ومن رتبة إلى رتبة ، أولها بالعفوصة وبعد ذلك بالحموضة'
-
-
-def test_create_trainingset_from_page2013_and_jpg(input_page2013_jpg):
-    """Create text-image pairs for tesstrain from given Page2013 and jpg"""
-
-    path_input_dir = os.path.dirname(input_page2013_jpg)
+    path_input_dir = os.path.dirname(fixture_page2013_jpg)
     path_input_parent = pathlib.Path(path_input_dir).parent
-    path_jpg = os.path.join(path_input_parent, 'images', '699723.jpg')
-    assert os.path.exists(path_jpg)
+    path_image = os.path.join(path_input_parent, 'images', '288652.jpg')
+    assert os.path.exists(path_image)
 
     # act
-    training_data = TrainingData(input_page2013_jpg, path_jpg)
-    data = training_data.create(min_chars=8, folder_out=path_input_dir)
+    training_data = TrainingSets(fixture_page2013_jpg, path_image)
+    data = training_data.create(
+        min_chars=8,
+        folder_out=path_input_dir,
+        revert=True)
 
     # assert
-    assert len(data) == 25
-    path_items = os.listdir(os.path.dirname(input_page2013_jpg))
-    assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 25
+    assert len(data) == 32
+    path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
+    assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 32
     txt_files = sorted(
         [txt for txt in path_items if str(txt).endswith(".gt.txt")])
-    assert len(txt_files) == 26
 
-    # assert text orientation, which is in this case invalid
-    with open(os.path.join(os.path.dirname(input_page2013_jpg), txt_files[2])) as txt_file:
+    # additional summary written
+    assert len(txt_files) == 33
+
+    # assert mixed content
+    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2])) as txt_file:
         arab = txt_file.readline().strip()
-        assert arab == TXTLINE_699723_TL_1
+        assert 'XIX' in arab
 
 
-# def test_create_trainingset_from_page2013_and_jpg_revert_words(input_page2013_jpg):
-#     """
-#     Create text-image pairs for tesstrain with right-to-left text orientation like arabic
-#     languages from given Page2013 and jpg
-#     """
+def test_create_sets_from_page2013_and_jpg_no_summary(
+        fixture_page2013_jpg):
+    """Create text-image pairs from PAGE2013 and JPG without summary"""
 
-#     path_input_dir = os.path.dirname(input_page2013_jpg)
-#     path_input_parent = pathlib.Path(path_input_dir).parent
-#     path_jpg = os.path.join(path_input_parent, 'images', '699723.jpg')
-#     assert os.path.exists(path_jpg)
+    path_input_dir = os.path.dirname(fixture_page2013_jpg)
+    path_input_parent = pathlib.Path(path_input_dir).parent
+    path_image = os.path.join(path_input_parent, 'images', '288652.jpg')
+    assert os.path.exists(path_image)
 
-#     # act
-#     training_data = TrainingData(input_page2013_jpg, path_jpg)
-#     data = training_data.create(
-#         min_chars=8, folder_out=path_input_dir, rtl=True)
+    # act
+    training_data = TrainingSets(fixture_page2013_jpg, path_image)
+    data = training_data.create(
+        min_chars=8,
+        folder_out=path_input_dir,
+        summary=False, revert=True)
 
-#     # assert
-#     assert len(data) == 25
-#     path_items = os.listdir(os.path.dirname(input_page2013_jpg))
-#     assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 25
-#     txt_files = sorted(
-#         [txt for txt in path_items if str(txt).endswith(".gt.txt")])
+    # assert
+    expected_len = 32
+    assert len(data) == expected_len
+    path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
+    tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
+    assert len(tifs) == expected_len
+    txt_files = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+    assert len(txt_files) == expected_len
 
-#     # one more textfile as summary
-#     assert len(txt_files) == 26
+    # no summary written
+    assert len(txt_files) == 32
 
-#     # assert text orientation
-#     with open(os.path.join(os.path.dirname(input_page2013_jpg), txt_files[2])) as txt_file:
-#         arabic = txt_file.readline().strip()
-#         assert arabic == TXTLINE_699723_TL_1_RTL
+
+@pytest.fixture(name='fixture_page2019_png')
+def _fixture_page2019_png(tmpdir):
+
+    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
+    path_page = tmpdir.mkdir('training').join('OCR-RESULT_0001.xml')
+    shutil.copyfile(res, path_page)
+
+    words = extract_words(path_page)
+
+    file_path = tmpdir.mkdir('images').join('OCR-RESULT_0001.png')
+
+    # 2257x3062px
+    generate_image(file_path, words=words, columns=2164, rows=2448)
+
+    return str(path_page)
+
+
+def test_create_sets_from_page2019_and_png(fixture_page2019_png):
+    """Create text-image pairs from PAGE2013 and JPG without summary"""
+
+    path_input_dir = os.path.dirname(fixture_page2019_png)
+    path_input_parent = pathlib.Path(path_input_dir).parent
+    path_image = os.path.join(
+        path_input_parent,
+        'images',
+        'OCR-RESULT_0001.png')
+    assert os.path.exists(path_image)
+
+    # act
+    training_data = TrainingSets(fixture_page2019_png, path_image)
+    data = training_data.create(
+        min_chars=8,
+        folder_out=path_input_dir)
+
+    # assert
+    expected_len = 33
+    assert len(data) == expected_len
+    path_items = os.listdir(os.path.dirname(fixture_page2019_png))
+    tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
+    assert len(tifs) == expected_len
+
+    txt_files = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+
+    # summary written
+    assert len(txt_files) == 34

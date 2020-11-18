@@ -4,5 +4,6 @@ lxml>=4.0.0
 exifread>=2.3.0
 opencv-python>=4.4.0
 numpy>=1.19.0
+Shapely>=1.7.0
 autopep8>=1.5.0
 pytest>=6.0.0
