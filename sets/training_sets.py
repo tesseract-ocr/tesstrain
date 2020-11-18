@@ -16,16 +16,22 @@ from PIL import (
 from shapely.geometry import (
     Polygon
 )
-
+from bidi.algorithm import (
+    get_display
+)
 
 XML_NS = {
     'alto': 'http://www.loc.gov/standards/alto/ns-v3#',
     'page2013': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15',
     'page2019': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'}
 
-DEFAULT_MIN_CHARS = 16
-
+# default values
+DEFAULT_MIN_CHARS = 4
+DEFAULT_OUTDIR_PREFIX = 'training_data_'
+DEFAULT_USE_SUMMARY = False
+DEFAULT_USE_REVERT = False
 DEFAULT_DPI = 300
+SUMMARY_SUFFIX = '_summary.gt.txt'
 
 
 class TextLine(abc.ABC):
@@ -61,9 +67,11 @@ class TextLine(abc.ABC):
         may revert order of tokens if required
         """
 
+        aggregat = ' '.join(self.text_words)
         if self.revert:
             return reduce(lambda c, p: p + ' ' + c, self.text_words)
-        return ' '.join(self.text_words)
+            # return get_display(aggregat)
+        return aggregat
 
     def __repr__(self):
         return '{}:{}'.format(self.__class__.__name__, self.element_id)
@@ -206,6 +214,7 @@ class TrainingSets:
         (self.set_label, _) = os.path.splitext(os.path.basename(path_xml_data))
 
         self.path_image_data = path_image_data
+        self.path_out = None
         self.image_data = TrainingSets._load_image(path_image_data)
         self._read_dpi()
 
@@ -217,21 +226,21 @@ class TrainingSets:
                    image_handle, path_out, prefix):
         """Serialize training data pairs"""
 
-        set_name = self.set_label
         if not path_out:
-            path_out = prefix + set_name
+            path_out = prefix + self.set_label
+        self.path_out = path_out
         os.makedirs(path_out, exist_ok=True)
 
         content = training_data.get_textline_content()
         if content:
-            file_name = set_name + '_' + training_data.element_id + '.gt.txt'
+            file_name = self.set_label + '_' + training_data.element_id + '.gt.txt'
             file_path = os.path.join(path_out, file_name)
             with open(file_path, 'w', encoding="utf8") as fhdl:
                 fhdl.write(content)
 
             img_frame = TrainingSets._extract_frame(
                 image_handle, training_data)
-            file_name = set_name + '_' + training_data.element_id + '.tif'
+            file_name = self.set_label + '_' + training_data.element_id + '.tif'
             file_path = os.path.join(path_out, file_name)
 
             if img_frame.any():
@@ -241,17 +250,12 @@ class TrainingSets:
                 else:
                     cv2.imwrite(file_path, img_frame)
 
-    def write_all(self, training_datas, path_out, prefix):
+    def write_all(self, training_datas):
         """Serialize training data pairs"""
 
-        set_name = self.set_label
-        if not path_out:
-            path_out = prefix + set_name
-        os.makedirs(path_out, exist_ok=True)
-
         contents = [d.get_textline_content() + '\n' for d in training_datas]
-        file_name = set_name + '_summary.gt.txt'
-        file_path = os.path.join(path_out, file_name)
+        file_name = self.set_label + SUMMARY_SUFFIX
+        file_path = os.path.join(self.path_out, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
 
@@ -311,7 +315,7 @@ class TrainingSets:
             return (DEFAULT_DPI, DEFAULT_DPI)
 
     def create(self, folder_out=None,
-               min_chars=8, prefix='training_data_', summary=True, revert=False):
+               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=True, revert=False):
         """
         Put training data sets which textlines consist of at least min_chars as
         text-image part pairs starting with prefix into folder_out
@@ -328,9 +332,6 @@ class TrainingSets:
                 prefix=prefix)
 
         if summary:
-            self.write_all(
-                training_datas,
-                path_out=folder_out,
-                prefix='summary')
+            self.write_all(training_datas)
 
         return training_datas
