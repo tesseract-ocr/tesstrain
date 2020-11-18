@@ -1,0 +1,2 @@
+autopep8>=1.5.0
+pytest-cov>=2.0.0
