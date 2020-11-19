@@ -2,6 +2,6 @@ Pillow>=6.2.1
 python-bidi>=0.4
 lxml>=4.0.0
 exifread>=2.3.0
-opencv-python>=4.4.0
+opencv-python-headless>=4.4.0
 numpy>=1.19.0
 Shapely>=1.7.0
