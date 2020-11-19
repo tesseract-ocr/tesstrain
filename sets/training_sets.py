@@ -3,6 +3,9 @@
 
 import abc
 import os
+from pathlib import (
+    Path
+)
 from functools import reduce
 
 import exifread
@@ -177,20 +180,18 @@ class PageLine(TextLine):
         return box
 
 
-def text_line_factory(path_xml_data, min_len, revert):
+def text_line_factory(xml_data, min_len, revert):
     """Create text_lines from given structured data"""
 
     text_lines = []
-    root = etree.parse(path_xml_data).getroot()
-    root_tag = root.xpath('namespace-uri(.)')
-    ns_prefix = [k for (k, v) in XML_NS.items() if v == root_tag][0]
+    ns_prefix = _determine_namespace(xml_data)
     if 'alto' in ns_prefix:
-        all_lines = root.findall(f'.//{ns_prefix}:TextLine', XML_NS)
+        all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
         all_lines_len = [l for l in all_lines if len(' '.join(
             [s.attrib['CONTENT'] for s in l.findall(f'{ns_prefix}:String', XML_NS)])) >= min_len]
         text_lines = [ALTOLine(line, ns_prefix) for line in all_lines_len]
     elif ns_prefix in ('page2013', 'page2019'):
-        all_lines = root.iterfind(f'.//{ns_prefix}:TextLine', XML_NS)
+        all_lines = xml_data.iterfind(f'.//{ns_prefix}:TextLine', XML_NS)
         matchings = [
             l for l in all_lines if len(
                 l.find(
@@ -199,6 +200,30 @@ def text_line_factory(path_xml_data, min_len, revert):
         text_lines = [PageLine(line, ns_prefix, revert) for line in matchings]
 
     return text_lines
+
+
+def resolve_image_path(path_xml_data):
+    """
+    In Context of an OCR-D-Workspace use information from PAGE to retrive
+    """
+    xml_data = etree.parse(path_xml_data).getroot()
+    ns_prefix = _determine_namespace(xml_data)
+    if ns_prefix in ('page2013', 'page2019'):
+        img_file = xml_data.find(
+            f'.//{ns_prefix}:Page', XML_NS).attrib['imageFilename']
+        if img_file:
+            workspace_dir = Path(path_xml_data).parent.parent
+            img_path = os.path.join(workspace_dir, img_file)
+            if not os.path.exists(img_path):
+                raise RuntimeError(
+                    f"can't handle invalid image_path : '{img_path}'")
+            return img_path
+    return None
+
+
+def _determine_namespace(xml_data):
+    root_tag = xml_data.xpath('namespace-uri(.)')
+    return [k for (k, v) in XML_NS.items() if v == root_tag][0]
 
 
 class TrainingSets:
@@ -210,13 +235,17 @@ class TrainingSets:
     def __init__(self, path_xml_data, path_image_data):
         self.xdpi = None
         self.ydpi = None
-        self.path_xml_data = path_xml_data
-        (self.set_label, _) = os.path.splitext(os.path.basename(path_xml_data))
-
-        self.path_image_data = path_image_data
         self.path_out = None
-        self.image_data = TrainingSets._load_image(path_image_data)
+        (self.set_label, _) = os.path.splitext(os.path.basename(path_xml_data))
+        self.xml_data = etree.parse(path_xml_data).getroot()
+        self.path_image_data = path_image_data
+        if not self.path_image_data:
+            self._resolve_image_path(path_xml_data)
+        self.image_data = TrainingSets._load_image(self.path_image_data)
         self._read_dpi()
+
+    def _resolve_image_path(self, path_xml_data):
+        self.path_image_data = resolve_image_path(path_xml_data)
 
     @staticmethod
     def _load_image(path_image_data):
@@ -315,14 +344,14 @@ class TrainingSets:
             return (DEFAULT_DPI, DEFAULT_DPI)
 
     def create(self, folder_out=None,
-               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=True, revert=False):
+               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, revert=False):
         """
         Put training data sets which textlines consist of at least min_chars as
         text-image part pairs starting with prefix into folder_out
         """
 
         training_datas = text_line_factory(
-            self.path_xml_data, min_len=min_chars, revert=revert)
+            self.xml_data, min_len=min_chars, revert=revert)
 
         for training_data in training_datas:
             self.write_data(

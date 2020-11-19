@@ -19,25 +19,26 @@ from sets.training_sets import (
 ########
 PARSER = argparse.ArgumentParser(description="generate pairs of textlines and image frames from existing OCR and image data")
 PARSER.add_argument(
-    "d",
+    "data",
     type=str,
     help="path to local alto|page file corresponding to image")
 PARSER.add_argument(
-    "i",
-    type=str,
-    help="path to local image file tif|jpg|png corresponding to ocr")
+    "-i",
+    "--image",
+    required=False,
+    help="path to local image file tif|jpg|png corresponding to ocr. (default: read from OCR-Data)")
 PARSER.add_argument(
     "-o",
     "--output",
     required=False,
-    help="optional: output directory. re-created if already exists.\n(default: <script-dir>/<{}-ocr-name>)".format(DEFAULT_OUTDIR_PREFIX))
+    help="optional: output directory, re-created if already exists. (default: <script-dir>/<{}-ocr-name>)".format(DEFAULT_OUTDIR_PREFIX))
 PARSER.add_argument(
     "-m",
     "--minchars",
     required=False,
     type=int,
     default=int(DEFAULT_MIN_CHARS),
-    help="optional: minimum chars required for a line to be included into set (Default: {})".format(DEFAULT_MIN_CHARS))
+    help="optional: minimum chars required for a line to be included into set (default: {})".format(DEFAULT_MIN_CHARS))
 PARSER.add_argument(
     "-s",
     "--summary",
@@ -61,7 +62,7 @@ MIN_CHARS = ARGS.minchars
 SUMMARY = ARGS.summary
 REVERT = ARGS.rtl
 
-if os.path.exists(PATH_OCR) and os.path.exists(PATH_IMG):
+if os.path.exists(PATH_OCR):
     print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, rtl: {})".format(
         PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REVERT))
     TRAINING_DATA = TrainingSets(PATH_OCR, PATH_IMG)

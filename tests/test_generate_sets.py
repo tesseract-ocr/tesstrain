@@ -100,7 +100,8 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
     assert os.path.exists(path_tif)
 
     training_data = TrainingSets(fixture_alto_tif, path_tif)
-    data = training_data.create(min_chars=32, folder_out=path_input_dir)
+    data = training_data.create(
+        min_chars=32, folder_out=path_input_dir, summary=True)
 
     # assert
     assert len(data) == 225
@@ -141,9 +142,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8,
-        folder_out=path_input_dir,
-        revert=True)
+        min_chars=8, folder_out=path_input_dir, summary=True, revert=True)
 
     # assert
     assert len(data) == 32
@@ -173,9 +172,7 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8,
-        folder_out=path_input_dir,
-        summary=False, revert=True)
+        min_chars=8, folder_out=path_input_dir, summary=False, revert=True)
 
     # assert
     expected_len = 32
@@ -221,7 +218,7 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     # act
     training_data = TrainingSets(fixture_page2019_png, path_image)
     data = training_data.create(
-        min_chars=8,
+        min_chars=8, summary=True,
         folder_out=path_input_dir)
 
     # assert
@@ -235,3 +232,47 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
 
     # summary written
     assert len(txt_files) == 34
+
+
+@pytest.fixture(name="fixture_ocrd_workspace")
+def _fixture_ocrd_workspace(tmpdir):
+    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
+    path_page = tmpdir.mkdir('OCR-RESULT').join('OCR-RESULT_0001.xml')
+    shutil.copyfile(res, path_page)
+    words = extract_words(path_page)
+    file_path = tmpdir.mkdir('OCR-D-IMG-PNG').join('OCR-D-IMG-PNG_0001.png')
+    generate_image(file_path, words=words, columns=2164, rows=2448)
+    return str(path_page)
+
+
+def test_create_sets_from_ocrd_workdspace(fixture_ocrd_workspace):
+    """Create Training data with default OCR-D-Workspace"""
+
+    # arrange
+    path_input_dir = os.path.dirname(fixture_ocrd_workspace)
+
+    # act
+    training_data = TrainingSets(fixture_ocrd_workspace, None)
+    data = training_data.create(min_chars=8, folder_out=path_input_dir)
+
+    # assert
+    assert len(data) == 33
+
+
+@pytest.fixture(name="fixture_ocrd_workspace_invalid")
+def _fixture_ocrd_workspace_invalid(tmpdir):
+    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
+    path_page = tmpdir.mkdir('OCR-RESULT').join('OCR-RESULT_0001.xml')
+    shutil.copyfile(res, path_page)
+    return str(path_page)
+
+
+def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
+    """Create Training data fails because OCR-D-Workspace misses image"""
+
+    # act
+    with pytest.raises(RuntimeError) as excinfo:
+        TrainingSets(fixture_ocrd_workspace_invalid, None)
+
+    # assert
+    assert 'invalid image_path' in str(excinfo.value)
