@@ -174,6 +174,33 @@ cd ./plot
 ./plot_cer.sh 
 ```
 
+## Generate Trainingdata
+
+Tesstrain provides utilities to generate pairs of Textlines and corresponding line images from input data that represent scanned pages (complete or partial) with existing OCR in form of Python scripts.  
+To enable this functionality, a virtual Python Environment needs to be activated that holds required dependencies:
+
+```
+# create virtual environment in subfolder "venv"
+python3 -m venv venv
+# unix
+source venv/bin/activate
+# win 
+venv\Scripts\activate.bat
+
+pip install -U pip
+pip install -r requirements.txt
+```
+
+Pairs can be created from various combinations of OCR formats and images. Currently, ALTO V3, PAGE 2013 and PAGE 2019 are supported as well as TIF- and JPG-Images. Output is written as UTF-8 encoded textfiles and TIF-images.   
+For more details, please consider:
+
+```
+python generate_sets.py --help
+```
+
+_Please note_, that the generated pairs are not automatically supervised or corrected. Therefore, it is required to review the generated data.
+
+
 ## License
 
 Software is provided under the terms of the `Apache 2.0` license.
