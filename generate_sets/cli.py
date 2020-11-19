@@ -4,7 +4,7 @@
 import argparse
 import os
 
-from sets.training_sets import (
+from generate_sets.training_sets import (
     TrainingSets,
     DEFAULT_OUTDIR_PREFIX,
     DEFAULT_MIN_CHARS,
@@ -53,28 +53,31 @@ PARSER.add_argument(
     default=DEFAULT_USE_REVERT,
     help="optional: attempt to switch reading order right-to-left (default: {})".format(DEFAULT_USE_REVERT))
 
-ARGS = PARSER.parse_args()
-PATH_OCR = ARGS.data
-PATH_IMG = ARGS.image
-FOLDER_OUTPUT = ARGS.output
-MIN_CHARS = ARGS.minchars
-SUMMARY = ARGS.summary
-REVERT = ARGS.rtl
+def main():
+    ARGS = PARSER.parse_args()
+    PATH_OCR = ARGS.data
+    PATH_IMG = ARGS.image
+    FOLDER_OUTPUT = ARGS.output
+    MIN_CHARS = ARGS.minchars
+    SUMMARY = ARGS.summary
+    REVERT = ARGS.rtl
+    if os.path.exists(PATH_OCR) and os.path.exists(PATH_IMG):
+        print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, rtl: {})".format(
+            PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REVERT))
+        TRAINING_DATA = TrainingSets(PATH_OCR, PATH_IMG)
+        RESULT = TRAINING_DATA.create(
+            folder_out=FOLDER_OUTPUT,
+            min_chars=MIN_CHARS,
+            summary=SUMMARY,
+            revert=REVERT)
+        print(
+            "[SUCCESS] created '{}' training data sets in '{}', please review".format(
+                len(RESULT), TRAINING_DATA.path_out))
+    else:
+        print(
+            "[ERROR  ] missing OCR '{}' or Image Data '{}'!".format(
+                PATH_OCR,
+                PATH_IMG))
 
-if os.path.exists(PATH_OCR) and os.path.exists(PATH_IMG):
-    print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, rtl: {})".format(
-        PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REVERT))
-    TRAINING_DATA = TrainingSets(PATH_OCR, PATH_IMG)
-    RESULT = TRAINING_DATA.create(
-        folder_out=FOLDER_OUTPUT,
-        min_chars=MIN_CHARS,
-        summary=SUMMARY,
-        revert=REVERT)
-    print(
-        "[SUCCESS] created '{}' training data sets in '{}', please review".format(
-            len(RESULT), TRAINING_DATA.path_out))
-else:
-    print(
-        "[ERROR  ] missing OCR '{}' or Image Data '{}'!".format(
-            PATH_OCR,
-            PATH_IMG))
+if __name__ == '__main__':
+    main()
