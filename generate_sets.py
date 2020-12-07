@@ -9,7 +9,7 @@ from sets.training_sets import (
     DEFAULT_OUTDIR_PREFIX,
     DEFAULT_MIN_CHARS,
     DEFAULT_USE_SUMMARY,
-    DEFAULT_USE_REVERT,
+    DEFAULT_USE_REORDER,
     SUMMARY_SUFFIX
 )
 
@@ -48,11 +48,11 @@ PARSER.add_argument(
     help="optional: print all lines in additional file (default: {}, pattern: <default-output-dir>{})".format(DEFAULT_USE_SUMMARY, SUMMARY_SUFFIX))
 PARSER.add_argument(
     "-r",
-    "--rtl",
+    "--reorder",
     required=False,
     action='store_true',
-    default=DEFAULT_USE_REVERT,
-    help="optional: attempt to switch reading order right-to-left (default: {})".format(DEFAULT_USE_REVERT))
+    default=DEFAULT_USE_REORDER,
+    help="optional: re-order word tokens from right-to-left (default: {})".format(DEFAULT_USE_REORDER))
 
 ARGS = PARSER.parse_args()
 PATH_OCR = ARGS.data
@@ -60,17 +60,17 @@ PATH_IMG = ARGS.image
 FOLDER_OUTPUT = ARGS.output
 MIN_CHARS = ARGS.minchars
 SUMMARY = ARGS.summary
-REVERT = ARGS.rtl
+REORDER = ARGS.reorder
 
 if os.path.exists(PATH_OCR):
     print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, rtl: {})".format(
-        PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REVERT))
+        PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REORDER))
     TRAINING_DATA = TrainingSets(PATH_OCR, PATH_IMG)
     RESULT = TRAINING_DATA.create(
         folder_out=FOLDER_OUTPUT,
         min_chars=MIN_CHARS,
         summary=SUMMARY,
-        revert=REVERT)
+        reorder=REORDER)
     print(
         "[SUCCESS] created '{}' training data sets in '{}', please review".format(
             len(RESULT), TRAINING_DATA.path_out))

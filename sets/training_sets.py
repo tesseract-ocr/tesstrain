@@ -19,9 +19,7 @@ from PIL import (
 from shapely.geometry import (
     Polygon
 )
-from bidi.algorithm import (
-    get_display
-)
+
 
 XML_NS = {
     'alto': 'http://www.loc.gov/standards/alto/ns-v3#',
@@ -32,7 +30,7 @@ XML_NS = {
 DEFAULT_MIN_CHARS = 4
 DEFAULT_OUTDIR_PREFIX = 'training_data_'
 DEFAULT_USE_SUMMARY = False
-DEFAULT_USE_REVERT = False
+DEFAULT_USE_REORDER = False
 DEFAULT_DPI = 300
 SUMMARY_SUFFIX = '_summary.gt.txt'
 
@@ -42,14 +40,14 @@ class TextLine(abc.ABC):
     TextLine from structured OCR-Data
     """
 
-    def __init__(self, element, namespace, revert=False):
+    def __init__(self, element, namespace, reorder=False):
         self.element = element
         self.namespace = namespace
         self.element_id = None
         self.set_id()
         self.text_words = []
         self.set_text_words()
-        self.revert = revert
+        self.reorder = reorder
         self.box = self.to_box(self.element)
 
     @abc.abstractmethod
@@ -67,13 +65,12 @@ class TextLine(abc.ABC):
     def get_textline_content(self) -> str:
         """
         Set TextLine contents from it's included word tokens
-        may revert order of tokens if required
+        reorder order of tokens if required
         """
 
         aggregat = ' '.join(self.text_words)
-        if self.revert:
+        if self.reorder:
             return reduce(lambda c, p: p + ' ' + c, self.text_words)
-            # return get_display(aggregat)
         return aggregat
 
     def __repr__(self):
@@ -180,7 +177,7 @@ class PageLine(TextLine):
         return box
 
 
-def text_line_factory(xml_data, min_len, revert):
+def text_line_factory(xml_data, min_len, reorder):
     """Create text_lines from given structured data"""
 
     text_lines = []
@@ -197,7 +194,7 @@ def text_line_factory(xml_data, min_len, revert):
                 l.find(
                     f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode',
                     XML_NS).text) >= min_len]
-        text_lines = [PageLine(line, ns_prefix, revert) for line in matchings]
+        text_lines = [PageLine(line, ns_prefix, reorder) for line in matchings]
 
     return text_lines
 
@@ -344,14 +341,14 @@ class TrainingSets:
             return (DEFAULT_DPI, DEFAULT_DPI)
 
     def create(self, folder_out=None,
-               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, revert=False):
+               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, reorder=False):
         """
         Put training data sets which textlines consist of at least min_chars as
         text-image part pairs starting with prefix into folder_out
         """
 
         training_datas = text_line_factory(
-            self.xml_data, min_len=min_chars, revert=revert)
+            self.xml_data, min_len=min_chars, reorder=reorder)
 
         for training_data in training_datas:
             self.write_data(

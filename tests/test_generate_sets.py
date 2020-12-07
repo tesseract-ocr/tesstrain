@@ -5,17 +5,17 @@ import os
 import pathlib
 import shutil
 
-from sets.training_sets import (
-    TrainingSets,
-    XML_NS
-)
-
 from cv2 import (
     cv2
 )
 import pytest
 import numpy as np
 import lxml.etree as etree
+
+from sets.training_sets import (
+    TrainingSets,
+    XML_NS
+)
 
 RES_ROOT = os.path.join('tests', 'resources')
 
@@ -142,7 +142,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=True, revert=True)
+        min_chars=8, folder_out=path_input_dir, summary=True, reorder=True)
 
     # assert
     assert len(data) == 32
@@ -172,7 +172,7 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=False, revert=True)
+        min_chars=8, folder_out=path_input_dir, summary=False, reorder=True)
 
     # assert
     expected_len = 32
