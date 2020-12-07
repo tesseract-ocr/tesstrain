@@ -56,11 +56,11 @@ def extract_words(path_xml_data):
         page_words = root.findall(f'.//{ns_prefix}:Word', XML_NS)
         for page_word in page_words:
             txt = page_word.find(f'.//{ns_prefix}:Unicode', XML_NS).text
-            p1 = page_word.find(
-                f'{ns_prefix}:Coords',
-                XML_NS).attrib['points'].split()[0]
-            origin = (int(p1.split(',')[0]), int(p1.split(',')[1]))
-            words.append((origin, txt))
+            points = page_word.find(f'{ns_prefix}:Coords', XML_NS).attrib['points'].split()
+            if points:
+                p1 = points[0]
+                origin = (int(p1.split(',')[0]), int(p1.split(',')[1]))
+                words.append((origin, txt))
 
     return words
 
@@ -281,3 +281,35 @@ def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
 
     # assert
     assert 'invalid image_path' in str(excinfo.value)
+
+
+OCR_DATA_729422 = '729422'
+@pytest.fixture(name='fixture_invalid_coords')
+def _fixture_invalid_coords(tmpdir):
+
+    res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_729422}.xml')
+    path_page = tmpdir.join(f'{OCR_DATA_729422}.xml')
+    shutil.copyfile(res, path_page)
+    words = extract_words(path_page)
+    file_path = tmpdir.join(f'{OCR_DATA_729422}.jpg')
+    generate_image(file_path, words=words, columns=2251, rows=3049)
+    return str(tmpdir)
+
+
+def test_handle_invalid_coords(fixture_invalid_coords):
+    """When procesing invalid coords, skip pair and alert user"""
+
+    # arrange
+    ocr_data = os.path.join(fixture_invalid_coords, f'{OCR_DATA_729422}.xml')
+    img_data = os.path.join(fixture_invalid_coords, f'{OCR_DATA_729422}.jpg')
+    training_data = TrainingSets(ocr_data, img_data)
+
+    # act
+    data = training_data.create(min_chars=16, folder_out=fixture_invalid_coords)
+
+
+    # assert: one line was skipped
+    assert len(data) == 22
+    assert  'tl_12' in [l.element_id for l in data]
+    assert not 'tl_13' in [l.element_id for l in data]
+    assert  'tl_14' in [l.element_id for l in data]

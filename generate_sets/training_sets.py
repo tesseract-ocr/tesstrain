@@ -7,6 +7,7 @@ from pathlib import (
     Path
 )
 from functools import reduce
+import sys
 
 import exifread
 import lxml.etree as etree
@@ -44,11 +45,13 @@ class TextLine(abc.ABC):
         self.element = element
         self.namespace = namespace
         self.element_id = None
+        self.valid = True
         self.set_id()
         self.text_words = []
         self.set_text_words()
-        self.reorder = reorder
-        self.box = self.to_box(self.element)
+        if self.valid:
+            self.reorder = reorder
+            self.box = self.to_box(self.element)
 
     @abc.abstractmethod
     def set_id(self):
@@ -128,13 +131,24 @@ class PageLine(TextLine):
 
     def set_text_words(self):
         """
-        set words and word as preferred
-        drop rtl-mark if contained
+        set words as preferred
+        * drop rtl-mark if contained
+        * mark lines with invalid coords
         """
 
         word_els = self.element.findall(f'{self.namespace}:Word', XML_NS)
+        word_points = []
+        for w in word_els:
+            top_left = PageLine._pick_top_left(w, self.namespace)
+            if not top_left:
+                elem_id = w.attrib['id']
+                print("[ERROR  ] skip '{}': invalid coords!".format(elem_id), file=sys.stderr)
+                self.valid = False
+                return
+            word_points.append(w)
+
         word_els = sorted(
-            word_els,
+            word_points,
             key=lambda w: int(PageLine._pick_top_left(w, self.namespace)))
         unicodes = [
             w.find(
@@ -156,7 +170,9 @@ class PageLine(TextLine):
     @staticmethod
     def _pick_top_left(elem, namespace):
         coords = elem.find(f'{namespace}:Coords', XML_NS)
-        return coords.attrib['points'].split()[0].split(',')[0]
+        points = coords.attrib['points'].split()
+        if len(points) > 0:
+            return points[0].split(',')[0]
 
     def to_box(self, element):
         """
@@ -196,7 +212,8 @@ def text_line_factory(xml_data, min_len, reorder):
                     XML_NS).text.strip()) >= min_len]
         text_lines = [PageLine(line, ns_prefix, reorder) for line in matchings]
 
-    return text_lines
+    # deliver only valid lines
+    return [t for t in text_lines if t.valid]
 
 
 def resolve_image_path(path_xml_data):

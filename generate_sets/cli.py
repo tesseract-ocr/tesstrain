@@ -73,8 +73,8 @@ def main():
             summary=SUMMARY,
             reorder=REORDER)
         print(
-            "[SUCCESS] created '{}' training data sets in '{}', please review".format(
-                len(RESULT), TRAINING_DATA.path_out))
+            "[SUCCESS] created '{}' training data sets from '{}' in '{}', please review".format(
+                len(RESULT), PATH_OCR, TRAINING_DATA.path_out))
     else:
         print(
             "[ERROR  ] missing OCR '{}' or Image Data '{}'!".format(
