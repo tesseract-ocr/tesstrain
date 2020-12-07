@@ -4,7 +4,7 @@
 import argparse
 import os
 
-from generate_sets.training_sets import (
+from . import (
     TrainingSets,
     DEFAULT_OUTDIR_PREFIX,
     DEFAULT_MIN_CHARS,
@@ -62,8 +62,8 @@ MIN_CHARS = ARGS.minchars
 SUMMARY = ARGS.summary
 REORDER = ARGS.reorder
 
-if os.path.exists(PATH_OCR) and os.path.exists(PATH_IMG):
-    print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, rtl: {})".format(
+if os.path.exists(PATH_OCR):
+    print("[INFO   ] generate trainingsets of '{}' with '{}' (min: {}, sum: {}, reorder: {})".format(
         PATH_OCR, PATH_IMG, MIN_CHARS, SUMMARY, REORDER))
     TRAINING_DATA = TrainingSets(PATH_OCR, PATH_IMG)
     RESULT = TRAINING_DATA.create(
