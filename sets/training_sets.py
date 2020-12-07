@@ -27,7 +27,7 @@ XML_NS = {
     'page2019': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'}
 
 # default values
-DEFAULT_MIN_CHARS = 4
+DEFAULT_MIN_CHARS = 1
 DEFAULT_OUTDIR_PREFIX = 'training_data_'
 DEFAULT_USE_SUMMARY = False
 DEFAULT_USE_REORDER = False
@@ -193,7 +193,7 @@ def text_line_factory(xml_data, min_len, reorder):
             l for l in all_lines if len(
                 l.find(
                     f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode',
-                    XML_NS).text) >= min_len]
+                    XML_NS).text.strip()) >= min_len]
         text_lines = [PageLine(line, ns_prefix, reorder) for line in matchings]
 
     return text_lines
@@ -341,7 +341,7 @@ class TrainingSets:
             return (DEFAULT_DPI, DEFAULT_DPI)
 
     def create(self, folder_out=None,
-               min_chars=8, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, reorder=False):
+               min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, reorder=False):
         """
         Put training data sets which textlines consist of at least min_chars as
         text-image part pairs starting with prefix into folder_out

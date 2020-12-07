@@ -38,7 +38,7 @@ PARSER.add_argument(
     required=False,
     type=int,
     default=int(DEFAULT_MIN_CHARS),
-    help="optional: minimum chars required for a line to be included into set (default: {})".format(DEFAULT_MIN_CHARS))
+    help="optional: minimum printable chars required for a line to be included into set (default: {})".format(DEFAULT_MIN_CHARS))
 PARSER.add_argument(
     "-s",
     "--summary",
