@@ -160,18 +160,18 @@ Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` by the output directory
 
 Training and Evaluation CER can be plotted using matplotlib. A couple of scripts are provided
 as a starting point in `plot` subdirectory for plotting of different training scenarios. The training
-log is expected to be saved in `plot/TESSTRAIN.LOG`.
+log is expected to be saved in `plot/MODEL_NAME.LOG`.
 
 As an example, use the training data provided in 
 [ocrd-testset.zip](./ocrd-testset.zip) to do training and generate the plots.
 Plotting can be done while training is running also to depict the training status till then.
 ```
 unzip ocrd-testset.zip -d data/ocrd-ground-truth
-nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > plot/TESSTRAIN.LOG &
+nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=100000 > plot/MODEL_NAME.LOG &
 ```
 ```
 cd ./plot
-./plot_cer.sh 
+make MODEL_NAME=ocrd
 ```
 
 ## License
