@@ -31,8 +31,8 @@ y = dataframe.IterationCER
 c = dataframe.CheckpointCER
 e = dataframe.EvalCER
 
-maxxlimit=300000 # Use fixed value not auto, so that plots made anytime during training have same scale
-minxlimit=-10000
+maxxlimit=5000 # Learning Iterations
+minxlimit=-100
 maxticks=10
 ymax = y[np.argmax(y)] # Use to limit y axis to Max IterationCER
 cmax = c[np.argmax(c)] # Use to limit y axis to Max CheckpointCER

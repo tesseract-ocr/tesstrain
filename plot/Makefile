@@ -31,12 +31,12 @@ $(TSV_VALIDATE): $(VALIDATE_LOG)
 		| grep 'Eval Char' \
 		| sed -e "s/.$(VALIDATE_LIST).log.*Eval Char error rate=/\t\t\t/" \
 		| sed -e 's/, Word.*$$//' \
-		| sed  -e 's/\(^.*\)_\([0-9].*\)_\([0-9].*\)_\([0-9].*\)\t/\1\t\2\t\3\t\4\t/g' >  "$@"
+		| sed -e 's/\(^.*\)_\([0-9].*\)_\([0-9].*\)_\([0-9].*\)\t/\1\t\2\t\3\t\4\t/g' >  "$@"
 
 $(VALIDATE_LOG): $(FAST_VALIDATE_LOG)
 	grep -E "$(VALIDATE_LIST).log$$|iteration" $(FAST_VALIDATE_LOG) > "$@"
 
-fastevallog: traineddata $(FAST_VALIDATE_LOG)
+fastevallog: traineddata $(FAST_VALIDATE_LOG) $(FAST_VALIDATE_LOG_FILES)
 
 $(FAST_VALIDATE_LOG): $(FAST_VALIDATE_LOG_FILES)
 	for i in $^; do \
@@ -44,7 +44,6 @@ $(FAST_VALIDATE_LOG): $(FAST_VALIDATE_LOG_FILES)
 	done > $@
 
 $(FAST_VALIDATE_LOG_FILES): %.$(VALIDATE_LIST).log: %.traineddata
-	echo "***** $< ****"
 	OMP_THREAD_LIMIT=1 lstmeval  \
     --verbosity=0 \
     --model $< \
@@ -59,28 +58,28 @@ plotcer: $(TSV_CER)
 $(TSV_CER): $(TSV_HEADER) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL)
 	cat $(TSV_HEADER) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL)  > "$@"
 	rm $(TSV_HEADER) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL)
-	python plot-eval-cer.py -m $(MODEL_NAME)
+#	python plot-eval-cer.py -m $(MODEL_NAME)
 
 $(TSV_HEADER):
 	echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	ValidationCER" > "$@"
 
 $(TSV_100_ITERATIONS): $(MODEL_LOG)
 	grep 'At iteration' $(MODEL_LOG) \
-		|  sed -e '/^Sub/d' \
-		|  sed -e '/^Update/d' \
-		| sed  -e 's/At iteration \([0-9]*\)\/\([0-9]*\)\/.*char train=/\t\t\1\t\2\t\t/' \
-		|  sed -e 's/%, word.*/\t/' >  "$@"
+		| sed -e '/^Sub/d' \
+		| sed -e '/^Update/d' \
+		| sed -e 's/At iteration \([0-9]*\)\/\([0-9]*\)\/.*char train=/\t\t\1\t\2\t\t/' \
+		| sed -e 's/%, word.*/\t/' >  "$@"
 
 $(TSV_CHECKPOINT): $(MODEL_LOG)
 	grep 'best model' $(MODEL_LOG) \
-		| sed  -e 's/^.*\///' \
-		| sed  -e 's/\.checkpoint.*$$/\t\t\t/' \
-		| sed  -e 's/_/\t/g' >  "$@"
+		| sed -e 's/^.*\///' \
+		| sed -e 's/\.checkpoint.*$$/\t\t\t/' \
+		| sed -e 's/_/\t/g' >  "$@"
 
 $(TSV_EVAL): $(MODEL_LOG)
 	grep 'Eval Char' $(MODEL_LOG) \
 		| sed -e 's/^.*[0-9]At iteration //' \
-		| \sed -e 's/,.* Eval Char error rate=/\t\t/'  \
+		| sed -e 's/,.* Eval Char error rate=/\t\t/'  \
 		| sed -e 's/, Word.*$$/\t\t/' \
 		| sed -e 's/^/\t\t/' >  "$@"
 
