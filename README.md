@@ -170,10 +170,11 @@ mkdir -p data
 unzip ocrd-testset.zip -d data/ocrd-ground-truth
 nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=$HOME/tessdata_best MAX_ITERATIONS=10000 > plot/ocrd.LOG &
 ```
-Allow the training to run for a while before plotting.
+Allow the training to run for a while before plotting. 
 ```
 cd plot
-make MODEL_NAME=ocrd
+make MODEL_NAME=ocrd VALIDATE_LIST=eval
+make MODEL_NAME=ocrd VALIDATE_LIST=validate
 ```
 
 ## License

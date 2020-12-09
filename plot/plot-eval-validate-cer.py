@@ -36,10 +36,10 @@ v = dataframe.ValidationCER
 
 maxxlimit=5000 # Learning Iterations
 minxlimit=-100
-maxticks=10
+maxticks=5
 ymax = y[np.argmax(y)] # Use to limit y axis to Max IterationCER
 cmax = c[np.argmax(c)] # Use to limit y axis to Max CheckpointCER
-maxCERtoDisplay=12 # Use ymax/cmax, for more detail use 20 or lower
+maxCERtoDisplay=8 # Use ymax/cmax, for more detail use 20 or lower
 minCERtoDisplay=-1 # Use -5 with ymax/cmax, -1 with 20 or lower
 
 def annot_min(boxcolor, xpos, ypos, x,y):
