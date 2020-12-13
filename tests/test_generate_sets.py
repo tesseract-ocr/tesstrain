@@ -42,27 +42,45 @@ def generate_image(path_image, words, columns, rows, params=None):
 
 
 def extract_words(path_xml_data):
-    """Get origin and textdata for all words in path_data"""
+    """
+    Get origin and textdata for all words in path_data
+    * if word granularity available, use words
+    * else if no words, use text lines
+    * else return empty list
+    """
 
-    words = []
+    texts = []
     root = etree.parse(str(path_xml_data)).getroot()
     root_tag = root.xpath('namespace-uri(.)')
     ns_prefix = [k for (k, v) in XML_NS.items() if v == root_tag][0]
     if 'alto' in ns_prefix:
         strings = root.findall(f'.//{ns_prefix}:String', XML_NS)
-        words = [((int(s.attrib['HPOS']), int(s.attrib['VPOS'])),
+        texts = [((int(s.attrib['HPOS']), int(s.attrib['VPOS'])),
                   s.attrib['CONTENT']) for s in strings]
     elif ns_prefix in ('page2013', 'page2019'):
-        page_words = root.findall(f'.//{ns_prefix}:Word', XML_NS)
-        for page_word in page_words:
-            txt = page_word.find(f'.//{ns_prefix}:Unicode', XML_NS).text
-            points = page_word.find(f'{ns_prefix}:Coords', XML_NS).attrib['points'].split()
-            if points:
-                p1 = points[0]
-                origin = (int(p1.split(',')[0]), int(p1.split(',')[1]))
-                words.append((origin, txt))
+        text_elements = root.findall(f'.//{ns_prefix}:Word', XML_NS)
 
-    return words
+        # if no words available, go for textlines
+        if not text_elements:
+            text_elements = root.findall(f'.//{ns_prefix}:TextLine', XML_NS)
+
+        texts = _extract_texts(text_elements, ns_prefix)
+
+    return texts
+
+
+def _extract_texts(elements, ns_prefix):
+    texts = []
+    for element in elements:
+        txt = element.find(f'.//{ns_prefix}:Unicode', XML_NS).text
+        points = element.find(f'{ns_prefix}:Coords',
+                              XML_NS).attrib['points'].split()
+        if points:
+            p1 = points[0]
+            origin = (int(p1.split(',')[0]), int(p1.split(',')[1]))
+            texts.append((origin, txt))
+
+    return texts
 
 
 @pytest.fixture(name='fixture_alto_tif')
@@ -284,6 +302,8 @@ def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
 
 
 OCR_DATA_729422 = '729422'
+
+
 @pytest.fixture(name='fixture_invalid_coords')
 def _fixture_invalid_coords(tmpdir):
 
@@ -305,11 +325,44 @@ def test_handle_invalid_coords(fixture_invalid_coords):
     training_data = TrainingSets(ocr_data, img_data)
 
     # act
-    data = training_data.create(min_chars=16, folder_out=fixture_invalid_coords)
-
+    data = training_data.create(
+        min_chars=16, folder_out=fixture_invalid_coords)
 
     # assert: one line was skipped
     assert len(data) == 22
-    assert  'tl_12' in [l.element_id for l in data]
+    assert 'tl_12' in [l.element_id for l in data]
     assert not 'tl_13' in [l.element_id for l in data]
-    assert  'tl_14' in [l.element_id for l in data]
+    assert 'tl_14' in [l.element_id for l in data]
+
+
+OCR_DATA_RAM110 = 'ram110'
+
+
+@pytest.fixture(name='fixture_page_devanagari')
+def _fixture_page_devanagari(tmpdir):
+
+    res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_RAM110}.xml')
+    path_page = tmpdir.join(f'{OCR_DATA_RAM110}.xml')
+    shutil.copyfile(res, path_page)
+    words = extract_words(path_page)
+    file_path = tmpdir.join(f'{OCR_DATA_RAM110}.png')
+    generate_image(file_path, words=words, columns=3873, rows=5848)
+    return str(tmpdir)
+
+
+def test_handle_page_devanagari_with_texlines(fixture_page_devanagari):
+    """When procesing invalid coords, skip pair and alert user"""
+
+    # arrange
+    ocr_data = os.path.join(fixture_page_devanagari, f'{OCR_DATA_RAM110}.xml')
+    img_data = os.path.join(fixture_page_devanagari, f'{OCR_DATA_RAM110}.png')
+    training_data = TrainingSets(ocr_data, img_data)
+
+    # act
+    data = training_data.create(
+        folder_out=fixture_page_devanagari, summary=True)
+
+    # assert: one line was skipped
+    assert len(data) == 24
+    assert 'tl_24' in [l.element_id for l in data]
+    assert not 'tl_25' in [l.element_id for l in data]

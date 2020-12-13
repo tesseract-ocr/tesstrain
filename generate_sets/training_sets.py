@@ -48,7 +48,7 @@ class TextLine(abc.ABC):
         self.valid = True
         self.set_id()
         self.text_words = []
-        self.set_text_words()
+        self.set_text()
         if self.valid:
             self.reorder = reorder
             self.box = self.to_box(self.element)
@@ -58,7 +58,7 @@ class TextLine(abc.ABC):
         """Determine identifier"""
 
     @abc.abstractmethod
-    def set_text_words(self):
+    def set_text(self):
         """Determine list of word tokens"""
 
     @abc.abstractmethod
@@ -91,7 +91,7 @@ class ALTOLine(TextLine):
     def set_id(self):
         self.element_id = self.element.attrib['ID']
 
-    def set_text_words(self):
+    def set_text(self):
         strings = self.element.findall(f'{self.namespace}:String', XML_NS)
         self.text_words = [e.attrib['CONTENT'] for e in strings]
 
@@ -129,31 +129,43 @@ class PageLine(TextLine):
     def set_id(self):
         self.element_id = self.element.attrib['id']
 
-    def set_text_words(self):
+    def set_text(self):
         """
-        set words as preferred
+        * set words as preferred text source, otherwise use text line
         * drop rtl-mark if contained
-        * mark lines with invalid coords
+        * print lines without coords
         """
 
-        word_els = self.element.findall(f'{self.namespace}:Word', XML_NS)
-        word_points = []
-        for w in word_els:
-            top_left = PageLine._pick_top_left(w, self.namespace)
+        texts = []
+        text_els = self.element.findall(f'{self.namespace}:Word', XML_NS)
+        for t in text_els:
+            top_left = PageLine._pick_top_left(t, self.namespace)
             if not top_left:
-                elem_id = w.attrib['id']
-                print("[ERROR  ] skip '{}': invalid coords!".format(elem_id), file=sys.stderr)
+                elem_id = t.attrib['id']
+                print("[ERROR  ] skip '{}': invalid coords!".format(
+                    elem_id), file=sys.stderr)
                 self.valid = False
                 return
-            word_points.append(w)
+            texts.append(t)
 
-        word_els = sorted(
-            word_points,
+        # if no words assume t least text lines exist
+        if not text_els:
+            top_left = PageLine._pick_top_left(self.element, self.namespace)
+            if not top_left:
+                elem_id = self.element.attrib['id']
+                print("[ERROR  ] skip '{}': invalid coords!".format(
+                    elem_id), file=sys.stderr)
+                self.valid = False
+                return
+            texts.append(self.element)
+
+        sorted_els = sorted(
+            texts,
             key=lambda w: int(PageLine._pick_top_left(w, self.namespace)))
         unicodes = [
             w.find(
                 f'.//{self.namespace}:Unicode',
-                XML_NS) for w in word_els]
+                XML_NS) for w in sorted_els]
         self.text_words = [u.text.strip() for u in unicodes]
 
         # elimiate read order mark
@@ -204,7 +216,7 @@ def text_line_factory(xml_data, min_len, reorder):
             [s.attrib['CONTENT'] for s in l.findall(f'{ns_prefix}:String', XML_NS)])) >= min_len]
         text_lines = [ALTOLine(line, ns_prefix) for line in all_lines_len]
     elif ns_prefix in ('page2013', 'page2019'):
-        all_lines = xml_data.iterfind(f'.//{ns_prefix}:TextLine', XML_NS)
+        all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
         matchings = [
             l for l in all_lines if len(
                 l.find(
@@ -218,7 +230,8 @@ def text_line_factory(xml_data, min_len, reorder):
 
 def resolve_image_path(path_xml_data):
     """
-    In Context of an OCR-D-Workspace use information from PAGE to retrive
+    In Context of OCR-D-Workspace use information from PAGE
+    to retrive matching image path
     """
     xml_data = etree.parse(path_xml_data).getroot()
     ns_prefix = _determine_namespace(xml_data)
@@ -354,8 +367,8 @@ class TrainingSets:
         if 'dpi' in image_file.info:
             x_dpi, y_dpi = image_file.info['dpi']
             return (x_dpi, y_dpi)
-        else:
-            return (DEFAULT_DPI, DEFAULT_DPI)
+
+        return (DEFAULT_DPI, DEFAULT_DPI)
 
     def create(self, folder_out=None,
                min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, reorder=False):
