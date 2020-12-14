@@ -23,7 +23,8 @@ from shapely.geometry import (
 
 
 XML_NS = {
-    'alto': 'http://www.loc.gov/standards/alto/ns-v3#',
+    'alto3': 'http://www.loc.gov/standards/alto/ns-v3#',
+    'alto4': 'http://www.loc.gov/standards/alto/ns-v4#',
     'page2013': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15',
     'page2019': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'}
 

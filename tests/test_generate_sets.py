@@ -12,7 +12,7 @@ import pytest
 import numpy as np
 import lxml.etree as etree
 
-from generate_sets.training_sets import (
+from generate_sets import (
     TrainingSets,
     XML_NS
 )
@@ -362,7 +362,42 @@ def test_handle_page_devanagari_with_texlines(fixture_page_devanagari):
     data = training_data.create(
         folder_out=fixture_page_devanagari, summary=True)
 
-    # assert: one line was skipped
+    # assert
     assert len(data) == 24
     assert 'tl_24' in [l.element_id for l in data]
     assert not 'tl_25' in [l.element_id for l in data]
+
+
+OCR_DATA_PERSIAN = 'Lubab_alAlbab.pdf_000003'
+
+
+@pytest.fixture(name='fixture_alto4_persian')
+def _fixture_alto4_persian(tmpdir):
+
+    res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_PERSIAN}.xml')
+    path_page = tmpdir.join(f'{OCR_DATA_PERSIAN}.xml')
+    shutil.copyfile(res, path_page)
+    words = extract_words(path_page)
+    file_path = tmpdir.join(f'{OCR_DATA_PERSIAN}.png')
+    generate_image(file_path, words=words, columns=593, rows=950)
+    return str(tmpdir)
+
+
+def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
+    """
+    Process data from OpenITI
+    https://raw.githubusercontent.com/OpenITI/OCR_GS_Data/master/TypeFaces/persian_intertype/data/
+    """
+
+    # arrange
+    ocr_data = os.path.join(fixture_alto4_persian, f'{OCR_DATA_PERSIAN}.xml')
+    img_data = os.path.join(fixture_alto4_persian, f'{OCR_DATA_PERSIAN}.png')
+    training_data = TrainingSets(ocr_data, img_data)
+
+    # act
+    data = training_data.create(
+        folder_out=fixture_alto4_persian, summary=True)
+
+    # assert
+    assert len(data) == 23
+    assert 'eSc_line_23302' in [l.element_id for l in data]
