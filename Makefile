@@ -195,13 +195,13 @@ $(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.bin.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.bin.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.bin.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.nrm.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.nrm.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.nrm.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
