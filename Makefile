@@ -303,6 +303,8 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 endif
 
 $(DATA_DIR)/radical-stroke.txt:
+#	wget -O $(DATA_DIR)/Inherited.unicharset 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/Inherited.unicharset'
+	wget -O $(DATA_DIR)/Latin.unicharset 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/Latin.unicharset'
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
 
 # Build leptonica
