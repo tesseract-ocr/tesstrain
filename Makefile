@@ -157,7 +157,7 @@ ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 # Create unicharset
 unicharset: $(OUTPUT_DIR)/unicharset
 
-# Create lists of lstmf filenames for training and eval
+# Create lists of lstmf filenames for training, eval and validate
 lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.test $(OUTPUT_DIR)/list.eval $(OUTPUT_DIR)/list.validate
 
 $(OUTPUT_DIR)/list.eval \
