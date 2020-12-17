@@ -158,21 +158,26 @@ ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 unicharset: $(OUTPUT_DIR)/unicharset
 
 # Create lists of lstmf filenames for training and eval
-lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
+lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.test $(OUTPUT_DIR)/list.eval $(OUTPUT_DIR)/list.validate
 
 $(OUTPUT_DIR)/list.eval \
+$(OUTPUT_DIR)/list.test \
+$(OUTPUT_DIR)/list.validate \
 $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 	@mkdir -p $(OUTPUT_DIR)
 	@total=$$(wc -l < $(ALL_LSTMF)); \
 	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
 	  test "$$train" = "0" && \
 	    echo "Error: missing ground truth for training" && exit 1; \
-	  eval=$$(echo "$$total - $$train" | bc); \
-	  test "$$eval" = "0" && \
+	  test=$$(echo "$$total - $$train" | bc); \
+	  test "$$test" = "0" && \
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
+	  eval=$$(echo "$$test / 2" | bc); \
 	  set -x; \
 	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+	  tail -n "$$test" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.test"; \
+	  head -n "$$eval" "$(OUTPUT_DIR)/list.test" > "$(OUTPUT_DIR)/list.eval"; \
+	  tail -n "$$eval" "$(OUTPUT_DIR)/list.test" > "$(OUTPUT_DIR)/list.validate"
 
 ifdef START_MODEL
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
