@@ -52,8 +52,16 @@ TESSDATA_REPO = _best
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
+# Epochs. Default: $(EPOCHS)
+EPOCHS :=
+
 # Max iterations. Default: $(MAX_ITERATIONS)
-MAX_ITERATIONS := 10000
+ifeq ($(EPOCHS),)
+ MAX_ITERATIONS := 10000
+else
+MAX_ITERATIONS := $(($(EPOCHS) * $(wc -l < $(OUTPUT_DIR)/list.train))
+MAX_ITERATIONS := $(shell echo $$(($(EPOCHS) * $$(wc -l < $(OUTPUT_DIR)/list.train))))
+endif
 
 # Debug Interval. Default:  $(DEBUG_INTERVAL)
 DEBUG_INTERVAL := 0
