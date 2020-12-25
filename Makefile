@@ -53,10 +53,10 @@ TESSDATA_REPO = _best
 GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # Epochs. Default: $(EPOCHS)
-EPOCHS :=
+EPOCHS := 0
 
 # Max iterations. Default: $(MAX_ITERATIONS)
-ifeq ($(EPOCHS),)
+ifeq ($(EPOCHS),0)
  MAX_ITERATIONS := 10000
 else
 MAX_ITERATIONS := $(($(EPOCHS) * $(wc -l < $(OUTPUT_DIR)/list.train))
