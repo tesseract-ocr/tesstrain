@@ -3,7 +3,6 @@
 import argparse
 import io
 import unicodedata
-from PIL import Image
 
 # Command line arguments.
 arg_parser = argparse.ArgumentParser(description='Normalize all ground truth texts for the given text files.')
