@@ -1,2 +1,4 @@
 Pillow>=6.2.1
 python-bidi>=0.4
+matplotlib
+pandas
