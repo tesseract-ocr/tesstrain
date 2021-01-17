@@ -191,7 +191,7 @@ training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs -I{} sh -c "cat {}; echo ''" > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs awk 'FNR==1{print ""}1' > "$@"
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
