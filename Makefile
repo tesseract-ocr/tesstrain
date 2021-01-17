@@ -250,7 +250,7 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 # Build the proto model
 proto-model: $(PROTO_MODEL)
 
-$(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(DATA_DIR)/radical-stroke.txt
+$(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(DATA_DIR)/radical-stroke.txt $(SCRIPT_UNICHARSETS)
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(DATA_DIR) \
@@ -303,9 +303,15 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 endif
 
 $(DATA_DIR)/radical-stroke.txt:
-#	wget -O $(DATA_DIR)/Inherited.unicharset 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/Inherited.unicharset'
-	wget -O $(DATA_DIR)/Latin.unicharset 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/Latin.unicharset'
 	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
+
+
+SCRIPT_NAMES := $(shell cat $(OUTPUT_DIR)/unicharset | sed s/.*0,0,0.// | sed 's/ .*//' | sort | uniq | grep "^[A-Z][a-z][a-z]*" | grep -v common | sed '/Common/d' | sed '/Inherited/d' | sed '/Joined/d')
+SCRIPT_UNICHARSETS = $(foreach script,$(SCRIPT_NAMES),$(script).unicharset)
+scriptunicharsets: $(SCRIPT_UNICHARSETS)
+$(DATA_DIR)/%.unicharset:%.unicharset
+	echo $@
+	wget -O $@ 'https://github.com/tesseract-ocr/langdata/raw/master/$@'
 
 # Build leptonica
 leptonica: leptonica.built
