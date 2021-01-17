@@ -1,5 +1,9 @@
 export
 
+# Disable built-in suffix rules.
+# This makes starting with a very large number of GT lines much faster.
+.SUFFIXES:
+
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
 
