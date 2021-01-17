@@ -56,8 +56,13 @@ TESSDATA_REPO = _best
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
+# If EPOCHS is given, it is used to set MAX_ITERATIONS.
+ifeq ($(EPOCHS),)
 # Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
+else
+MAX_ITERATIONS := -$(EPOCHS)
+endif
 
 # Debug Interval. Default:  $(DEBUG_INTERVAL)
 DEBUG_INTERVAL := 0
@@ -140,6 +145,7 @@ help:
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
+	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
 	@echo "    LEARNING_RATE      Learning rate. Default: $(LEARNING_RATE)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
