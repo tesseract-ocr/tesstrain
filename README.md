@@ -115,6 +115,7 @@ Run `make help` to see all the possible targets and variables:
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/MODEL_NAME-ground-truth
     OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
+    EPOCHS             Set max iterations based on the number of lines for training. Default: none
     LEARNING_RATE      Learning rate. Default: 0.0001 with START_MODEL, otherwise 0.002
     NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
     FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: ''
