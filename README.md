@@ -109,7 +109,7 @@ Run `make help` to see all the possible targets and variables:
     PROTO_MODEL        Name of the proto model. Default: 'data/foo/foo.traineddata'
     CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
     LEPTONICA_VERSION  Leptonica version. Default: 1.78.0
-    TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
+    TESSERACT_VERSION  Tesseract commit. Default: 4.1.1
     TESSDATA_REPO      Tesseract model repo to use. Default: _best
     TESSDATA           Path to the .traineddata directory to start finetuning from. Default: ./usr/share/tessdata
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/MODEL_NAME-ground-truth
