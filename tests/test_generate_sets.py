@@ -110,7 +110,6 @@ def _fixture_alto_tif(tmpdir):
 
     return str(path)
 
-
 def test_create_sets_from_alto_and_tif(fixture_alto_tif):
     """Create text-image pairs from ALTO V3 and TIF"""
 
@@ -381,7 +380,6 @@ def _fixture_alto4_persian(tmpdir):
     file_path = tmpdir.join(f'{OCR_DATA_PERSIAN}.png')
     generate_image(file_path, words=words, columns=593, rows=950)
     return str(tmpdir)
-
 
 def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
     """
