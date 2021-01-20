@@ -174,31 +174,39 @@ cd ./plot
 ./plot_cer.sh 
 ```
 
-## Generate Trainingdata
+## Generate training data from ALTO/PAGE
 
-Tesstrain provides utilities to generate pairs of Textlines and corresponding line images from input data that represent scanned pages (complete or partial) with existing OCR in form of Python scripts.  
-To enable this functionality, a virtual Python Environment needs to be activated that holds required dependencies:
+tesstrain provides a utility `tesstrain-extract-gt` to generate pairs of text
+line and corresponding line images from input data in the form of
+[ALTO](https://www.loc.gov/standards/alto/) or
+[PAGE-XML](https://github.com/PRImA-Research-Lab/PAGE-XML) files that represent
+scanned pages (complete or partial) with existing OCR.
+
+To install the `tesstrain-extract-gt` tool, set up a virtual environment and install the project with `pip`:
 
 ```
 # create virtual environment in subfolder "venv"
 python3 -m venv venv
 # unix
 source venv/bin/activate
-# win 
+# win
 venv\Scripts\activate.bat
 
 pip install -U pip
-pip install -r requirements.txt
+pip install .
 ```
 
-Pairs can be created from various combinations of OCR formats and images. Currently, ALTO V3, PAGE 2013 and PAGE 2019 are supported as well as TIF- and JPG-Images. Output is written as UTF-8 encoded textfiles and TIF-images.   
-For more details, please consider:
+`tesstrain-extract-gt` currently supports ALTO V3, PAGE 2013 and PAGE 2019 as
+OCR formats and TIFF, JPEG and PNG images.
 
-```
-python generate_sets.py --help
-```
+Output is written as UTF-8 encoded plain text files and TIFF images.
 
-_Please note_, that the generated pairs are not automatically supervised or corrected. Therefore, it is required to review the generated data.
+See `tesstrain-extract-gt --help` for a brief listing of all supported command
+line flags and options.
+
+**NOTE:** The text of the lines is extracted as-is, no automatic correction
+takes place. Therefore, it is required to manually review the generated data
+before training Tesseract with it.
 
 
 ## License
