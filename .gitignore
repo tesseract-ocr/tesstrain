@@ -20,3 +20,5 @@ wackenroder_herzensergiessungen_*.tif
 master.zip
 plot/*.LOG
 plot/ocrd*
+__pycache__
+*.egg-info

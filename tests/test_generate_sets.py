@@ -12,12 +12,17 @@ import pytest
 import numpy as np
 import lxml.etree as etree
 
-from sets.training_sets import (
+from generate_sets import (
     TrainingSets,
     XML_NS
 )
 
 RES_ROOT = os.path.join('tests', 'resources')
+
+GT_SUFFIX = '.gt.txt'
+OCR_TRANSK_IMAG = '288652.jpg'
+OCR_TRANSK_DATA = '288652.xml'
+OCR_D_PAGE_DATA = 'OCR-RESULT_0001.xml'
 
 
 def generate_image(path_image, words, columns, rows, params=None):
@@ -108,7 +113,7 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
     path_items = os.listdir(os.path.dirname(fixture_alto_tif))
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == 225
-    lines = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+    lines = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
 
     # one more txt since summery
     assert len(lines) == 226
@@ -117,13 +122,13 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
 @pytest.fixture(name='fixture_page2013_jpg')
 def _fixture_page2013_jpg(tmpdir):
 
-    res = os.path.join(RES_ROOT, 'xml', '288652.xml')
-    path_page = tmpdir.mkdir('training').join('288652.xml')
+    res = os.path.join(RES_ROOT, 'xml', OCR_TRANSK_DATA)
+    path_page = tmpdir.mkdir('training').join(OCR_TRANSK_DATA)
     shutil.copyfile(res, path_page)
 
     words = extract_words(path_page)
 
-    file_path = tmpdir.mkdir('images').join('288652.jpg')
+    file_path = tmpdir.mkdir('images').join(OCR_TRANSK_IMAG)
 
     # 2257x3062px
     generate_image(file_path, words=words, columns=2091, rows=2938)
@@ -136,20 +141,20 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
 
     path_input_dir = os.path.dirname(fixture_page2013_jpg)
     path_input_parent = pathlib.Path(path_input_dir).parent
-    path_image = os.path.join(path_input_parent, 'images', '288652.jpg')
+    path_image = os.path.join(path_input_parent, 'images', OCR_TRANSK_IMAG)
     assert os.path.exists(path_image)
 
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=True, reorder=True)
+        min_chars=8, folder_out=path_input_dir, summary=True, revert=True)
 
     # assert
     assert len(data) == 32
     path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
     assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 32
     txt_files = sorted(
-        [txt for txt in path_items if str(txt).endswith(".gt.txt")])
+        [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)])
 
     # additional summary written
     assert len(txt_files) == 33
@@ -166,13 +171,13 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
 
     path_input_dir = os.path.dirname(fixture_page2013_jpg)
     path_input_parent = pathlib.Path(path_input_dir).parent
-    path_image = os.path.join(path_input_parent, 'images', '288652.jpg')
+    path_image = os.path.join(path_input_parent, 'images', OCR_TRANSK_IMAG)
     assert os.path.exists(path_image)
 
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=False, reorder=True)
+        min_chars=8, folder_out=path_input_dir, summary=False, revert=True)
 
     # assert
     expected_len = 32
@@ -180,7 +185,7 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == expected_len
-    txt_files = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+    txt_files = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
     assert len(txt_files) == expected_len
 
     # no summary written
@@ -190,8 +195,8 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
 @pytest.fixture(name='fixture_page2019_png')
 def _fixture_page2019_png(tmpdir):
 
-    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
-    path_page = tmpdir.mkdir('training').join('OCR-RESULT_0001.xml')
+    res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
+    path_page = tmpdir.mkdir('training').join(OCR_D_PAGE_DATA)
     shutil.copyfile(res, path_page)
 
     words = extract_words(path_page)
@@ -228,7 +233,7 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == expected_len
 
-    txt_files = [txt for txt in path_items if str(txt).endswith(".gt.txt")]
+    txt_files = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
 
     # summary written
     assert len(txt_files) == 34
@@ -236,8 +241,8 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
 
 @pytest.fixture(name="fixture_ocrd_workspace")
 def _fixture_ocrd_workspace(tmpdir):
-    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
-    path_page = tmpdir.mkdir('OCR-RESULT').join('OCR-RESULT_0001.xml')
+    res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
+    path_page = tmpdir.mkdir('OCR-RESULT').join(OCR_D_PAGE_DATA)
     shutil.copyfile(res, path_page)
     words = extract_words(path_page)
     file_path = tmpdir.mkdir('OCR-D-IMG-PNG').join('OCR-D-IMG-PNG_0001.png')
@@ -261,8 +266,8 @@ def test_create_sets_from_ocrd_workdspace(fixture_ocrd_workspace):
 
 @pytest.fixture(name="fixture_ocrd_workspace_invalid")
 def _fixture_ocrd_workspace_invalid(tmpdir):
-    res = os.path.join(RES_ROOT, 'xml', 'OCR-RESULT_0001.xml')
-    path_page = tmpdir.mkdir('OCR-RESULT').join('OCR-RESULT_0001.xml')
+    res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
+    path_page = tmpdir.mkdir('OCR-RESULT').join(OCR_D_PAGE_DATA)
     shutil.copyfile(res, path_page)
     return str(path_page)
 
