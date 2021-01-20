@@ -1,5 +1,9 @@
 export
 
+# Disable built-in suffix rules.
+# This makes starting with a very large number of GT lines much faster.
+.SUFFIXES:
+
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
 
@@ -52,8 +56,13 @@ TESSDATA_REPO = _best
 # Ground truth directory. Default: $(GROUND_TRUTH_DIR)
 GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
+# If EPOCHS is given, it is used to set MAX_ITERATIONS.
+ifeq ($(EPOCHS),)
 # Max iterations. Default: $(MAX_ITERATIONS)
 MAX_ITERATIONS := 10000
+else
+MAX_ITERATIONS := -$(EPOCHS)
+endif
 
 # Debug Interval. Default:  $(DEBUG_INTERVAL)
 DEBUG_INTERVAL := 0
@@ -66,7 +75,7 @@ LEARNING_RATE := 0.002
 endif
 
 # Network specification. Default: $(NET_SPEC)
-NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
+NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx192 O1c\#\#\#]
 
 # Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
@@ -136,6 +145,7 @@ help:
 	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
 	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
+	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
 	@echo "    LEARNING_RATE      Learning rate. Default: $(LEARNING_RATE)"
 	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
@@ -191,17 +201,17 @@ training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs cat | sort | uniq > "$@"
+	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.bin.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.bin.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.bin.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.nrm.png %.gt.txt
-	PYTHONIOENCODING=utf-8 python3 generate_line_box.py -i "$*.nrm.png" -t "$*.gt.txt" > "$@"
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.nrm.png" -t "$*.gt.txt" > "$@"
 
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"

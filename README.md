@@ -109,12 +109,13 @@ Run `make help` to see all the possible targets and variables:
     PROTO_MODEL        Name of the proto model. Default: 'data/foo/foo.traineddata'
     CORES              No of cores to use for compiling leptonica/tesseract. Default: 4
     LEPTONICA_VERSION  Leptonica version. Default: 1.78.0
-    TESSERACT_VERSION  Tesseract commit. Default: 4.1.0
+    TESSERACT_VERSION  Tesseract commit. Default: 4.1.1
     TESSDATA_REPO      Tesseract model repo to use. Default: _best
     TESSDATA           Path to the .traineddata directory to start finetuning from. Default: ./usr/share/tessdata
     GROUND_TRUTH_DIR   Ground truth directory. Default: data/MODEL_NAME-ground-truth
     OUTPUT_DIR         Output directory for generated files. Default: data/MODEL_NAME
     MAX_ITERATIONS     Max iterations. Default: 10000
+    EPOCHS             Set max iterations based on the number of lines for training. Default: none
     LEARNING_RATE      Learning rate. Default: 0.0001 with START_MODEL, otherwise 0.002
     NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
     FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: ''
