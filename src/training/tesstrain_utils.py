@@ -17,7 +17,6 @@
 import argparse
 import atexit
 import concurrent.futures
-import io
 import logging
 import os
 import pathlib
@@ -362,6 +361,8 @@ def generate_font_image(ctx, font, exposure, char_spacing):
                 )
 
             check_file_readable(str(gtoutputbase) + ".box", str(gtoutputbase) + ".tif")
+            
+            
     if ctx.extract_font_properties and pathlib.Path(ctx.train_ngrams_file).exists():
         log.info(f"Extracting font properties of {font}")
         run_command(
