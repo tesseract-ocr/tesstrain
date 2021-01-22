@@ -17,6 +17,7 @@
 import argparse
 import atexit
 import concurrent.futures
+import io
 import logging
 import os
 import pathlib
@@ -328,7 +329,6 @@ def generate_font_image(ctx, font, exposure, char_spacing):
         f"--leading={ctx.leading}",
         f"--char_spacing={char_spacing}",
         f"--exposure={exposure}",
-        f"--outputbase={outbase}",
         f"--max_pages={ctx.max_pages}",
     ]
 
@@ -340,16 +340,28 @@ def generate_font_image(ctx, font, exposure, char_spacing):
     if font in VERTICAL_FONTS:
         common_args.append("--writing_mode=vertical-upright")
 
-    run_command(
-        "text2image",
-        *common_args,
-        f"--font={font}",
-        f"--text={ctx.training_text}",
-        *ctx.text2image_extra_args,
-    )
+    count = 0
+    with open(ctx.training_text, "r", encoding='utf-8') as gtText:
+        for line in gtText:
+            count += 1
+            if count > ctx.max_pages:
+                break;
+            gtoutputbase=(str(outbase) + "." + str(count).zfill(6))
+            gtline=(str(gtoutputbase) + ".gt.txt")
+            gtFile = open(gtline, 'w', encoding='utf-8')
+            print(line, file=gtFile)
+            gtFile.close()
+            log.info(f"Running text2image on {gtline}")
+            run_command(
+                    "text2image",
+                    *common_args,
+                    f"--font={font}",
+                    f"--text={gtline}",
+                    f"--outputbase={gtoutputbase}",
+                    *ctx.text2image_extra_args,
+                )
 
-    check_file_readable(str(outbase) + ".box", str(outbase) + ".tif")
-
+            check_file_readable(str(gtoutputbase) + ".box", str(gtoutputbase) + ".tif")
     if ctx.extract_font_properties and pathlib.Path(ctx.train_ngrams_file).exists():
         log.info(f"Extracting font properties of {font}")
         run_command(
@@ -409,11 +421,6 @@ def phase_I_generate_image(ctx, par_factor=None):
                 else:
                     pbar.update(1)
 
-        # Check that each process was successful.
-        for font in ctx.fonts:
-            fontname = make_fontname(font)
-            outbase = make_outbase(ctx, fontname, exposure)
-            check_file_readable(str(outbase) + ".box", str(outbase) + ".tif")
     return
 
 
