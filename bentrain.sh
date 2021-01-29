@@ -6,6 +6,7 @@ START_MODEL=ben \
 TESSDATA=$HOME/tessdata_best \
 TESSTRAIN_TEXT=$HOME/langdata_lstm/ben/ben.training_text \
 TESSTRAIN_FONT=Kalpurush \
+TESSTRAIN_LANG=ben \
 TESSTRAIN_SCRIPT=Bengali \
 TESSTRAIN_FONTS_DIR=$HOME/.fonts/ben \
 TESSTRAIN_MAX_LINES=10000 \

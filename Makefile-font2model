@@ -77,6 +77,9 @@ TESSTRAIN_MAX_LINES := 10000
 # Default Script for training. Default: $(TESSTRAIN_SCRIPT)
 TESSTRAIN_SCRIPT := Latin
 
+# Default Language for training. Default: $(TESSTRAIN_LANG)
+TESSTRAIN_LANG := eng
+
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
