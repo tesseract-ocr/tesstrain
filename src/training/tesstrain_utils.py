@@ -359,8 +359,11 @@ def generate_font_image(ctx, font, exposure, char_spacing):
                     f"--outputbase={gtoutputbase}",
                     *ctx.text2image_extra_args,
                 )
-
-            check_file_readable(str(gtoutputbase) + ".box", str(gtoutputbase) + ".tif")
+            #check_file_readable(str(gtoutputbase) + ".box", str(gtoutputbase) + ".tif")
+            
+            # delete all related files if box file is of size zero
+            if os.stat(str(gtoutputbase) + ".box").st_size == 0:
+               os.remove(str(gtoutputbase) + ".*")
             
             
     if ctx.extract_font_properties and pathlib.Path(ctx.train_ngrams_file).exists():

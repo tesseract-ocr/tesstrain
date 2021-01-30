@@ -20,3 +20,6 @@ wackenroder_herzensergiessungen_*.tif
 master.zip
 plot/*.LOG
 plot/ocrd*
+src/training/__pycache__/
+data
+plot/tmp*

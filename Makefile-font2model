@@ -53,8 +53,16 @@ else
 LEARNING_RATE := 0.002
 endif
 
-# Network specification. Default: $(NET_SPEC)
-NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx192 O1c\#\#\#]
+# Replace top layer of network, Finetune, from Scratch training
+ifeq ($(TRAIN_TYPE),FineTune)
+	NET_SPEC =--continue_from $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata 
+else
+ifeq ($(TRAIN_TYPE),ReplaceLayer)
+	NET_SPEC =--continue_from $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm --append_index 5 --net_spec '[Lfx192O1c1]'
+else
+	NET_SPEC =--net_spec [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx192O1c1]
+endif
+endif
 
 # Ratio of train / eval training data. Default: $(RATIO_TRAIN)
 RATIO_TRAIN := 0.90
@@ -108,7 +116,6 @@ help:
 	@echo "    EPOCHS                Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL        Debug Interval. Default:  $(DEBUG_INTERVAL)"
 	@echo "    LEARNING_RATE         Learning rate. Default: $(LEARNING_RATE)"
-	@echo "    NET_SPEC              Network specification. Default: $(NET_SPEC)"
 	@echo "    RATIO_TRAIN           Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 	@echo "    TARGET_ERROR_RATE     Target Error Rate. Default: $(TARGET_ERROR_RATE)"
 	@echo "    TESSTRAIN_FONTS_DIR   Fonts Directory. Default: $(TESSTRAIN_FONTS_DIR)"
@@ -118,6 +125,7 @@ help:
 	@echo "    TESSTRAIN_LANG        Language code of existing language for creating PROTO_MODEL. "
 	@echo "                          (It can be the same as START_MODEL for fine-tuning). Default: $(TESSTRAIN_LANG)"
 	@echo "    TESSTRAIN_SCRIPT      Language Script (eg. Latin for eng, Bengali for ben). Default: $(TESSTRAIN_SCRIPT)"
+	@echo "    TRAIN_TYPE            Training Type - FineTune, ReplaceLayer or blank (from scratch). Default: '$(TRAIN_TYPE)'"
 	
 # END-EVAL
 
@@ -156,32 +164,21 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 
 $(LAST_CHECKPOINT): proto_model lists
 ifdef START_MODEL
-	@mkdir -p $(OUTPUT_DIR)/checkpoints $(DATA_DIR)/$(START_MODEL)
-	combine_tessdata -e $(TESSDATA)/$(START_MODEL).traineddata  $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm
-	lstmtraining \
-	  --debug_interval $(DEBUG_INTERVAL) \
-	  --traineddata $(PROTO_MODEL) \
-	  --old_traineddata $(TESSDATA)/$(START_MODEL).traineddata \
-	  --continue_from $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm \
-	  --learning_rate $(LEARNING_RATE) \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
-	  --train_listfile $(OUTPUT_DIR)/list.train \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS) \
-	  --target_error_rate $(TARGET_ERROR_RATE) > $(DATA_DIR)/$(MODEL_NAME).log 2>&1
-else
-	@mkdir -p $(OUTPUT_DIR)/checkpoints
-	lstmtraining \
-	  --debug_interval $(DEBUG_INTERVAL) \
-	  --traineddata $(PROTO_MODEL) \
-	  --learning_rate $(LEARNING_RATE) \
-	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
-	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
-	  --train_listfile $(OUTPUT_DIR)/list.train \
-	  --eval_listfile $(OUTPUT_DIR)/list.eval \
-	  --max_iterations $(MAX_ITERATIONS) \
-	  --target_error_rate $(TARGET_ERROR_RATE) > $(DATA_DIR)/$(MODEL_NAME).log 2>&1
+	  @mkdir -p $(DATA_DIR)/$(START_MODEL)
+	  combine_tessdata -e $(TESSDATA)/$(START_MODEL).traineddata  $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm
 endif
+	@mkdir -p $(OUTPUT_DIR)/checkpoints 
+	lstmtraining \
+	  $(NET_SPEC) \
+	  --traineddata $(PROTO_MODEL) \
+	  --train_listfile $(OUTPUT_DIR)/list.train \
+	  --eval_listfile $(OUTPUT_DIR)/list.eval \
+	  --max_iterations $(MAX_ITERATIONS) \
+	  --debug_interval $(DEBUG_INTERVAL) \
+	  --learning_rate $(LEARNING_RATE) \
+	  --target_error_rate $(TARGET_ERROR_RATE) \
+	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
+	  > $(DATA_DIR)/$(MODEL_NAME).log 2>&1
 
 proto_model: $(PROTO_MODEL) 
 
