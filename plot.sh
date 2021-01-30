@@ -1,7 +1,7 @@
 #!/bin/bash
 # `make` needs to be run twice, 
 # first to generate traineddata and then to generate new validate.log files.
-# $1 - lang code of START_MODEL = TESSTRAIN_LANG
+# $1 - MODEL_NAME
 # $2 - maximum CER for y axis - adjust based on graph
 
 cd plot
