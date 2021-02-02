@@ -370,4 +370,4 @@ clean-output:
 	rm -rf $(OUTPUT_DIR)
 
 # Clean all generated files
-clean: clean-box clean-lstmf clean-output	
+clean: clean-box clean-lstmf clean-output
