@@ -22,7 +22,7 @@ arg_parser.add_argument('-y', '--ymaxcer', nargs='?', metavar='Y_MAX_CER',
 
 args = arg_parser.parse_args()
 
-maxticks=10
+maxticks=5
 maxCER=int(args.ymaxcer) #max y axis to display
 
 ytsvfile = "tmp-" + args.model + "-" + args.validatelist + "-iteration.tsv"

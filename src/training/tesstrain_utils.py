@@ -21,6 +21,7 @@ import logging
 import os
 import pathlib
 import platform
+import random
 import shutil
 import subprocess
 import sys
@@ -41,9 +42,7 @@ class TrainingArgs(argparse.Namespace):
         self.uname = platform.uname().system.lower()
         self.lang_code = "eng"
         self.timestamp = str(date.today())
-
-        self._font_config_cache = TemporaryDirectory(prefix="font_tmp")
-        self.font_config_cache = self._font_config_cache.name
+        self.font_config_cache = mkdtemp(prefix=f"font_tmp-{self.timestamp}")
         self.fonts_dir = (
             "/Library/Fonts/" if "darwin" in self.uname else "/usr/share/fonts/"
         )
@@ -341,7 +340,9 @@ def generate_font_image(ctx, font, exposure, char_spacing):
 
     count = 0
     with open(ctx.training_text, "r", encoding='utf-8') as gtText:
-        for line in gtText:
+        lines = gtText.readlines()
+        random.shuffle(lines)
+        for line in lines:
             count += 1
             if count > ctx.max_pages:
                 break;
@@ -359,10 +360,9 @@ def generate_font_image(ctx, font, exposure, char_spacing):
                     f"--outputbase={gtoutputbase}",
                     *ctx.text2image_extra_args,
                 )
-            #check_file_readable(str(gtoutputbase) + ".box", str(gtoutputbase) + ".tif")
-            
             # delete all related files if box file is of size zero
             if os.stat(str(gtoutputbase) + ".box").st_size == 0:
+               log.info(f"Deleting files with box file of size zero {(str(gtoutputbase) + '.box')}")
                os.remove(str(gtoutputbase) + ".*")
             
             

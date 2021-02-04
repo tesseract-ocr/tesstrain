@@ -76,8 +76,12 @@ TESSTRAIN_FONTS_DIR := /usr/share/fonts/
 # Default Training Text. Default: $(TESSTRAIN_TEXT)
 TESSTRAIN_TEXT := $(DATA_DIR)/$START_MODEL.training_text
 
-# Default Font for training. Default: $(TESSTRAIN_FONT)
-TESSTRAIN_FONT := Arial
+# Font for training. Default: $(TESSTRAIN_FONT)
+TESSTRAIN_FONT =
+# Font List for training. Default: $(TESSTRAIN_FONT_LIST)
+ifdef TESSTRAIN_FONT
+TESSTRAIN_FONT_LIST =--fontlist $(TESSTRAIN_FONT)
+endif
 
 # Default maximum number of lines from training text. Default: $(TESSTRAIN_MAX_LINES)
 TESSTRAIN_MAX_LINES := 10000
@@ -185,7 +189,7 @@ proto_model: $(PROTO_MODEL)
 $(OUTPUT_DIR)/all-lstmf $(PROTO_MODEL): $(DATA_DIR)/$(TESSTRAIN_SCRIPT).unicharset
 	python ./src/training/tesstrain.py \
 	 --fonts_dir $(TESSTRAIN_FONTS_DIR) \
-	 --fontlist "$(TESSTRAIN_FONT)" \
+	 $(TESSTRAIN_FONT_LIST) \
 	 --maxpages $(TESSTRAIN_MAX_LINES) \
 	 --lang $(TESSTRAIN_LANG) \
 	 --langdata_dir $(DATA_DIR) \
