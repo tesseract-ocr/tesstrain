@@ -5,12 +5,13 @@
 # $3 - START_MODEL
 # $4 - MODEL_NAME
 # $5 - Training Type - FineTune, ReplaceLayer or blank (from scratch)
-# $6 - TESSTRAIN_FONT
 ##
 # FineTune - TESSTRAIN_MAX_LINES=1000 EPOCHS=10 
 # ReplaceLayer - TESSTRAIN_MAX_LINES=10000 EPOCHS=10
 # Scratch - TESSTRAIN_MAX_LINES=50000 EPOCHS=10
-# eg. bash -x engINR.sh eng Latin eng engINR FineTune 'Arial'
+# eg. bash -x engINR.sh eng Latin eng engINR FineTune
+#
+## This format for using fontnames from language_specific.py
 
 make -f Makefile-font2model \
 MODEL_NAME=$4 \
