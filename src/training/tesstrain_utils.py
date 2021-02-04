@@ -27,7 +27,7 @@ import subprocess
 import sys
 from datetime import date
 from operator import itemgetter
-from tempfile import TemporaryDirectory, mkdtemp
+from tempfile import mkdtemp
 
 from tqdm import tqdm
 
@@ -338,6 +338,11 @@ def generate_font_image(ctx, font, exposure, char_spacing):
     if font in VERTICAL_FONTS:
         common_args.append("--writing_mode=vertical-upright")
 
+    # Create single line box/tiff pairs and lstmf files.
+    # Randomly shuffle the training text for each font.
+    # Use the number of lines specified by max_pages.
+    # gtoutputbase adds a zeropadded six digit line number to outputbase.
+    # run text2image on single text lines till max_pages.
     count = 0
     with open(ctx.training_text, "r", encoding='utf-8') as gtText:
         lines = gtText.readlines()
@@ -432,10 +437,9 @@ def phase_I_generate_image(ctx, par_factor=None):
 def phase_UP_generate_unicharset(ctx):
     log.info("=== Phase UP: Generating unicharset and unichar properties files ===")
 
-    #box_files = pathlib.Path(ctx.training_dir).glob("*.box")
-
     ctx.unicharset_file = pathlib.Path(ctx.training_dir) / f"{ctx.lang_code}.unicharset"
 
+    # create unicharset based on the complete training_text (not box files or groundtruth files).
     run_command(
         "unicharset_extractor",
         "--output_unicharset",
@@ -574,9 +578,6 @@ def phase_E_extract_features(ctx, box_config, ext):
                 err_exit("Failed while extracting features: " + str(exc))
             else:
                 pbar.update(1)
-    # Check that all the output files were produced.
-    #for img_file in img_files:
-    #    check_file_readable(pathlib.Path(img_file.with_suffix("." + ext)))
 
     return
 

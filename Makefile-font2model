@@ -81,6 +81,8 @@ TESSTRAIN_FONT =
 # Font List for training. Default: $(TESSTRAIN_FONT_LIST)
 ifdef TESSTRAIN_FONT
 TESSTRAIN_FONT_LIST =--fontlist $(TESSTRAIN_FONT)
+else
+TESSTRAIN_FONT_LIST =
 endif
 
 # Default maximum number of lines from training text. Default: $(TESSTRAIN_MAX_LINES)
