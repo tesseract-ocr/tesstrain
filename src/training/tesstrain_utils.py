@@ -348,20 +348,6 @@ def generate_font_image(ctx, font, exposure, char_spacing):
         *ctx.text2image_extra_args,
     )
 
-    check_file_readable(str(outbase) + ".box", str(outbase) + ".tif")
-
-    if ctx.extract_font_properties and pathlib.Path(ctx.train_ngrams_file).exists():
-        log.info(f"Extracting font properties of {font}")
-        run_command(
-            "text2image",
-            *common_args,
-            f"--font={font}",
-            f"--ligatures=false",
-            f"--text={ctx.train_ngrams_file}",
-            f"--only_extract_font_properties",
-            f"--ptsize=32",
-        )
-        check_file_readable(str(outbase) + ".fontinfo")
     return f"{font}-{exposure}"
 
 
@@ -375,24 +361,6 @@ def phase_I_generate_image(ctx, par_factor=None):
     char_spacing = 0.0
 
     for exposure in ctx.exposures:
-        if ctx.extract_font_properties and pathlib.Path(ctx.bigram_freqs_file).exists():
-            # Parse .bigram_freqs file and compose a .train_ngrams file with text
-            # for tesseract to recognize during training. Take only the ngrams whose
-            # combined weight accounts for 95% of all the bigrams in the language.
-            lines = pathlib.Path(ctx.bigram_freqs_file).read_text(encoding="utf-8").split("\n")
-            records = (line.split() for line in lines)
-            p = 0.99
-            ngram_frac = p * sum(int(rec[1]) for rec in records if len(rec) >= 2)
-
-            with pathlib.Path(ctx.train_ngrams_file).open("w", encoding="utf-8") as f:
-                cumsum = 0
-                for bigram, count in sorted(records, key=itemgetter(1), reverse=True):
-                    if cumsum > ngram_frac:
-                        break
-                    f.write(bigram + " ")
-                    cumsum += count
-
-            check_file_readable(ctx.train_ngrams_file)
 
         with tqdm(
                 total=len(ctx.fonts)
@@ -536,8 +504,8 @@ def make_lstmdata(ctx):
         training_path = pathlib.Path(ctx.training_dir)
         if ctx.save_box_tiff:
             log.info("=== Saving box/tiff pairs for training data ===")
-            yield from training_path.glob(f"{ctx.lang_code}*.box")
             yield from training_path.glob(f"{ctx.lang_code}*.tif")
+            yield from training_path.glob(f"{ctx.lang_code}*.box")
         log.info("=== Moving lstmf files for training data ===")
         yield from training_path.glob(f"{ctx.lang_code}.*.lstmf")
 
@@ -548,5 +516,3 @@ def make_lstmdata(ctx):
     lstm_list = f"{ctx.output_dir}/{ctx.lang_code}.training_files.txt"
     dir_listing = (str(p) for p in path_output.glob(f"{ctx.lang_code}.*.lstmf"))
     pathlib.Path(lstm_list).write_text("\n".join(dir_listing))
-
-
