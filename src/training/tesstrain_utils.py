@@ -417,9 +417,9 @@ def phase_UP_generate_unicharset(ctx):
     check_file_readable(ctx.xheights_file)
 
 
-# Phase E : (E)xtract .tr feature files from .tif/.box files
+# Phase E : (E)xtract .lstmf  files from .tif/.box files
 def phase_E_extract_features(ctx, box_config, ext):
-    log.info(f"=== Phase E: Generating {ext} files ===")
+    log.info(f"=== Phase E: Generating {ext} files using {box_config}===")
 
     img_files = list(pathlib.Path(ctx.training_dir).glob("*.exp*.tif"))
     log.debug(img_files)
@@ -504,8 +504,8 @@ def make_lstmdata(ctx):
         training_path = pathlib.Path(ctx.training_dir)
         if ctx.save_box_tiff:
             log.info("=== Saving box/tiff pairs for training data ===")
-            yield from training_path.glob(f"{ctx.lang_code}*.tif")
             yield from training_path.glob(f"{ctx.lang_code}*.box")
+            yield from training_path.glob(f"{ctx.lang_code}*.tif")
         log.info("=== Moving lstmf files for training data ===")
         yield from training_path.glob(f"{ctx.lang_code}.*.lstmf")
 
