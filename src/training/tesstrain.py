@@ -72,7 +72,7 @@ def main():
     ctx = language_specific.set_lang_specific_parameters(ctx, ctx.lang_code)
 
     initialize_fontconfig(ctx)
-    phase_I_generate_image(ctx, par_factor=8)
+    phase_I_generate_image(ctx, par_factor=1)
     phase_UP_generate_unicharset(ctx)
 
     if ctx.linedata:
