@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Copyright 2024 Christine Roughan
 #
@@ -26,7 +27,7 @@ def main(argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h','--help'):
-            print('USAGE: count_chars.py <txt_file>')
+            print('USAGE: count_chars.py <txt_file> | sort -n -r > <txt_file>.charcount')
             sys.exit()
     for arg in args:
         txt_file = arg
@@ -44,10 +45,9 @@ def main(argv):
 
     keys = list(chars.keys())
     keys.sort()
-    print('Count\tCharacter\n-----\t---------')
     for char in keys:
         try:
-            print(chars[char], '\t', char,
+            print(chars[char], '\t', char, '\t',
                   unicodedata.name(char))
         except:
             pass
