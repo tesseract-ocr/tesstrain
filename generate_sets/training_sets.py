@@ -36,6 +36,8 @@ DEFAULT_USE_REORDER = False
 DEFAULT_DPI = 300
 SUMMARY_SUFFIX = '_summary.gt.txt'
 
+# clear read order marks for single tokens
+CLEAR_MARKS = [ '\u200f', '\u200e']
 
 class TextLine(abc.ABC):
     """
@@ -172,8 +174,9 @@ class PageLine(TextLine):
         # elimiate read order mark
         for i, strip in enumerate(self.text_words):
             strip = self.text_words[i]
-            if '\u200f' in strip:
-                self.text_words[i] = strip.replace('\u200f', '')
+            for mark in CLEAR_MARKS:
+                if mark in strip:
+                    self.text_words[i] = strip.replace(mark, '')
         # enrich read order mark with latin digits
         for i, strip in enumerate(self.text_words):
             strip = self.text_words[i]
