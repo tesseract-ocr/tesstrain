@@ -177,11 +177,6 @@ class PageLine(TextLine):
             for mark in CLEAR_MARKS:
                 if mark in strip:
                     self.text_words[i] = strip.replace(mark, '')
-        # enrich read order mark with latin digits
-        for i, strip in enumerate(self.text_words):
-            strip = self.text_words[i]
-            if 'X' in strip or 'I' in strip or 'V' in strip:
-                self.text_words[i] = '\u200f' + strip
 
     @staticmethod
     def _pick_top_left(elem, namespace):
