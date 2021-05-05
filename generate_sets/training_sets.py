@@ -36,8 +36,13 @@ DEFAULT_USE_REORDER = False
 DEFAULT_DPI = 300
 SUMMARY_SUFFIX = '_summary.gt.txt'
 
-# clear read order marks for single tokens
-CLEAR_MARKS = [ '\u200f', '\u200e']
+# clear unwanted marks for single wordlike tokens
+CLEAR_MARKS = [
+    u'\u200f',  # 'RIGHT-TO-LEFT-MARK'
+    u'\u200e',  # 'LEFT-TO-RIGHT-MARK'
+    u'\ufeff'   # 'ZERO WIDTH NO-BREAK SPACE', the char formerly known as 'BOM'
+]
+
 
 class TextLine(abc.ABC):
     """
@@ -223,7 +228,8 @@ def text_line_factory(xml_data, min_len, reorder):
                 if len(stripped) and len(stripped) >= min_len:
                     matchings.append(textline)
             else:
-                words = textline.findall(f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
+                words = textline.findall(
+                    f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
                 if len(words):
                     msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
                     raise RuntimeError(msg)
