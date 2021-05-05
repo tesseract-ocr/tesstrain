@@ -24,6 +24,7 @@ OCR_TRANSK_IMAG = '288652.jpg'
 OCR_TRANSK_DATA = '288652.xml'
 OCR_D_PAGE_DATA = 'OCR-RESULT_0001.xml'
 OCR_DATA_729422 = '729422'
+OCR_DATA_PERSIAN = 'Lubab_alAlbab.pdf_000003'
 
 # data problem: just TextLines, no Words at all
 OCR_DATA_RAM110 = 'ram110'
@@ -90,8 +91,8 @@ def _extract_texts(elements, ns_prefix):
     return texts
 
 
-@pytest.fixture(name='fixture_alto_tif')
-def _fixture_alto_tif(tmpdir):
+@pytest.fixture
+def fixture_alto_tif(tmpdir):
     res_alto = os.path.join(RES_ROOT, 'xml', '1667522809_J_0073_0512.xml')
     path = tmpdir.mkdir('training').join('1667522809_J_0073_0512.xml')
     shutil.copyfile(res_alto, path)
@@ -144,8 +145,8 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
     assert len(lines) == 226
 
 
-@pytest.fixture(name='fixture_page2013_jpg')
-def _fixture_page2013_jpg(tmpdir):
+@pytest.fixture
+def fixture_page2013_jpg(tmpdir):
 
     res = os.path.join(RES_ROOT, 'xml', OCR_TRANSK_DATA)
     path_page = tmpdir.mkdir('training').join(OCR_TRANSK_DATA)
@@ -221,8 +222,8 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     assert len(txt_files) == expected_len
 
 
-@pytest.fixture(name='fixture_page2019_png')
-def _fixture_page2019_png(tmpdir):
+@pytest.fixture
+def fixture_page2019_png(tmpdir):
 
     res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
     path_page = tmpdir.mkdir('training').join(OCR_D_PAGE_DATA)
@@ -272,8 +273,8 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     assert len(txt_files) == 34
 
 
-@pytest.fixture(name="fixture_ocrd_workspace")
-def _fixture_ocrd_workspace(tmpdir):
+@pytest.fixture
+def fixture_ocrd_workspace(tmpdir):
     res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
     path_page = tmpdir.mkdir('OCR-RESULT').join(OCR_D_PAGE_DATA)
     shutil.copyfile(res, path_page)
@@ -297,8 +298,8 @@ def test_create_sets_from_ocrd_workdspace(fixture_ocrd_workspace):
     assert len(data) == 33
 
 
-@pytest.fixture(name="fixture_ocrd_workspace_invalid")
-def _fixture_ocrd_workspace_invalid(tmpdir):
+@pytest.fixture
+def fixture_ocrd_workspace_invalid(tmpdir):
     res = os.path.join(RES_ROOT, 'xml', OCR_D_PAGE_DATA)
     path_page = tmpdir.mkdir('OCR-RESULT').join(OCR_D_PAGE_DATA)
     shutil.copyfile(res, path_page)
@@ -318,7 +319,6 @@ def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
 
 @pytest.fixture
 def fixture_invalid_coords(tmpdir):
-
     res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_729422}.xml')
     path_page = tmpdir.join(f'{OCR_DATA_729422}.xml')
     shutil.copyfile(res, path_page)
@@ -373,9 +373,6 @@ def test_handle_page_devanagari_with_texlines(fixture_page_devanagari):
     assert len(data) == 24
     assert 'tl_24' in [l.element_id for l in data]
     assert not 'tl_25' in [l.element_id for l in data]
-
-
-OCR_DATA_PERSIAN = 'Lubab_alAlbab.pdf_000003'
 
 
 @pytest.fixture
