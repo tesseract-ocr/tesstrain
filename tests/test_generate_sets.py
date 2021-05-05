@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Specification for Generation of training data sets"""
 
+# disable warnings from fixture names
+# pylint: disable=redefined-outer-name
+
 import os
 import pathlib
 import shutil
@@ -242,7 +245,7 @@ def fixture_page2019_png(tmpdir):
 def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     """
     Create text-image pairs from PAGE2013 and JPG without summary
-    From total 35 lines 2 got dropped because they contain less 
+    From total 35 lines 2 got dropped because they contain less
     than min_len = 8 chars
     """
 

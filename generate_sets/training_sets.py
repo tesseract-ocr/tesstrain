@@ -49,17 +49,13 @@ class TextLine(abc.ABC):
     TextLine from structured OCR-Data
     """
 
-    def __init__(self, element, namespace, reorder=False):
+    def __init__(self, element, namespace):
         self.element = element
         self.namespace = namespace
         self.element_id = None
         self.valid = True
-        self.set_id()
         self.text_words = []
-        self.set_text()
-        if self.valid:
-            self.reorder = reorder
-            self.box = self.to_box(self.element)
+        self.reorder = None
 
     @abc.abstractmethod
     def set_id(self):
@@ -69,8 +65,7 @@ class TextLine(abc.ABC):
     def set_text(self):
         """Determine list of word tokens"""
 
-    @abc.abstractmethod
-    def to_box(self, element):
+    def to_box(self, _):
         """Return bounding box of TexLine shape"""
 
     def get_textline_content(self) -> str:
@@ -93,6 +88,10 @@ class ALTOLine(TextLine):
 
     def __init__(self, element, namespace, sanitize=True):
         super().__init__(element, namespace)
+        self.set_id()
+        self.set_text()
+        if self.valid:
+            self.box = self.to_box(self.element)
         if sanitize:
             self.sanitize_box()
 
@@ -133,6 +132,14 @@ class ALTOLine(TextLine):
 
 class PageLine(TextLine):
     """Extract TextLine Information from PAGE Data"""
+
+    def __init__(self, element, namespace, reorder):
+        super().__init__(element, namespace)
+        self.set_id()
+        self.set_text()
+        if self.valid:
+            self.reorder = reorder
+            self.box = self.to_box(self.element)
 
     def set_id(self):
         self.element_id = self.element.attrib['id']
