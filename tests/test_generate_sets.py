@@ -23,6 +23,13 @@ GT_SUFFIX = '.gt.txt'
 OCR_TRANSK_IMAG = '288652.jpg'
 OCR_TRANSK_DATA = '288652.xml'
 OCR_D_PAGE_DATA = 'OCR-RESULT_0001.xml'
+OCR_DATA_729422 = '729422'
+
+# data problem: just TextLines, no Words at all
+OCR_DATA_RAM110 = 'ram110'
+
+# data problem: empty TextLine, although Words with text exist
+OCR_FID_ERR_1123596 = '1123596'
 
 
 def generate_image(path_image, words, columns, rows, params=None):
@@ -110,6 +117,7 @@ def _fixture_alto_tif(tmpdir):
 
     return str(path)
 
+
 def test_create_sets_from_alto_and_tif(fixture_alto_tif):
     """Create text-image pairs from ALTO V3 and TIF"""
 
@@ -154,7 +162,11 @@ def _fixture_page2013_jpg(tmpdir):
 
 
 def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
-    """Create text-image pairs from PAGE2013 and JPG with defaults"""
+    """
+    Create text-image pairs from PAGE2013 and JPG with defaults
+    From 33 Textlines one got dropped because in only contained 3 chars
+    and min_chars was set to '8'
+    """
 
     path_input_dir = os.path.dirname(fixture_page2013_jpg)
     path_input_parent = pathlib.Path(path_input_dir).parent
@@ -173,7 +185,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     txt_files = sorted(
         [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)])
 
-    # additional summary written
+    # additional summary written, therefore we have one more txt
     assert len(txt_files) == 33
 
     # assert mixed content
@@ -194,10 +206,10 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=False, reorder=True)
+        min_chars=3, folder_out=path_input_dir, summary=False, reorder=True)
 
     # assert
-    expected_len = 32
+    expected_len = 33
     assert len(data) == expected_len
     path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
@@ -205,8 +217,8 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     txt_files = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
     assert len(txt_files) == expected_len
 
-    # no summary written
-    assert len(txt_files) == 32
+    # no summary written, no extra txt file
+    assert len(txt_files) == expected_len
 
 
 @pytest.fixture(name='fixture_page2019_png')
@@ -227,7 +239,11 @@ def _fixture_page2019_png(tmpdir):
 
 
 def test_create_sets_from_page2019_and_png(fixture_page2019_png):
-    """Create text-image pairs from PAGE2013 and JPG without summary"""
+    """
+    Create text-image pairs from PAGE2013 and JPG without summary
+    From total 35 lines 2 got dropped because they contain less 
+    than min_len = 8 chars
+    """
 
     path_input_dir = os.path.dirname(fixture_page2019_png)
     path_input_parent = pathlib.Path(path_input_dir).parent
@@ -300,11 +316,8 @@ def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
     assert 'invalid image_path' in str(excinfo.value)
 
 
-OCR_DATA_729422 = '729422'
-
-
-@pytest.fixture(name='fixture_invalid_coords')
-def _fixture_invalid_coords(tmpdir):
+@pytest.fixture
+def fixture_invalid_coords(tmpdir):
 
     res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_729422}.xml')
     path_page = tmpdir.join(f'{OCR_DATA_729422}.xml')
@@ -316,7 +329,7 @@ def _fixture_invalid_coords(tmpdir):
 
 
 def test_handle_invalid_coords(fixture_invalid_coords):
-    """When procesing invalid coords, skip pair and alert user"""
+    """When procesing data with invalid coords, raise Error"""
 
     # arrange
     ocr_data = os.path.join(fixture_invalid_coords, f'{OCR_DATA_729422}.xml')
@@ -324,17 +337,12 @@ def test_handle_invalid_coords(fixture_invalid_coords):
     training_data = TrainingSets(ocr_data, img_data)
 
     # act
-    data = training_data.create(
-        min_chars=16, folder_out=fixture_invalid_coords)
+    with pytest.raises(RuntimeError) as exc:
+        training_data.create(folder_out=fixture_invalid_coords)
 
     # assert: one line was skipped
-    assert len(data) == 22
-    assert 'tl_12' in [l.element_id for l in data]
-    assert not 'tl_13' in [l.element_id for l in data]
-    assert 'tl_14' in [l.element_id for l in data]
-
-
-OCR_DATA_RAM110 = 'ram110'
+    expected = "Invalid Coords of Word 'word_1595308100448_546' in 'tl_13'!"
+    assert expected == str(exc.value)
 
 
 @pytest.fixture(name='fixture_page_devanagari')
@@ -370,8 +378,8 @@ def test_handle_page_devanagari_with_texlines(fixture_page_devanagari):
 OCR_DATA_PERSIAN = 'Lubab_alAlbab.pdf_000003'
 
 
-@pytest.fixture(name='fixture_alto4_persian')
-def _fixture_alto4_persian(tmpdir):
+@pytest.fixture
+def fixture_alto4_persian(tmpdir):
 
     res = os.path.join(RES_ROOT, 'xml', f'{OCR_DATA_PERSIAN}.xml')
     path_page = tmpdir.join(f'{OCR_DATA_PERSIAN}.xml')
@@ -380,6 +388,7 @@ def _fixture_alto4_persian(tmpdir):
     file_path = tmpdir.join(f'{OCR_DATA_PERSIAN}.png')
     generate_image(file_path, words=words, columns=593, rows=950)
     return str(tmpdir)
+
 
 def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
     """
@@ -399,3 +408,36 @@ def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
     # assert
     assert len(data) == 23
     assert 'eSc_line_23302' in [l.element_id for l in data]
+
+
+@pytest.fixture
+def page_1123596(tmp_path):
+    """
+    Represents data with a single empty TextLine, although there are single Words with content
+    Unclear origin; maybe synchronization problem when working with Transkribus
+    """
+
+    res = os.path.join(RES_ROOT, 'xml', f'{OCR_FID_ERR_1123596}.xml')
+    path_page = tmp_path / f'{OCR_FID_ERR_1123596}.xml'
+    shutil.copyfile(res, path_page)
+    words = extract_words(path_page)
+    file_path = tmp_path / f'{OCR_FID_ERR_1123596}.png'
+    generate_image(file_path, words=words, columns=593, rows=950)
+    return str(tmp_path)
+
+
+def test_error_1123596(page_1123596):
+    """When OCR-Data contains empty lines, although words are present, yield Exception"""
+
+    # arrange
+    ocr_data = os.path.join(page_1123596, f'{OCR_FID_ERR_1123596}.xml')
+    img_data = os.path.join(page_1123596, f'{OCR_FID_ERR_1123596}.png')
+    training_data = TrainingSets(ocr_data, img_data)
+
+    # act
+    with pytest.raises(RuntimeError) as exc:
+        training_data.create(folder_out=page_1123596)
+
+    # assert
+    assert "no text but words for line 'line_1617688885509_1198'" in str(
+        exc.value)

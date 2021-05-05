@@ -80,7 +80,7 @@ class TextLine(abc.ABC):
         return aggregat
 
     def __repr__(self):
-        return '{}:{}'.format(self.__class__.__name__, self.element_id)
+        return '{}[{}]:{}'.format(self.__class__.__name__, self.element_id, self.get_textline_content())
 
 
 class ALTOLine(TextLine):
@@ -145,13 +145,11 @@ class PageLine(TextLine):
             top_left = PageLine._pick_top_left(t, self.namespace)
             if not top_left:
                 elem_id = t.attrib['id']
-                print("[ERROR  ] skip '{}': invalid coords!".format(
-                    elem_id), file=sys.stderr)
-                self.valid = False
-                return
+                msg = f"Invalid Coords of Word '{elem_id}' in '{self.element_id}'!"
+                raise RuntimeError(msg)
             texts.append(t)
 
-        # if no words assume t least text lines exist
+        # if no Word assume at least TextLine exists
         if not text_els:
             top_left = PageLine._pick_top_left(self.element, self.namespace)
             if not top_left:
@@ -216,11 +214,19 @@ def text_line_factory(xml_data, min_len, reorder):
         text_lines = [ALTOLine(line, ns_prefix) for line in all_lines_len]
     elif ns_prefix in ('page2013', 'page2019'):
         all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
-        matchings = [
-            l for l in all_lines if len(
-                l.find(
-                    f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode',
-                    XML_NS).text.strip()) >= min_len]
+        matchings = []
+        for textline in all_lines:
+            text_equiv = textline.find(
+                f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
+            if text_equiv.text:
+                stripped = text_equiv.text.strip()
+                if len(stripped) and len(stripped) >= min_len:
+                    matchings.append(textline)
+            else:
+                words = textline.findall(f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
+                if len(words):
+                    msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
+                    raise RuntimeError(msg)
         text_lines = [PageLine(line, ns_prefix, reorder) for line in matchings]
 
     # deliver only valid lines

@@ -1,0 +1,2390 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15 http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15/pagecontent.xsd">
+    <Metadata>
+        <Creator></Creator>
+        <Created>2021-03-16T10:10:28.364+01:00</Created>
+        <LastChange>2021-05-04T13:37:16.389+02:00</LastChange>
+        <Comments>
+                Measurement unit: pixel
+                PrimaryLanguage: </Comments>
+    </Metadata>
+    <Page imageFilename="1123596.jpg" imageWidth="2155" imageHeight="3141">
+        <PrintSpace>
+            <Coords points="0,0 2155,0 2155,3141 0,3141"/>
+        </PrintSpace>
+        <ReadingOrder>
+            <OrderedGroup id="ro_1620128236521" caption="Regions reading order">
+                <RegionRefIndexed index="0" regionRef="block_4"/>
+                <RegionRefIndexed index="1" regionRef="block_5"/>
+                <RegionRefIndexed index="2" regionRef="block_18"/>
+            </OrderedGroup>
+        </ReadingOrder>
+        <TextRegion id="block_4" custom="readingOrder {index:0;}">
+            <Coords points="660,501 1657,501 1657,576 660,576"/>
+            <TextLine id="tl_3" custom="readingOrder {index:0;}">
+                <Coords points="659,502 1657,502 1657,576 659,576"/>
+                <Baseline points="538,576 1657,576"/>
+                <Word id="w_13" custom="readingOrder {index:0;}">
+                    <Coords points="663,518 740,518 740,553 663,553"/>
+                    <TextEquiv>
+                        <Unicode>٣٩٥</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_12" custom="readingOrder {index:1;}">
+                    <Coords points="808,508 907,508 907,573 808,573"/>
+                    <TextEquiv>
+                        <Unicode>الدينيَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_11" custom="readingOrder {index:2;}">
+                    <Coords points="924,516 1039,516 1039,559 924,559"/>
+                    <TextEquiv>
+                        <Unicode>العادات</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_10" custom="readingOrder {index:3;}">
+                    <Coords points="1062,527 1071,527 1071,548 1062,548"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_9" custom="readingOrder {index:4;}">
+                    <Coords points="1096,505 1207,505 1207,570 1096,570"/>
+                    <TextEquiv>
+                        <Unicode>الجاهليَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_8" custom="readingOrder {index:5;}">
+                    <Coords points="1226,535 1301,535 1301,571 1226,571"/>
+                    <TextEquiv>
+                        <Unicode>عرب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_7" custom="readingOrder {index:6;}">
+                    <Coords points="1317,525 1366,525 1366,569 1317,569"/>
+                    <TextEquiv>
+                        <Unicode>بين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_6" custom="readingOrder {index:7;}">
+                    <Coords points="1381,505 1526,505 1526,570 1381,570"/>
+                    <TextEquiv>
+                        <Unicode>النصرانيَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_5" custom="readingOrder {index:8;}">
+                    <Coords points="1541,515 1656,515 1656,556 1541,556"/>
+                    <TextEquiv>
+                        <Unicode>العادات</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>٣٩٥ الدينيَّة العادات : الجاهليَّة عرب بين النصرانيَّة العادات</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextEquiv>
+                <Unicode>٣٩٥ الدينيَّة العادات : الجاهليَّة عرب بين النصرانيَّة العادات</Unicode>
+            </TextEquiv>
+        </TextRegion>
+        <TextRegion id="block_5" custom="readingOrder {index:1;}">
+            <Coords points="583,602 1897,601 1897,2539 583,2540"/>
+            <TextLine id="tl_4" custom="readingOrder {index:0;}">
+                <Coords points="587,604 1881,604 1881,679 587,679"/>
+                <Baseline points="586,695 1880,695"/>
+                <Word id="w_30" custom="readingOrder {index:0;}">
+                    <Coords points="587,621 677,621 677,672 587,672"/>
+                    <TextEquiv>
+                        <Unicode>يكون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_29" custom="readingOrder {index:1;}">
+                    <Coords points="709,629 745,629 745,667 709,667"/>
+                    <TextEquiv>
+                        <Unicode>ان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_28" custom="readingOrder {index:2;}">
+                    <Coords points="760,635 820,635 820,679 760,679"/>
+                    <TextEquiv>
+                        <Unicode>ينبغي</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_27" custom="readingOrder {index:3;}">
+                    <Coords points="836,621 929,621 929,670 836,670"/>
+                    <TextEquiv>
+                        <Unicode>السبحة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_26" custom="readingOrder {index:4;}">
+                    <Coords points="943,623 966,623 966,669 943,669"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_25" custom="readingOrder {index:5;}">
+                    <Coords points="989,623 1081,623 1081,669 989,669"/>
+                    <TextEquiv>
+                        <Unicode>والامر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_24" custom="readingOrder {index:6;}">
+                    <Coords points="1089,645 1099,645 1099,656 1089,656"/>
+                    <TextEquiv>
+                        <Unicode>.‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_23" custom="readingOrder {index:7;}">
+                    <Coords points="1109,623 1237,623 1237,660 1109,660"/>
+                    <TextEquiv>
+                        <Unicode>والعادات</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_22" custom="readingOrder {index:8;}">
+                    <Coords points="1251,622 1336,622 1336,665 1251,665"/>
+                    <TextEquiv>
+                        <Unicode>اللباس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_21" custom="readingOrder {index:9;}">
+                    <Coords points="1346,635 1389,635 1389,667 1346,667"/>
+                    <TextEquiv>
+                        <Unicode>من</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_20" custom="readingOrder {index:10;}">
+                    <Coords points="1402,612 1498,612 1498,660 1402,660"/>
+                    <TextEquiv>
+                        <Unicode>اخذوهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_19" custom="readingOrder {index:11;}">
+                    <Coords points="1513,624 1544,624 1544,671 1513,671"/>
+                    <TextEquiv>
+                        <Unicode>فيما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_18" custom="readingOrder {index:12;}">
+                    <Coords points="1558,629 1616,629 1616,675 1558,675"/>
+                    <TextEquiv>
+                        <Unicode>عنهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_17" custom="readingOrder {index:13;}">
+                    <Coords points="1627,604 1731,604 1731,671 1627,671"/>
+                    <TextEquiv>
+                        <Unicode>السُّبحة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_16" custom="readingOrder {index:14;}">
+                    <Coords points="1746,624 1834,624 1834,660 1746,660"/>
+                    <TextEquiv>
+                        <Unicode>اخذوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_15" custom="readingOrder {index:15;}">
+                    <Coords points="1845,623 1881,623 1881,658 1845,658"/>
+                    <TextEquiv>
+                        <Unicode>قد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>يكون ان ينبغي السبحة في والامر .‏ والعادات اللباس من اخذوهُ فيما عنهم السُّبحة اخذوا قد</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_5" custom="readingOrder {index:1;}">
+                <Coords points="585,672 1879,672 1879,748 585,748"/>
+                <Baseline points="585,751 1879,751"/>
+                <Word id="w_47" custom="readingOrder {index:0;}">
+                    <Coords points="586,684 678,684 678,731 586,731"/>
+                    <TextEquiv>
+                        <Unicode>الداخلة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_46" custom="readingOrder {index:1;}">
+                    <Coords points="685,690 756,690 756,747 685,747"/>
+                    <TextEquiv>
+                        <Unicode>البدع</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_45" custom="readingOrder {index:2;}">
+                    <Coords points="765,703 804,703 804,734 765,734"/>
+                    <TextEquiv>
+                        <Unicode>من</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_44" custom="readingOrder {index:3;}">
+                    <Coords points="819,684 962,684 962,732 819,732"/>
+                    <TextEquiv>
+                        <Unicode>فالسبحة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_43" custom="readingOrder {index:4;}">
+                    <Coords points="980,709 1044,709 1044,718 980,718"/>
+                    <TextEquiv>
+                        <Unicode>...</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617688991549_1229" custom="readingOrder {index:5;}">
+                    <Coords points="1062,673 1140,673 1140,727 1062,727"/>
+                    <TextEquiv>
+                        <Unicode>شعارًا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617688991549_1228" custom="readingOrder {index:6;}">
+                    <Coords points="1146,673 1229,673 1229,727 1146,727"/>
+                    <TextEquiv>
+                        <Unicode>وتُعَدّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_39" custom="readingOrder {index:7;}">
+                    <Coords points="1247,681 1329,681 1329,729 1247,729"/>
+                    <TextEquiv>
+                        <Unicode>العبادة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_38" custom="readingOrder {index:8;}">
+                    <Coords points="1344,682 1372,682 1372,734 1344,734"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_37" custom="readingOrder {index:9;}">
+                    <Coords points="1381,685 1460,685 1460,728 1381,728"/>
+                    <TextEquiv>
+                        <Unicode>تدخل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_36" custom="readingOrder {index:10;}">
+                    <Coords points="1475,673 1539,673 1539,730 1475,730"/>
+                    <TextEquiv>
+                        <Unicode>لأَنَّها</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_35" custom="readingOrder {index:11;}">
+                    <Coords points="1546,691 1603,691 1603,738 1546,738"/>
+                    <TextEquiv>
+                        <Unicode>عنهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_34" custom="readingOrder {index:12;}">
+                    <Coords points="1615,684 1690,684 1690,731 1615,731"/>
+                    <TextEquiv>
+                        <Unicode>غيرها</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_33" custom="readingOrder {index:13;}">
+                    <Coords points="1695,687 1751,687 1751,724 1695,724"/>
+                    <TextEquiv>
+                        <Unicode>اخذ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_32" custom="readingOrder {index:14;}">
+                    <Coords points="1775,698 1813,698 1813,733 1775,733"/>
+                    <TextEquiv>
+                        <Unicode>من</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_31" custom="readingOrder {index:15;}">
+                    <Coords points="1822,682 1878,682 1878,725 1822,725"/>
+                    <TextEquiv>
+                        <Unicode>اشدّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>الداخلة البدع من فالسبحة ... شعارًا وتُعَدّ العبادة في تدخل لأَنَّها عنهم غيرها اخذ من اشدّ</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_6" custom="readingOrder {index:2;}">
+                <Coords points="1579,743 1879,743 1879,798 1579,798"/>
+                <Baseline points="1213,800 1879,800"/>
+                <Word id="w_53" custom="readingOrder {index:0;}">
+                    <Coords points="1582,760 1598,760 1598,779 1582,779"/>
+                    <TextEquiv>
+                        <Unicode>»</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_52" custom="readingOrder {index:1;}">
+                    <Coords points="1617,756 1629,756 1629,783 1617,783"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_51" custom="readingOrder {index:2;}">
+                    <Coords points="1647,744 1714,744 1714,784 1647,784"/>
+                    <TextEquiv>
+                        <Unicode>كذا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_50" custom="readingOrder {index:3;}">
+                    <Coords points="1721,755 1737,755 1737,783 1721,783"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_49" custom="readingOrder {index:4;}">
+                    <Coords points="1755,748 1840,748 1840,794 1755,794"/>
+                    <TextEquiv>
+                        <Unicode>العبادة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_48" custom="readingOrder {index:5;}">
+                    <Coords points="1850,747 1880,747 1880,796 1850,796"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>» ) كذا ( العبادة في</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_7" custom="readingOrder {index:3;}">
+                <Coords points="585,806 1801,806 1801,887 585,887"/>
+                <Baseline points="587,885 1801,885"/>
+                <Word id="w_67" custom="readingOrder {index:0;}">
+                    <Coords points="588,809 644,809 644,872 588,872"/>
+                    <TextEquiv>
+                        <Unicode>وانَّما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_66" custom="readingOrder {index:1;}">
+                    <Coords points="672,812 791,812 791,887 672,887"/>
+                    <TextEquiv>
+                        <Unicode>الجاهليَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_65" custom="readingOrder {index:2;}">
+                    <Coords points="801,818 839,818 839,881 801,881"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_64" custom="readingOrder {index:3;}">
+                    <Coords points="850,820 946,820 946,883 850,883"/>
+                    <TextEquiv>
+                        <Unicode>العرب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_63" custom="readingOrder {index:4;}">
+                    <Coords points="955,832 1005,832 1005,879 955,879"/>
+                    <TextEquiv>
+                        <Unicode>من</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_62" custom="readingOrder {index:5;}">
+                    <Coords points="1018,815 1155,815 1155,875 1018,875"/>
+                    <TextEquiv>
+                        <Unicode>المشركون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_61" custom="readingOrder {index:6;}">
+                    <Coords points="1175,814 1259,814 1259,881 1175,881"/>
+                    <TextEquiv>
+                        <Unicode>يعرفهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_60" custom="readingOrder {index:7;}">
+                    <Coords points="1267,812 1294,812 1294,882 1267,882"/>
+                    <TextEquiv>
+                        <Unicode>لم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_59" custom="readingOrder {index:8;}">
+                    <Coords points="1300,814 1415,814 1415,881 1300,881"/>
+                    <TextEquiv>
+                        <Unicode>الاسلام</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_58" custom="readingOrder {index:9;}">
+                    <Coords points="1434,824 1521,824 1521,865 1434,865"/>
+                    <TextEquiv>
+                        <Unicode>اركان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617689164132_1279" custom="readingOrder {index:10;}">
+                    <Coords points="1540,823 1599,823 1599,864 1540,864"/>
+                    <TextEquiv>
+                        <Unicode>احد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617689164131_1278" custom="readingOrder {index:11;}">
+                    <Coords points="1599,807 1638,807 1638,876 1599,876"/>
+                    <TextEquiv>
+                        <Unicode>﴾</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617689145915_1272" custom="readingOrder {index:12;}">
+                    <Coords points="1655,819 1747,819 1747,881 1655,881"/>
+                    <TextEquiv>
+                        <Unicode>الصوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617689145915_1271" custom="readingOrder {index:13;}">
+                    <Coords points="1761,807 1800,807 1800,878 1761,878"/>
+                    <TextEquiv>
+                        <Unicode>﴿</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>وانَّما الجاهليَّة في العرب من المشركون يعرفهُ لم الاسلام اركان احد ﴾ الصوم ﴿</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_8" custom="readingOrder {index:4;}">
+                <Coords points="583,890 1881,890 1881,969 583,969"/>
+                <Baseline points="585,969 1881,969"/>
+                <Word id="w_79" custom="readingOrder {index:0;}">
+                    <Coords points="584,900 621,900 621,964 584,964"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_78" custom="readingOrder {index:1;}">
+                    <Coords points="636,905 775,905 775,962 636,962"/>
+                    <TextEquiv>
+                        <Unicode>يصومونهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_77" custom="readingOrder {index:2;}">
+                    <Coords points="794,901 870,901 870,959 794,959"/>
+                    <TextEquiv>
+                        <Unicode>كانوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_76" custom="readingOrder {index:3;}">
+                    <Coords points="880,891 1030,891 1030,969 880,969"/>
+                    <TextEquiv>
+                        <Unicode>ولعلَّهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_75" custom="readingOrder {index:4;}">
+                    <Coords points="1045,901 1187,901 1187,966 1045,966"/>
+                    <TextEquiv>
+                        <Unicode>نواميسهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_74" custom="readingOrder {index:5;}">
+                    <Coords points="1197,901 1306,901 1306,959 1197,959"/>
+                    <TextEquiv>
+                        <Unicode>مقتضى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_73" custom="readingOrder {index:6;}">
+                    <Coords points="1316,905 1369,905 1369,958 1316,958"/>
+                    <TextEquiv>
+                        <Unicode>على</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_72" custom="readingOrder {index:7;}">
+                    <Coords points="1380,917 1417,917 1417,960 1380,960"/>
+                    <TextEquiv>
+                        <Unicode>بهِ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_71" custom="readingOrder {index:8;}">
+                    <Coords points="1426,904 1550,904 1550,957 1426,957"/>
+                    <TextEquiv>
+                        <Unicode>يقومون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_70" custom="readingOrder {index:9;}">
+                    <Coords points="1562,914 1636,914 1636,967 1562,967"/>
+                    <TextEquiv>
+                        <Unicode>منهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_69" custom="readingOrder {index:10;}">
+                    <Coords points="1648,900 1804,900 1804,960 1648,960"/>
+                    <TextEquiv>
+                        <Unicode>المتنصِّرون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_68" custom="readingOrder {index:11;}">
+                    <Coords points="1819,905 1880,905 1880,946 1819,946"/>
+                    <TextEquiv>
+                        <Unicode>كان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>في يصومونهُ كانوا ولعلَّهم نواميسهم مقتضى على بهِ يقومون منهم المتنصِّرون كان</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_9" custom="readingOrder {index:5;}">
+                <Coords points="587,969 1881,969 1881,1045 587,1045"/>
+                <Baseline points="587,1045 1881,1045"/>
+                <Word id="w_92" custom="readingOrder {index:0;}">
+                    <Coords points="588,976 686,976 686,1031 588,1031"/>
+                    <TextEquiv>
+                        <Unicode>الخطط</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_91" custom="readingOrder {index:1;}">
+                    <Coords points="702,982 736,982 736,1043 702,1043"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_90" custom="readingOrder {index:2;}">
+                    <Coords points="748,981 866,981 866,1045 748,1045"/>
+                    <TextEquiv>
+                        <Unicode>المقريزي</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_89" custom="readingOrder {index:3;}">
+                    <Coords points="879,976 974,976 974,1025 879,1025"/>
+                    <TextEquiv>
+                        <Unicode>قال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_88" custom="readingOrder {index:4;}">
+                    <Coords points="992,980 1088,980 1088,1040 992,1040"/>
+                    <TextEquiv>
+                        <Unicode>نيسان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_87" custom="readingOrder {index:5;}">
+                    <Coords points="1100,974 1186,974 1186,1033 1100,1033"/>
+                    <TextEquiv>
+                        <Unicode>شهرنا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_86" custom="readingOrder {index:6;}">
+                    <Coords points="1198,979 1281,979 1281,1038 1198,1038"/>
+                    <TextEquiv>
+                        <Unicode>يوافق</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_85" custom="readingOrder {index:7;}">
+                    <Coords points="1294,976 1389,976 1389,1033 1294,1033"/>
+                    <TextEquiv>
+                        <Unicode>الثابتة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_84" custom="readingOrder {index:8;}">
+                    <Coords points="1403,968 1527,968 1527,1044 1403,1044"/>
+                    <TextEquiv>
+                        <Unicode>اشهُرهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_83" custom="readingOrder {index:9;}">
+                    <Coords points="1541,997 1593,997 1593,1038 1541,1038"/>
+                    <TextEquiv>
+                        <Unicode>من</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_82" custom="readingOrder {index:10;}">
+                    <Coords points="1603,979 1697,979 1697,1038 1603,1038"/>
+                    <TextEquiv>
+                        <Unicode>وقتئذٍ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_81" custom="readingOrder {index:11;}">
+                    <Coords points="1708,994 1778,994 1778,1038 1708,1038"/>
+                    <TextEquiv>
+                        <Unicode>وهو</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_80" custom="readingOrder {index:12;}">
+                    <Coords points="1789,976 1882,976 1882,1044 1789,1044"/>
+                    <TextEquiv>
+                        <Unicode>رجَب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>الخطط في المقريزي قال نيسان شهرنا يوافق الثابتة اشهُرهم من وقتئذٍ وهو رجَب</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_10" custom="readingOrder {index:6;}">
+                <Coords points="1679,1062 1878,1062 1878,1101 1679,1101"/>
+                <Baseline points="1679,1101 1878,1101"/>
+                <Word id="w_94" custom="readingOrder {index:0;}">
+                    <Coords points="1680,1071 1690,1071 1690,1093 1680,1093"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617820665328_4691" custom="readingOrder {index:1;}">
+                    <Coords points="1716,1067 1731,1067 1731,1100 1716,1100"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617820665328_4690" custom="readingOrder {index:2;}">
+                    <Coords points="1735,1068 1803,1068 1803,1098 1735,1098"/>
+                    <TextEquiv>
+                        <Unicode>٢٨٢</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617820663672_4686" custom="readingOrder {index:3;}">
+                    <Coords points="1816,1072 1826,1072 1826,1100 1816,1100"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617820662491_4682" custom="readingOrder {index:4;}">
+                    <Coords points="1841,1063 1858,1063 1858,1100 1841,1100"/>
+                    <TextEquiv>
+                        <Unicode>١</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617820661468_4678" custom="readingOrder {index:5;}">
+                    <Coords points="1862,1063 1877,1063 1877,1100 1862,1100"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>: ) ٢٨٢ : ١ (</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_11" custom="readingOrder {index:7;}">
+                <Coords points="584,1111 1821,1111 1821,1198 584,1198"/>
+                <Baseline points="584,1232 1821,1232"/>
+                <Word id="w_108" custom="readingOrder {index:0;}">
+                    <Coords points="587,1136 629,1136 629,1183 587,1183"/>
+                    <TextEquiv>
+                        <Unicode>فيه</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_107" custom="readingOrder {index:1;}">
+                    <Coords points="641,1120 723,1120 723,1197 641,1197"/>
+                    <TextEquiv>
+                        <Unicode>يُسمع</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_106" custom="readingOrder {index:2;}">
+                    <Coords points="730,1132 769,1132 769,1174 730,1174"/>
+                    <TextEquiv>
+                        <Unicode>فلا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_105" custom="readingOrder {index:3;}">
+                    <Coords points="794,1132 869,1132 869,1179 794,1179"/>
+                    <TextEquiv>
+                        <Unicode>القتال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_104" custom="readingOrder {index:4;}">
+                    <Coords points="883,1150 923,1150 923,1178 883,1178"/>
+                    <TextEquiv>
+                        <Unicode>عن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_103" custom="readingOrder {index:5;}">
+                    <Coords points="938,1136 977,1136 977,1179 938,1179"/>
+                    <TextEquiv>
+                        <Unicode>فيهِ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_102" custom="readingOrder {index:6;}">
+                    <Coords points="991,1114 1107,1114 1107,1179 991,1179"/>
+                    <TextEquiv>
+                        <Unicode>يكفُّون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_101" custom="readingOrder {index:7;}">
+                    <Coords points="1123,1128 1199,1128 1199,1178 1123,1178"/>
+                    <TextEquiv>
+                        <Unicode>كانوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_100" custom="readingOrder {index:8;}">
+                    <Coords points="1200,1132 1267,1132 1267,1186 1200,1186"/>
+                    <TextEquiv>
+                        <Unicode>لانهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_99" custom="readingOrder {index:9;}">
+                    <Coords points="1292,1123 1370,1123 1370,1190 1292,1190"/>
+                    <TextEquiv>
+                        <Unicode>الاصمّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_98" custom="readingOrder {index:10;}">
+                    <Coords points="1379,1122 1408,1122 1408,1164 1379,1164"/>
+                    <TextEquiv>
+                        <Unicode>لهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_97" custom="readingOrder {index:11;}">
+                    <Coords points="1425,1126 1540,1126 1540,1180 1425,1180"/>
+                    <TextEquiv>
+                        <Unicode>ويقولون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690174077_1347" custom="readingOrder {index:12;}">
+                    <Coords points="1556,1132 1621,1132 1621,1183 1556,1183"/>
+                    <TextEquiv>
+                        <Unicode>حرام</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690174076_1346" custom="readingOrder {index:13;}">
+                    <Coords points="1634,1132 1692,1132 1692,1176 1634,1176"/>
+                    <TextEquiv>
+                        <Unicode>شهر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690182284_1353" custom="readingOrder {index:14;}">
+                    <Coords points="1697,1120 1800,1120 1800,1177 1697,1177"/>
+                    <TextEquiv>
+                        <Unicode>رجَبٌ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690182284_1352" custom="readingOrder {index:15;}">
+                    <Coords points="1801,1142 1820,1142 1820,1163 1801,1163"/>
+                    <TextEquiv>
+                        <Unicode>«</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>فيه يُسمع فلا القتال عن فيهِ يكفُّون كانوا لانهم الاصمّ لهُ ويقولون حرام شهر رجَبٌ «</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_13" custom="readingOrder {index:8;}">
+                <Coords points="588,1181 1881,1181 1881,1252 588,1252"/>
+                <Baseline points="588,1265 1881,1265"/>
+                <Word id="w_126" custom="readingOrder {index:0;}">
+                    <Coords points="589,1196 682,1196 682,1251 589,1251"/>
+                    <TextEquiv>
+                        <Unicode>وكانت</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_125" custom="readingOrder {index:1;}">
+                    <Coords points="697,1200 831,1200 831,1243 697,1243"/>
+                    <TextEquiv>
+                        <Unicode>الجاهلية</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_124" custom="readingOrder {index:2;}">
+                    <Coords points="847,1198 872,1198 872,1243 847,1243"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_123" custom="readingOrder {index:3;}">
+                    <Coords points="887,1188 974,1188 974,1242 887,1242"/>
+                    <TextEquiv>
+                        <Unicode>تصومُهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_122" custom="readingOrder {index:4;}">
+                    <Coords points="990,1197 1077,1197 1077,1241 990,1241"/>
+                    <TextEquiv>
+                        <Unicode>العرب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_121" custom="readingOrder {index:5;}">
+                    <Coords points="1092,1187 1189,1187 1189,1235 1092,1235"/>
+                    <TextEquiv>
+                        <Unicode>وكانت</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_120" custom="readingOrder {index:6;}">
+                    <Coords points="1198,1181 1272,1181 1272,1241 1198,1241"/>
+                    <TextEquiv>
+                        <Unicode>مُضَر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_119" custom="readingOrder {index:7;}">
+                    <Coords points="1287,1182 1353,1182 1354,1241 1288,1241"/>
+                    <TextEquiv>
+                        <Unicode>شهرُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_118" custom="readingOrder {index:8;}">
+                    <Coords points="1360,1210 1401,1210 1401,1241 1360,1241"/>
+                    <TextEquiv>
+                        <Unicode>هو</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_117" custom="readingOrder {index:9;}">
+                    <Coords points="1416,1186 1503,1186 1503,1248 1416,1248"/>
+                    <TextEquiv>
+                        <Unicode>الاصمّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_116" custom="readingOrder {index:10;}">
+                    <Coords points="1519,1209 1620,1209 1620,1242 1519,1242"/>
+                    <TextEquiv>
+                        <Unicode>ورجب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_113" custom="readingOrder {index:11;}">
+                    <Coords points="1627,1219 1689,1219 1689,1227 1627,1227"/>
+                    <TextEquiv>
+                        <Unicode>...</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_112" custom="readingOrder {index:12;}">
+                    <Coords points="1715,1198 1782,1198 1782,1251 1715,1251"/>
+                    <TextEquiv>
+                        <Unicode>سلاح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_111" custom="readingOrder {index:13;}">
+                    <Coords points="1799,1209 1880,1209 1880,1240 1799,1240"/>
+                    <TextEquiv>
+                        <Unicode>صوت</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>وكانت الجاهلية في تصومُهُ العرب وكانت مُضَر شهرُ هو الاصمّ ورجب ... سلاح صوت</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_14" custom="readingOrder {index:9;}">
+                <Coords points="728,1242 1882,1242 1882,1311 728,1311"/>
+                <Baseline points="728,1314 1882,1314"/>
+                <Word id="word_1617690259164_1376" custom="readingOrder {index:0;}">
+                    <Coords points="729,1272 745,1272 745,1295 729,1295"/>
+                    <TextEquiv>
+                        <Unicode>»</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690259164_1375" custom="readingOrder {index:1;}">
+                    <Coords points="745,1263 841,1263 841,1307 745,1307"/>
+                    <TextEquiv>
+                        <Unicode>يخافون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_139" custom="readingOrder {index:2;}">
+                    <Coords points="858,1265 901,1265 901,1298 858,1298"/>
+                    <TextEquiv>
+                        <Unicode>ولا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_138" custom="readingOrder {index:3;}">
+                    <Coords points="914,1263 1008,1263 1008,1298 914,1298"/>
+                    <TextEquiv>
+                        <Unicode>الاسفار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_137" custom="readingOrder {index:4;}">
+                    <Coords points="1026,1260 1059,1260 1059,1296 1026,1296"/>
+                    <TextEquiv>
+                        <Unicode>الى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_136" custom="readingOrder {index:5;}">
+                    <Coords points="1080,1261 1217,1261 1217,1304 1080,1304"/>
+                    <TextEquiv>
+                        <Unicode>ويخرجون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_135" custom="readingOrder {index:6;}">
+                    <Coords points="1221,1257 1265,1257 1265,1306 1221,1306"/>
+                    <TextEquiv>
+                        <Unicode>فيهِ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_134" custom="readingOrder {index:7;}">
+                    <Coords points="1281,1248 1332,1248 1332,1300 1281,1300"/>
+                    <TextEquiv>
+                        <Unicode>بعضًا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_133" custom="readingOrder {index:8;}">
+                    <Coords points="1352,1240 1433,1240 1433,1313 1352,1313"/>
+                    <TextEquiv>
+                        <Unicode>بعضُهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_132" custom="readingOrder {index:9;}">
+                    <Coords points="1452,1246 1511,1246 1511,1308 1452,1308"/>
+                    <TextEquiv>
+                        <Unicode>يأمن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_131" custom="readingOrder {index:10;}">
+                    <Coords points="1530,1247 1607,1247 1607,1308 1530,1308"/>
+                    <TextEquiv>
+                        <Unicode>وكان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_130" custom="readingOrder {index:11;}">
+                    <Coords points="1617,1260 1675,1260 1675,1309 1617,1309"/>
+                    <TextEquiv>
+                        <Unicode>اهلها</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_129" custom="readingOrder {index:12;}">
+                    <Coords points="1692,1262 1761,1262 1761,1303 1692,1303"/>
+                    <TextEquiv>
+                        <Unicode>وتمير</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_128" custom="readingOrder {index:13;}">
+                    <Coords points="1776,1262 1814,1262 1814,1303 1776,1303"/>
+                    <TextEquiv>
+                        <Unicode>فيه</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_127" custom="readingOrder {index:14;}">
+                    <Coords points="1824,1261 1881,1261 1881,1303 1824,1303"/>
+                    <TextEquiv>
+                        <Unicode>تمتار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>» يخافون ولا الاسفار الى ويخرجون فيهِ بعضًا بعضُهم يأمن وكان اهلها وتمير فيه تمتار</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_15" custom="readingOrder {index:10;}">
+                <Coords points="919,1318 1804,1318 1804,1396 919,1396"/>
+                <Baseline points="919,1416 1804,1416"/>
+                <Word id="w_153" custom="readingOrder {index:0;}">
+                    <Coords points="920,1345 929,1345 929,1366 920,1366"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_152" custom="readingOrder {index:1;}">
+                    <Coords points="937,1333 1013,1333 1013,1395 937,1395"/>
+                    <TextEquiv>
+                        <Unicode>النعيم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_151" custom="readingOrder {index:2;}">
+                    <Coords points="1026,1336 1079,1336 1079,1377 1026,1377"/>
+                    <TextEquiv>
+                        <Unicode>دار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_150" custom="readingOrder {index:3;}">
+                    <Coords points="1093,1330 1125,1330 1125,1387 1093,1387"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_149" custom="readingOrder {index:4;}">
+                    <Coords points="1137,1327 1251,1327 1251,1387 1137,1387"/>
+                    <TextEquiv>
+                        <Unicode>الصائمين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_147" custom="readingOrder {index:5;}">
+                    <Coords points="1264,1334 1335,1334 1335,1383 1264,1383"/>
+                    <TextEquiv>
+                        <Unicode>جزاء</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_146" custom="readingOrder {index:6;}">
+                    <Coords points="1344,1320 1421,1321 1421,1385 1344,1384"/>
+                    <TextEquiv>
+                        <Unicode>يذكر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_145" custom="readingOrder {index:7;}">
+                    <Coords points="1436,1327 1543,1327 1543,1380 1436,1380"/>
+                    <TextEquiv>
+                        <Unicode>الصلت</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_144" custom="readingOrder {index:8;}">
+                    <Coords points="1551,1331 1601,1331 1601,1390 1551,1390"/>
+                    <TextEquiv>
+                        <Unicode>ابي</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_143" custom="readingOrder {index:9;}">
+                    <Coords points="1615,1336 1659,1336 1659,1376 1615,1376"/>
+                    <TextEquiv>
+                        <Unicode>ابن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_142" custom="readingOrder {index:10;}">
+                    <Coords points="1675,1322 1730,1322 1730,1390 1675,1390"/>
+                    <TextEquiv>
+                        <Unicode>اميَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_141" custom="readingOrder {index:11;}">
+                    <Coords points="1748,1327 1803,1327 1803,1375 1748,1375"/>
+                    <TextEquiv>
+                        <Unicode>قال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>: النعيم دار في الصائمين جزاء يذكر الصلت ابي ابن اميَّة قال</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_17" custom="readingOrder {index:11;}">
+                <Coords points="775,1402 1696,1402 1696,1475 775,1475"/>
+                <Baseline points="787,1524 1696,1524"/>
+                <Word id="word_1617690359282_1401" custom="readingOrder {index:0;}">
+                    <Coords points="776,1403 874,1403 874,1472 776,1472"/>
+                    <TextEquiv>
+                        <Unicode>يَصُومُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690359282_1400" custom="readingOrder {index:1;}">
+                    <Coords points="887,1408 934,1408 934,1465 887,1465"/>
+                    <TextEquiv>
+                        <Unicode>مَن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690358026_1396" custom="readingOrder {index:2;}">
+                    <Coords points="944,1405 1069,1405 1069,1472 944,1472"/>
+                    <TextEquiv>
+                        <Unicode>وحُلِّل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690356058_1392" custom="readingOrder {index:3;}">
+                    <Coords points="1081,1403 1205,1403 1205,1472 1081,1472"/>
+                    <TextEquiv>
+                        <Unicode>تقبَّلَهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_160" custom="readingOrder {index:4;}">
+                    <Coords points="1270,1406 1343,1406 1343,1461 1270,1461"/>
+                    <TextEquiv>
+                        <Unicode>اليها</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_159" custom="readingOrder {index:5;}">
+                    <Coords points="1368,1405 1465,1405 1465,1455 1368,1455"/>
+                    <TextEquiv>
+                        <Unicode>أَجْرَوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690389162_1413" custom="readingOrder {index:6;}">
+                    <Coords points="1495,1412 1538,1412 1538,1472 1495,1472"/>
+                    <TextEquiv>
+                        <Unicode>التي</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690389162_1412" custom="readingOrder {index:7;}">
+                    <Coords points="1552,1415 1643,1415 1643,1463 1552,1463"/>
+                    <TextEquiv>
+                        <Unicode>بلغوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690386161_1408" custom="readingOrder {index:8;}">
+                    <Coords points="1658,1412 1695,1412 1695,1454 1658,1454"/>
+                    <TextEquiv>
+                        <Unicode>اذا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>يَصُومُ مَن وحُلِّل تقبَّلَهم اليها أَجْرَوا التي بلغوا اذا</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_18" custom="readingOrder {index:12;}">
+                <Coords points="967,1486 1806,1486 1806,1571 967,1571"/>
+                <Baseline points="749,1667 1836,1667"/>
+                <Word id="word_1617690501410_1438" custom="readingOrder {index:0;}">
+                    <Coords points="967,1509 979,1509 979,1543 967,1543"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690507064_1441" custom="readingOrder {index:1;}">
+                    <Coords points="1003,1501 1090,1501 1090,1565 1003,1565"/>
+                    <TextEquiv>
+                        <Unicode>تولب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690510624_1444" custom="readingOrder {index:2;}">
+                    <Coords points="1100,1507 1139,1507 1139,1553 1100,1553"/>
+                    <TextEquiv>
+                        <Unicode>بن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690515184_1447" custom="readingOrder {index:3;}">
+                    <Coords points="1149,1501 1187,1501 1187,1555 1149,1555"/>
+                    <TextEquiv>
+                        <Unicode>نمر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690519958_1450" custom="readingOrder {index:4;}">
+                    <Coords points="1197,1494 1256,1494 1256,1545 1197,1545"/>
+                    <TextEquiv>
+                        <Unicode>قال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690526192_1453" custom="readingOrder {index:5;}">
+                    <Coords points="1265,1498 1365,1498 1365,1565 1265,1565"/>
+                    <TextEquiv>
+                        <Unicode>الفِصح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690531272_1456" custom="readingOrder {index:6;}">
+                    <Coords points="1374,1517 1448,1517 1448,1564 1374,1564"/>
+                    <TextEquiv>
+                        <Unicode>صوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690538137_1459" custom="readingOrder {index:7;}">
+                    <Coords points="1461,1506 1597,1506 1597,1568 1461,1568"/>
+                    <TextEquiv>
+                        <Unicode>اصوامهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690549263_1462" custom="readingOrder {index:8;}">
+                    <Coords points="1611,1487 1705,1487 1705,1563 1611,1563"/>
+                    <TextEquiv>
+                        <Unicode>اخصُّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690555337_1465" custom="readingOrder {index:9;}">
+                    <Coords points="1719,1497 1805,1497 1805,1553 1719,1553"/>
+                    <TextEquiv>
+                        <Unicode>وكان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>سوَّامُ : تولب بن نمر قال الفِصح صوم اصوامهم اخصُّ وكان</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="line_1617688885509_1198" custom="readingOrder {index:13;}">
+                <Coords points="744,1572 1733,1572 1733,1645 744,1645"/>
+                <Word id="w_171" custom="readingOrder {index:0;}">
+                    <Coords points="748,1578 829,1578 829,1644 748,1644"/>
+                    <TextEquiv>
+                        <Unicode>سوَّامُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_170" custom="readingOrder {index:1;}">
+                    <Coords points="842,1589 932,1589 932,1645 842,1645"/>
+                    <TextEquiv>
+                        <Unicode>الفِصح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_169" custom="readingOrder {index:2;}">
+                    <Coords points="941,1573 1032,1573 1032,1632 941,1632"/>
+                    <TextEquiv>
+                        <Unicode>قُبَيْل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_168" custom="readingOrder {index:3;}">
+                    <Coords points="1051,1585 1138,1585 1138,1627 1051,1627"/>
+                    <TextEquiv>
+                        <Unicode>نصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_167" custom="readingOrder {index:4;}">
+                    <Coords points="1155,1584 1214,1584 1214,1634 1155,1634"/>
+                    <TextEquiv>
+                        <Unicode>ساقي</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_166" custom="readingOrder {index:5;}">
+                    <Coords points="1273,1580 1298,1580 1298,1616 1273,1616"/>
+                    <TextEquiv>
+                        <Unicode>لهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_165" custom="readingOrder {index:6;}">
+                    <Coords points="1325,1577 1379,1577 1379,1627 1325,1627"/>
+                    <TextEquiv>
+                        <Unicode>يحلُّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690428497_1427" custom="readingOrder {index:7;}">
+                    <Coords points="1405,1587 1430,1587 1430,1622 1405,1622"/>
+                    <TextEquiv>
+                        <Unicode>لا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690428497_1426" custom="readingOrder {index:8;}">
+                    <Coords points="1447,1572 1482,1572 1482,1622 1447,1622"/>
+                    <TextEquiv>
+                        <Unicode>عمَّا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690427441_1422" custom="readingOrder {index:9;}">
+                    <Coords points="1502,1577 1551,1577 1551,1622 1502,1622"/>
+                    <TextEquiv>
+                        <Unicode>صدَّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_163" custom="readingOrder {index:10;}">
+                    <Coords points="1578,1581 1635,1581 1635,1630 1578,1630"/>
+                    <TextEquiv>
+                        <Unicode>كما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_162" custom="readingOrder {index:11;}">
+                    <Coords points="1645,1581 1729,1581 1729,1628 1645,1628"/>
+                    <TextEquiv>
+                        <Unicode>صدّت</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode></Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_19" custom="readingOrder {index:14;}">
+                <Coords points="598,1648 1809,1648 1808,1732 597,1732"/>
+                <Baseline points="598,1750 1809,1750"/>
+                <Word id="w_184" custom="readingOrder {index:0;}">
+                    <Coords points="598,1666 628,1666 628,1709 598,1709"/>
+                    <TextEquiv>
+                        <Unicode>لا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_183" custom="readingOrder {index:1;}">
+                    <Coords points="641,1665 737,1665 737,1732 641,1732"/>
+                    <TextEquiv>
+                        <Unicode>الفصح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_182" custom="readingOrder {index:2;}">
+                    <Coords points="747,1682 824,1682 824,1728 747,1728"/>
+                    <TextEquiv>
+                        <Unicode>صوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_181" custom="readingOrder {index:3;}">
+                    <Coords points="839,1662 920,1662 920,1710 839,1710"/>
+                    <TextEquiv>
+                        <Unicode>وكان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_180" custom="readingOrder {index:4;}">
+                    <Coords points="938,1650 991,1650 991,1717 938,1717"/>
+                    <TextEquiv>
+                        <Unicode>يوماً</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_179" custom="readingOrder {index:5;}">
+                    <Coords points="1001,1656 1083,1656 1083,1717 1001,1717"/>
+                    <TextEquiv>
+                        <Unicode>ثلثين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_178" custom="readingOrder {index:6;}">
+                    <Coords points="1093,1657 1205,1657 1205,1707 1093,1707"/>
+                    <TextEquiv>
+                        <Unicode>رمضان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_177" custom="readingOrder {index:7;}">
+                    <Coords points="1215,1649 1298,1649 1298,1719 1215,1719"/>
+                    <TextEquiv>
+                        <Unicode>صومَ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_176" custom="readingOrder {index:8;}">
+                    <Coords points="1310,1659 1389,1659 1389,1700 1310,1700"/>
+                    <TextEquiv>
+                        <Unicode>محمَّد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_175" custom="readingOrder {index:9;}">
+                    <Coords points="1402,1658 1495,1658 1495,1718 1402,1718"/>
+                    <TextEquiv>
+                        <Unicode>اقتبس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_174" custom="readingOrder {index:10;}">
+                    <Coords points="1513,1654 1640,1654 1640,1705 1513,1705"/>
+                    <TextEquiv>
+                        <Unicode>النصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_173" custom="readingOrder {index:11;}">
+                    <Coords points="1651,1676 1723,1676 1723,1720 1651,1720"/>
+                    <TextEquiv>
+                        <Unicode>صوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_172" custom="readingOrder {index:12;}">
+                    <Coords points="1734,1670 1808,1670 1808,1714 1734,1714"/>
+                    <TextEquiv>
+                        <Unicode>ومن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>لا الفصح صوم وكان يوماً ثلثين رمضان صومَ محمَّد اقتبس النصارى صوم ومن</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_20" custom="readingOrder {index:15;}">
+                <Coords points="596,1727 1889,1727 1889,1811 596,1811"/>
+                <Baseline points="597,1823 1890,1823"/>
+                <Word id="w_199" custom="readingOrder {index:0;}">
+                    <Coords points="596,1755 699,1755 699,1809 596,1809"/>
+                    <TextEquiv>
+                        <Unicode>غروب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_198" custom="readingOrder {index:1;}">
+                    <Coords points="710,1759 768,1759 768,1802 710,1802"/>
+                    <TextEquiv>
+                        <Unicode>بعد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_197" custom="readingOrder {index:2;}">
+                    <Coords points="776,1734 896,1734 896,1809 776,1809"/>
+                    <TextEquiv>
+                        <Unicode>الإِفْطار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_196" custom="readingOrder {index:3;}">
+                    <Coords points="911,1739 986,1739 986,1787 911,1787"/>
+                    <TextEquiv>
+                        <Unicode>عادةَ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_195" custom="readingOrder {index:4;}">
+                    <Coords points="1003,1744 1059,1744 1059,1783 1003,1783"/>
+                    <TextEquiv>
+                        <Unicode>اخذ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_194" custom="readingOrder {index:5;}">
+                    <Coords points="1082,1731 1143,1731 1143,1797 1082,1797"/>
+                    <TextEquiv>
+                        <Unicode>ايضاً</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_193" custom="readingOrder {index:6;}">
+                    <Coords points="1162,1748 1262,1748 1262,1810 1162,1810"/>
+                    <TextEquiv>
+                        <Unicode>ومنهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_192" custom="readingOrder {index:7;}">
+                    <Coords points="1283,1763 1291,1763 1291,1771 1283,1771"/>
+                    <TextEquiv>
+                        <Unicode>.</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690706761_1492" custom="readingOrder {index:8;}">
+                    <Coords points="1322,1742 1335,1742 1335,1776 1322,1776"/>
+                    <TextEquiv>
+                        <Unicode>١‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690706761_1491" custom="readingOrder {index:9;}">
+                    <Coords points="1340,1742 1355,1742 1355,1776 1340,1776"/>
+                    <TextEquiv>
+                        <Unicode>(‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_190" custom="readingOrder {index:10;}">
+                    <Coords points="1370,1732 1518,1732 1518,1798 1370,1798"/>
+                    <TextEquiv>
+                        <Unicode>الكنائس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_189" custom="readingOrder {index:11;}">
+                    <Coords points="1533,1747 1611,1747 1611,1794 1533,1794"/>
+                    <TextEquiv>
+                        <Unicode>بعض</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_188" custom="readingOrder {index:12;}">
+                    <Coords points="1625,1733 1659,1733 1659,1796 1625,1796"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_187" custom="readingOrder {index:13;}">
+                    <Coords points="1671,1738 1746,1738 1746,1785 1671,1785"/>
+                    <TextEquiv>
+                        <Unicode>ذلك</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_186" custom="readingOrder {index:14;}">
+                    <Coords points="1760,1745 1811,1745 1811,1802 1760,1802"/>
+                    <TextEquiv>
+                        <Unicode>على</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_185" custom="readingOrder {index:15;}">
+                    <Coords points="1824,1745 1889,1745 1889,1799 1824,1799"/>
+                    <TextEquiv>
+                        <Unicode>يزيد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>غروب بعد الإِفْطار عادةَ اخذ ايضاً ومنهم . ١‏ (‏ الكنائس بعض في ذلك على يزيد</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_21" custom="readingOrder {index:16;}">
+                <Coords points="599,1802 1891,1802 1891,1887 599,1887"/>
+                <Baseline points="588,1887 1934,1887"/>
+                <Word id="w_213" custom="readingOrder {index:0;}">
+                    <Coords points="599,1818 661,1818 661,1886 599,1886"/>
+                    <TextEquiv>
+                        <Unicode>حلَّل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_212" custom="readingOrder {index:1;}">
+                    <Coords points="672,1827 756,1827 756,1882 672,1882"/>
+                    <TextEquiv>
+                        <Unicode>الذين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_211" custom="readingOrder {index:2;}">
+                    <Coords points="770,1828 888,1828 888,1883 770,1883"/>
+                    <TextEquiv>
+                        <Unicode>المسلمين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_210" custom="readingOrder {index:3;}">
+                    <Coords points="906,1829 1004,1829 1004,1870 906,1870"/>
+                    <TextEquiv>
+                        <Unicode>خلاف</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_209" custom="readingOrder {index:4;}">
+                    <Coords points="1006,1832 1057,1832 1057,1887 1006,1887"/>
+                    <TextEquiv>
+                        <Unicode>على</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_208" custom="readingOrder {index:5;}">
+                    <Coords points="1063,1829 1166,1829 1166,1874 1063,1874"/>
+                    <TextEquiv>
+                        <Unicode>واحدة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_207" custom="readingOrder {index:6;}">
+                    <Coords points="1180,1810 1232,1810 1232,1876 1180,1876"/>
+                    <TextEquiv>
+                        <Unicode>مرَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_206" custom="readingOrder {index:7;}">
+                    <Coords points="1243,1807 1280,1807 1280,1864 1243,1864"/>
+                    <TextEquiv>
+                        <Unicode>الَّا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_205" custom="readingOrder {index:8;}">
+                    <Coords points="1293,1819 1389,1819 1389,1884 1293,1884"/>
+                    <TextEquiv>
+                        <Unicode>حينئذٍ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_204" custom="readingOrder {index:9;}">
+                    <Coords points="1407,1809 1509,1809 1509,1880 1407,1880"/>
+                    <TextEquiv>
+                        <Unicode>يأكلوا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_203" custom="readingOrder {index:10;}">
+                    <Coords points="1515,1811 1543,1811 1543,1886 1515,1886"/>
+                    <TextEquiv>
+                        <Unicode>لم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_202" custom="readingOrder {index:11;}">
+                    <Coords points="1548,1819 1680,1819 1680,1872 1548,1872"/>
+                    <TextEquiv>
+                        <Unicode>النصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690770217_1509" custom="readingOrder {index:12;}">
+                    <Coords points="1689,1804 1730,1804 1730,1867 1689,1867"/>
+                    <TextEquiv>
+                        <Unicode>أَنَّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690770217_1508" custom="readingOrder {index:13;}">
+                    <Coords points="1734,1804 1776,1804 1776,1867 1734,1867"/>
+                    <TextEquiv>
+                        <Unicode>الَّا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690769141_1504" custom="readingOrder {index:14;}">
+                    <Coords points="1776,1819 1888,1819 1888,1879 1776,1879"/>
+                    <TextEquiv>
+                        <Unicode>الشمس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>حلَّل الذين المسلمين خلاف على واحدة مرَّة الَّا حينئذٍ يأكلوا لم النصارى أَنَّ الَّا الشمس</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_22" custom="readingOrder {index:17;}">
+                <Coords points="597,1897 1891,1897 1891,1969 597,1969"/>
+                <Baseline points="597,1969 1891,1969"/>
+                <Word id="w_227" custom="readingOrder {index:0;}">
+                    <Coords points="598,1907 717,1907 717,1968 598,1968"/>
+                    <TextEquiv>
+                        <Unicode>والبقول</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_226" custom="readingOrder {index:1;}">
+                    <Coords points="734,1909 865,1909 865,1967 734,1967"/>
+                    <TextEquiv>
+                        <Unicode>الاعشاب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_225" custom="readingOrder {index:2;}">
+                    <Coords points="884,1893 921,1893 921,1950 884,1950"/>
+                    <TextEquiv>
+                        <Unicode>الَّا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_224" custom="readingOrder {index:3;}">
+                    <Coords points="938,1897 1071,1897 1071,1962 938,1962"/>
+                    <TextEquiv>
+                        <Unicode>يأكلون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_222" custom="readingOrder {index:4;}">
+                    <Coords points="1076,1904 1113,1904 1113,1950 1076,1950"/>
+                    <TextEquiv>
+                        <Unicode>لا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_221" custom="readingOrder {index:5;}">
+                    <Coords points="1121,1907 1248,1907 1248,1955 1121,1955"/>
+                    <TextEquiv>
+                        <Unicode>النصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_220" custom="readingOrder {index:6;}">
+                    <Coords points="1262,1909 1321,1909 1321,1949 1262,1949"/>
+                    <TextEquiv>
+                        <Unicode>كان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_219" custom="readingOrder {index:7;}">
+                    <Coords points="1337,1900 1509,1900 1509,1950 1337,1950"/>
+                    <TextEquiv>
+                        <Unicode>وكذلك</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_218" custom="readingOrder {index:8;}">
+                    <Coords points="1525,1924 1540,1924 1540,1938 1525,1938"/>
+                    <TextEquiv>
+                        <Unicode>.‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_217" custom="readingOrder {index:9;}">
+                    <Coords points="1561,1906 1633,1906 1633,1960 1561,1960"/>
+                    <TextEquiv>
+                        <Unicode>الليل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_216" custom="readingOrder {index:10;}">
+                    <Coords points="1647,1900 1719,1900 1719,1957 1647,1957"/>
+                    <TextEquiv>
+                        <Unicode>طول</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_215" custom="readingOrder {index:11;}">
+                    <Coords points="1734,1898 1825,1898 1825,1953 1734,1953"/>
+                    <TextEquiv>
+                        <Unicode>الاكل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_214" custom="readingOrder {index:12;}">
+                    <Coords points="1843,1905 1890,1905 1890,1963 1843,1963"/>
+                    <TextEquiv>
+                        <Unicode>لهم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>والبقول الاعشاب الَّا يأكلون لا النصارى كان وكذلك .‏ الليل طول الاكل لهم</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_23" custom="readingOrder {index:18;}">
+                <Coords points="600,1975 1891,1975 1891,2050 600,2050"/>
+                <Baseline points="599,2073 1890,2073"/>
+                <Word id="w_240" custom="readingOrder {index:0;}">
+                    <Coords points="600,1985 696,1985 696,2045 600,2045"/>
+                    <TextEquiv>
+                        <Unicode>توماس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_239" custom="readingOrder {index:1;}">
+                    <Coords points="711,1978 811,1978 811,2032 711,2032"/>
+                    <TextEquiv>
+                        <Unicode>العلَّامة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_238" custom="readingOrder {index:2;}">
+                    <Coords points="825,1984 882,1984 882,2033 825,2033"/>
+                    <TextEquiv>
+                        <Unicode>قال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_237" custom="readingOrder {index:3;}">
+                    <Coords points="896,2009 912,2009 912,2025 896,2025"/>
+                    <TextEquiv>
+                        <Unicode>.‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_236" custom="readingOrder {index:4;}">
+                    <Coords points="932,1990 1071,1990 1071,2042 932,2042"/>
+                    <TextEquiv>
+                        <Unicode>للمسلمين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_235" custom="readingOrder {index:5;}">
+                    <Coords points="1100,2004 1135,2004 1135,2044 1100,2044"/>
+                    <TextEquiv>
+                        <Unicode>بهِ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_233" custom="readingOrder {index:6;}">
+                    <Coords points="1143,2004 1264,2004 1264,2047 1143,2047"/>
+                    <TextEquiv>
+                        <Unicode>مسموح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_232" custom="readingOrder {index:7;}">
+                    <Coords points="1289,1986 1403,1986 1403,2031 1289,2031"/>
+                    <TextEquiv>
+                        <Unicode>وكلاهما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_231" custom="readingOrder {index:8;}">
+                    <Coords points="1430,1986 1589,1986 1589,2041 1430,2041"/>
+                    <TextEquiv>
+                        <Unicode>والبياض</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_230" custom="readingOrder {index:9;}">
+                    <Coords points="1606,1985 1689,1985 1689,2049 1606,2049"/>
+                    <TextEquiv>
+                        <Unicode>اللحم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_229" custom="readingOrder {index:10;}">
+                    <Coords points="1701,1991 1769,1991 1769,2026 1701,2026"/>
+                    <TextEquiv>
+                        <Unicode>دون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_228" custom="readingOrder {index:11;}">
+                    <Coords points="1782,1977 1889,1977 1889,2026 1782,2026"/>
+                    <TextEquiv>
+                        <Unicode>والاثمار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>توماس العلَّامة قال .‏ للمسلمين بهِ مسموح وكلاهما والبياض اللحم دون والاثمار</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_24" custom="readingOrder {index:19;}">
+                <Coords points="601,2055 1892,2055 1892,2132 601,2132"/>
+                <Baseline points="602,2151 1887,2151"/>
+                <Word id="word_1617690992780_1577" custom="readingOrder {index:0;}">
+                    <Coords points="603,2073 619,2073 619,2112 603,2112"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690992780_1576" custom="readingOrder {index:1;}">
+                    <Coords points="619,2073 802,2073 802,2112 619,2112"/>
+                    <TextEquiv>
+                        <Unicode>Dictiona-</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690961655_1568" custom="readingOrder {index:2;}">
+                    <Coords points="820,2074 835,2074 835,2110 820,2110"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690961655_1567" custom="readingOrder {index:3;}">
+                    <Coords points="837,2074 907,2074 907,2105 837,2105"/>
+                    <TextEquiv>
+                        <Unicode>٥٣٤</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690960126_1563" custom="readingOrder {index:4;}">
+                    <Coords points="909,2083 958,2083 958,2119 909,2119"/>
+                    <TextEquiv>
+                        <Unicode>ص</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690959188_1559" custom="readingOrder {index:5;}">
+                    <Coords points="958,2067 973,2067 973,2102 958,2102"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_248" custom="readingOrder {index:6;}">
+                    <Coords points="988,2061 1103,2061 1103,2130 988,2130"/>
+                    <TextEquiv>
+                        <Unicode>الاسلام</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_247" custom="readingOrder {index:7;}">
+                    <Coords points="1124,2081 1213,2081 1213,2132 1124,2132"/>
+                    <TextEquiv>
+                        <Unicode>معجم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_246" custom="readingOrder {index:8;}">
+                    <Coords points="1220,2062 1256,2062 1256,2122 1220,2122"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690935477_1552" custom="readingOrder {index:9;}">
+                    <Coords points="1270,2068 1289,2068 1289,2104 1270,2104"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690935477_1551" custom="readingOrder {index:10;}">
+                    <Coords points="1289,2068 1333,2068 1333,2104 1289,2104"/>
+                    <TextEquiv>
+                        <Unicode>U.</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_244" custom="readingOrder {index:11;}">
+                    <Coords points="1349,2066 1471,2066 1471,2103 1349,2103"/>
+                    <TextEquiv>
+                        <Unicode>Patrik</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690926348_1546" custom="readingOrder {index:12;}">
+                    <Coords points="1485,2062 1642,2062 1642,2112 1485,2112"/>
+                    <TextEquiv>
+                        <Unicode>Hughes</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617690926348_1545" custom="readingOrder {index:13;}">
+                    <Coords points="1642,2062 1656,2062 1656,2098 1642,2098"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_242" custom="readingOrder {index:14;}">
+                    <Coords points="1674,2075 1771,2075 1771,2116 1674,2116"/>
+                    <TextEquiv>
+                        <Unicode>هيوس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_241" custom="readingOrder {index:15;}">
+                    <Coords points="1796,2062 1889,2062 1889,2125 1796,2125"/>
+                    <TextEquiv>
+                        <Unicode>پتريك</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>) Dictiona- ) ٥٣٤ ص ( الاسلام معجم في ) U. Patrik Hughes ( هيوس پتريك</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_25" custom="readingOrder {index:20;}">
+                <Coords points="599,2124 1887,2124 1887,2216 599,2216"/>
+                <Baseline points="599,2240 1887,2240"/>
+                <Word id="w_265" custom="readingOrder {index:0;}">
+                    <Coords points="600,2149 690,2149 690,2215 600,2215"/>
+                    <TextEquiv>
+                        <Unicode>الصوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_264" custom="readingOrder {index:1;}">
+                    <Coords points="706,2153 804,2153 804,2204 706,2204"/>
+                    <TextEquiv>
+                        <Unicode>ناموس</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_262" custom="readingOrder {index:2;}">
+                    <Coords points="815,2148 980,2148 980,2199 815,2199"/>
+                    <TextEquiv>
+                        <Unicode>النصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_261" custom="readingOrder {index:3;}">
+                    <Coords points="993,2164 1037,2164 1037,2202 993,2202"/>
+                    <TextEquiv>
+                        <Unicode>عن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_260" custom="readingOrder {index:4;}">
+                    <Coords points="1050,2146 1104,2146 1104,2184 1050,2184"/>
+                    <TextEquiv>
+                        <Unicode>اخذ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_259" custom="readingOrder {index:5;}">
+                    <Coords points="1131,2135 1216,2135 1216,2184 1131,2184"/>
+                    <TextEquiv>
+                        <Unicode>محمَّدًا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_258" custom="readingOrder {index:6;}">
+                    <Coords points="1232,2130 1267,2130 1267,2186 1232,2186"/>
+                    <TextEquiv>
+                        <Unicode>انَّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_257" custom="readingOrder {index:7;}">
+                    <Coords points="1285,2140 1386,2140 1386,2183 1285,2183"/>
+                    <TextEquiv>
+                        <Unicode>عندنا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_256" custom="readingOrder {index:8;}">
+                    <Coords points="1399,2135 1512,2135 1512,2207 1399,2207"/>
+                    <TextEquiv>
+                        <Unicode>الارجح</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_255" custom="readingOrder {index:9;}">
+                    <Coords points="1529,2128 1564,2128 1564,2184 1529,2184"/>
+                    <TextEquiv>
+                        <Unicode>انَّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691018023_1587" custom="readingOrder {index:10;}">
+                    <Coords points="1586,2150 1601,2150 1601,2173 1586,2173"/>
+                    <TextEquiv>
+                        <Unicode>«</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691018023_1586" custom="readingOrder {index:11;}">
+                    <Coords points="1607,2150 1620,2150 1620,2173 1607,2173"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_253" custom="readingOrder {index:12;}">
+                    <Coords points="1645,2155 1684,2155 1684,2193 1645,2193"/>
+                    <TextEquiv>
+                        <Unicode>ry</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_252" custom="readingOrder {index:13;}">
+                    <Coords points="1706,2145 1748,2145 1748,2183 1706,2183"/>
+                    <TextEquiv>
+                        <Unicode>of</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691142545_1593" custom="readingOrder {index:14;}">
+                    <Coords points="1759,2146 1871,2146 1871,2197 1759,2197"/>
+                    <TextEquiv>
+                        <Unicode>Islam</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691142545_1592" custom="readingOrder {index:15;}">
+                    <Coords points="1871,2146 1886,2146 1886,2185 1871,2185"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>الصوم ناموس النصارى عن اخذ محمَّدًا انَّ عندنا الارجح انَّ « : ry of Islam (</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_26" custom="readingOrder {index:21;}">
+                <Coords points="603,2212 1895,2213 1895,2293 603,2292"/>
+                <Baseline points="604,2310 1891,2310"/>
+                <Word id="w_280" custom="readingOrder {index:0;}">
+                    <Coords points="605,2224 646,2224 646,2273 605,2273"/>
+                    <TextEquiv>
+                        <Unicode>معاً</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_279" custom="readingOrder {index:1;}">
+                    <Coords points="660,2229 756,2229 756,2294 660,2294"/>
+                    <TextEquiv>
+                        <Unicode>والليل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_278" custom="readingOrder {index:2;}">
+                    <Coords points="771,2226 845,2226 845,2291 771,2291"/>
+                    <TextEquiv>
+                        <Unicode>النهار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_277" custom="readingOrder {index:3;}">
+                    <Coords points="859,2217 901,2217 901,2279 859,2279"/>
+                    <TextEquiv>
+                        <Unicode>الى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_276" custom="readingOrder {index:4;}">
+                    <Coords points="928,2214 980,2214 980,2286 928,2286"/>
+                    <TextEquiv>
+                        <Unicode>يمتدُّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_275" custom="readingOrder {index:5;}">
+                    <Coords points="993,2213 1081,2213 1081,2281 993,2281"/>
+                    <TextEquiv>
+                        <Unicode>الشدَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_274" custom="readingOrder {index:6;}">
+                    <Coords points="1108,2226 1140,2226 1140,2283 1108,2283"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_273" custom="readingOrder {index:7;}">
+                    <Coords points="1154,2227 1209,2227 1209,2280 1154,2280"/>
+                    <TextEquiv>
+                        <Unicode>غاية</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_272" custom="readingOrder {index:8;}">
+                    <Coords points="1232,2216 1329,2216 1329,2277 1232,2277"/>
+                    <TextEquiv>
+                        <Unicode>الشرق</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_271" custom="readingOrder {index:9;}">
+                    <Coords points="1342,2218 1380,2218 1380,2282 1342,2282"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_270" custom="readingOrder {index:10;}">
+                    <Coords points="1389,2216 1517,2216 1517,2272 1389,2272"/>
+                    <TextEquiv>
+                        <Unicode>النصارى</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_269" custom="readingOrder {index:11;}">
+                    <Coords points="1532,2244 1600,2244 1600,2285 1532,2285"/>
+                    <TextEquiv>
+                        <Unicode>صوم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691511403_1602" custom="readingOrder {index:12;}">
+                    <Coords points="1615,2223 1702,2223 1702,2279 1615,2279"/>
+                    <TextEquiv>
+                        <Unicode>وكان‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691511403_1601" custom="readingOrder {index:13;}">
+                    <Coords points="1706,2244 1717,2244 1717,2262 1706,2262"/>
+                    <TextEquiv>
+                        <Unicode>.‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_267" custom="readingOrder {index:14;}">
+                    <Coords points="1731,2212 1789,2212 1789,2279 1731,2279"/>
+                    <TextEquiv>
+                        <Unicode>يوماً</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_266" custom="readingOrder {index:15;}">
+                    <Coords points="1797,2220 1891,2220 1891,2279 1797,2279"/>
+                    <TextEquiv>
+                        <Unicode>ثلاثين</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>معاً والليل النهار الى يمتدُّ الشدَّة في غاية الشرق في النصارى صوم وكان‏ .‏ يوماً ثلاثين</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_27" custom="readingOrder {index:22;}">
+                <Coords points="602,2286 1892,2286 1890,2372 600,2372"/>
+                <Baseline points="602,2375 1892,2375"/>
+                <Word id="w_295" custom="readingOrder {index:0;}">
+                    <Coords points="603,2317 690,2317 690,2368 603,2368"/>
+                    <TextEquiv>
+                        <Unicode>سورة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_294" custom="readingOrder {index:1;}">
+                    <Coords points="699,2315 717,2315 717,2351 699,2351"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_293" custom="readingOrder {index:2;}">
+                    <Coords points="732,2308 784,2308 784,2357 732,2357"/>
+                    <TextEquiv>
+                        <Unicode>قال</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_292" custom="readingOrder {index:3;}">
+                    <Coords points="809,2292 861,2292 861,2352 809,2352"/>
+                    <TextEquiv>
+                        <Unicode>كما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_291" custom="readingOrder {index:4;}">
+                    <Coords points="861,2298 953,2298 953,2373 861,2373"/>
+                    <TextEquiv>
+                        <Unicode>لشدَّتهِ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_290" custom="readingOrder {index:5;}">
+                    <Coords points="969,2296 1063,2296 1063,2370 969,2370"/>
+                    <TextEquiv>
+                        <Unicode>تلطيفاً</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_289" custom="readingOrder {index:6;}">
+                    <Coords points="1077,2308 1151,2308 1151,2365 1077,2365"/>
+                    <TextEquiv>
+                        <Unicode>الليل</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_288" custom="readingOrder {index:7;}">
+                    <Coords points="1166,2316 1236,2316 1236,2353 1166,2353"/>
+                    <TextEquiv>
+                        <Unicode>دون</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_287" custom="readingOrder {index:8;}">
+                    <Coords points="1251,2302 1330,2302 1330,2360 1251,2360"/>
+                    <TextEquiv>
+                        <Unicode>النهار</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_286" custom="readingOrder {index:9;}">
+                    <Coords points="1339,2298 1376,2298 1376,2364 1339,2364"/>
+                    <TextEquiv>
+                        <Unicode>في</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_285" custom="readingOrder {index:10;}">
+                    <Coords points="1390,2306 1521,2306 1521,2357 1390,2357"/>
+                    <TextEquiv>
+                        <Unicode>وحصرها</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_284" custom="readingOrder {index:11;}">
+                    <Coords points="1538,2287 1613,2287 1613,2344 1538,2344"/>
+                    <TextEquiv>
+                        <Unicode>السُّنَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_283" custom="readingOrder {index:12;}">
+                    <Coords points="1629,2305 1690,2305 1690,2343 1629,2343"/>
+                    <TextEquiv>
+                        <Unicode>هذه</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_282" custom="readingOrder {index:13;}">
+                    <Coords points="1707,2310 1779,2310 1779,2345 1707,2345"/>
+                    <TextEquiv>
+                        <Unicode>محمّد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_281" custom="readingOrder {index:14;}">
+                    <Coords points="1795,2291 1891,2291 1891,2347 1795,2347"/>
+                    <TextEquiv>
+                        <Unicode>فخفَّف</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>سورة ( قال كما لشدَّتهِ تلطيفاً الليل دون النهار في وحصرها السُّنَّة هذه محمّد فخفَّف</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_28" custom="readingOrder {index:23;}">
+                <Coords points="885,2371 1894,2371 1894,2459 885,2459"/>
+                <Baseline points="885,2467 1894,2467"/>
+                <Word id="w_307" custom="readingOrder {index:0;}">
+                    <Coords points="886,2403 904,2403 904,2423 886,2423"/>
+                    <TextEquiv>
+                        <Unicode>»</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_306" custom="readingOrder {index:1;}">
+                    <Coords points="915,2379 1001,2379 1001,2448 915,2448"/>
+                    <TextEquiv>
+                        <Unicode>العُسْر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_305" custom="readingOrder {index:2;}">
+                    <Coords points="1013,2388 1107,2388 1107,2457 1013,2457"/>
+                    <TextEquiv>
+                        <Unicode>بكم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_304" custom="readingOrder {index:3;}">
+                    <Coords points="1119,2402 1187,2402 1187,2447 1119,2447"/>
+                    <TextEquiv>
+                        <Unicode>يريد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_303" custom="readingOrder {index:4;}">
+                    <Coords points="1195,2386 1249,2386 1249,2436 1195,2436"/>
+                    <TextEquiv>
+                        <Unicode>ولا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_302" custom="readingOrder {index:5;}">
+                    <Coords points="1259,2372 1339,2372 1339,2448 1259,2448"/>
+                    <TextEquiv>
+                        <Unicode>اليُسْر</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_301" custom="readingOrder {index:6;}">
+                    <Coords points="1356,2384 1447,2384 1447,2455 1356,2455"/>
+                    <TextEquiv>
+                        <Unicode>بكم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_300" custom="readingOrder {index:7;}">
+                    <Coords points="1457,2375 1509,2375 1509,2426 1457,2426"/>
+                    <TextEquiv>
+                        <Unicode>اللهُ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_299" custom="readingOrder {index:8;}">
+                    <Coords points="1523,2398 1588,2398 1588,2440 1523,2440"/>
+                    <TextEquiv>
+                        <Unicode>يريد</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691612045_1635" custom="readingOrder {index:9;}">
+                    <Coords points="1601,2389 1620,2389 1620,2416 1601,2416"/>
+                    <TextEquiv>
+                        <Unicode>«</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691612045_1634" custom="readingOrder {index:10;}">
+                    <Coords points="1627,2389 1639,2389 1639,2416 1627,2416"/>
+                    <TextEquiv>
+                        <Unicode>:</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691601591_1629" custom="readingOrder {index:11;}">
+                    <Coords points="1664,2389 1681,2389 1681,2422 1664,2422"/>
+                    <TextEquiv>
+                        <Unicode>)</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691601590_1628" custom="readingOrder {index:12;}">
+                    <Coords points="1684,2389 1746,2389 1746,2422 1684,2422"/>
+                    <TextEquiv>
+                        <Unicode>١٧١</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691590126_1621" custom="readingOrder {index:13;}">
+                    <Coords points="1770,2400 1806,2400 1806,2450 1770,2450"/>
+                    <TextEquiv>
+                        <Unicode>ع</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691590126_1620" custom="readingOrder {index:14;}">
+                    <Coords points="1806,2383 1893,2383 1893,2450 1806,2450"/>
+                    <TextEquiv>
+                        <Unicode>البقرة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>» العُسْر بكم يريد ولا اليُسْر بكم اللهُ يريد « : ) ١٧١ ع البقرة</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="tl_29" custom="readingOrder {index:24;}">
+                <Coords points="608,2453 1810,2453 1810,2539 608,2539"/>
+                <Baseline points="608,2553 1810,2553"/>
+                <Word id="word_1617691742751_1667" custom="readingOrder {index:0;}">
+                    <Coords points="609,2481 645,2481 645,2523 609,2523"/>
+                    <TextEquiv>
+                        <Unicode>بن</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691742751_1666" custom="readingOrder {index:1;}">
+                    <Coords points="645,2463 705,2463 705,2535 645,2535"/>
+                    <TextEquiv>
+                        <Unicode>اميَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_318" custom="readingOrder {index:2;}">
+                    <Coords points="721,2462 786,2462 786,2522 721,2522"/>
+                    <TextEquiv>
+                        <Unicode>فانَّ</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691718844_1660" custom="readingOrder {index:3;}">
+                    <Coords points="802,2479 818,2479 818,2511 802,2511"/>
+                    <TextEquiv>
+                        <Unicode>)‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691718844_1659" custom="readingOrder {index:4;}">
+                    <Coords points="822,2479 892,2479 892,2511 822,2511"/>
+                    <TextEquiv>
+                        <Unicode>‏١٨٣</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691707764_1653" custom="readingOrder {index:5;}">
+                    <Coords points="907,2488 939,2488 939,2535 907,2535"/>
+                    <TextEquiv>
+                        <Unicode>ع</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691707764_1652" custom="readingOrder {index:6;}">
+                    <Coords points="939,2476 954,2476 954,2509 939,2509"/>
+                    <TextEquiv>
+                        <Unicode>(</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_315" custom="readingOrder {index:7;}">
+                    <Coords points="973,2470 1049,2470 1049,2515 973,2515"/>
+                    <TextEquiv>
+                        <Unicode>هناك</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_314" custom="readingOrder {index:8;}">
+                    <Coords points="1066,2461 1166,2461 1166,2521 1066,2521"/>
+                    <TextEquiv>
+                        <Unicode>ذكرهما</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_313" custom="readingOrder {index:9;}">
+                    <Coords points="1181,2471 1274,2471 1274,2514 1181,2514"/>
+                    <TextEquiv>
+                        <Unicode>اللذان</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_312" custom="readingOrder {index:10;}">
+                    <Coords points="1289,2468 1394,2468 1394,2524 1289,2524"/>
+                    <TextEquiv>
+                        <Unicode>الاسود</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_311" custom="readingOrder {index:11;}">
+                    <Coords points="1412,2465 1524,2465 1524,2521 1412,2521"/>
+                    <TextEquiv>
+                        <Unicode>والخيط</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_310" custom="readingOrder {index:12;}">
+                    <Coords points="1539,2465 1652,2465 1652,2522 1539,2522"/>
+                    <TextEquiv>
+                        <Unicode>الابيض</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_309" custom="readingOrder {index:13;}">
+                    <Coords points="1670,2466 1757,2466 1757,2524 1670,2524"/>
+                    <TextEquiv>
+                        <Unicode>الخيط</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_308" custom="readingOrder {index:14;}">
+                    <Coords points="1775,2454 1809,2454 1809,2506 1775,2506"/>
+                    <TextEquiv>
+                        <Unicode>امَّا</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>بن اميَّة فانَّ )‏ ‏١٨٣ ع ( هناك ذكرهما اللذان الاسود والخيط الابيض الخيط امَّا</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextEquiv>
+                <Unicode>يكون ان ينبغي السبحة في والامر .‏ والعادات اللباس من اخذوهُ فيما عنهم السُّبحة اخذوا قد&#xD;
+الداخلة البدع من فالسبحة ... شعارًا وتُعَدّ العبادة في تدخل لأَنَّها عنهم غيرها اخذ من اشدّ&#xD;
+» ) كذا ( العبادة في&#xD;
+وانَّما الجاهليَّة في العرب من المشركون يعرفهُ لم الاسلام اركان احد ﴾ الصوم ﴿&#xD;
+في يصومونهُ كانوا ولعلَّهم نواميسهم مقتضى على بهِ يقومون منهم المتنصِّرون كان&#xD;
+الخطط في المقريزي قال نيسان شهرنا يوافق الثابتة اشهُرهم من وقتئذٍ وهو رجَب&#xD;
+: ) ٢٨٢ : ١ (&#xD;
+فيه يُسمع فلا القتال عن فيهِ يكفُّون كانوا لانهم الاصمّ لهُ ويقولون حرام شهر رجَبٌ «&#xD;
+وكانت الجاهلية في تصومُهُ العرب وكانت مُضَر شهرُ هو الاصمّ ورجب ... سلاح صوت&#xD;
+» يخافون ولا الاسفار الى ويخرجون فيهِ بعضًا بعضُهم يأمن وكان اهلها وتمير فيه تمتار&#xD;
+: النعيم دار في الصائمين جزاء يذكر الصلت ابي ابن اميَّة قال&#xD;
+يَصُومُ مَن وحُلِّل تقبَّلَهم اليها أَجْرَوا التي بلغوا اذا&#xD;
+سوَّامُ : تولب بن نمر قال الفِصح صوم اصوامهم اخصُّ وكان&#xD;
+&#xD;
+لا الفصح صوم وكان يوماً ثلثين رمضان صومَ محمَّد اقتبس النصارى صوم ومن&#xD;
+غروب بعد الإِفْطار عادةَ اخذ ايضاً ومنهم . ١‏ (‏ الكنائس بعض في ذلك على يزيد&#xD;
+حلَّل الذين المسلمين خلاف على واحدة مرَّة الَّا حينئذٍ يأكلوا لم النصارى أَنَّ الَّا الشمس&#xD;
+والبقول الاعشاب الَّا يأكلون لا النصارى كان وكذلك .‏ الليل طول الاكل لهم&#xD;
+توماس العلَّامة قال .‏ للمسلمين بهِ مسموح وكلاهما والبياض اللحم دون والاثمار&#xD;
+) Dictiona- ) ٥٣٤ ص ( الاسلام معجم في ) U. Patrik Hughes ( هيوس پتريك&#xD;
+الصوم ناموس النصارى عن اخذ محمَّدًا انَّ عندنا الارجح انَّ « : ry of Islam (&#xD;
+معاً والليل النهار الى يمتدُّ الشدَّة في غاية الشرق في النصارى صوم وكان‏ .‏ يوماً ثلاثين&#xD;
+سورة ( قال كما لشدَّتهِ تلطيفاً الليل دون النهار في وحصرها السُّنَّة هذه محمّد فخفَّف&#xD;
+» العُسْر بكم يريد ولا اليُسْر بكم اللهُ يريد « : ) ١٧١ ع البقرة&#xD;
+بن اميَّة فانَّ )‏ ‏١٨٣ ع ( هناك ذكرهما اللذان الاسود والخيط الابيض الخيط امَّا</Unicode>
+            </TextEquiv>
+        </TextRegion>
+        <TextRegion id="block_18" custom="readingOrder {index:2;}">
+            <Coords points="609,2552 1826,2552 1826,2660 609,2660"/>
+            <TextLine id="tl_31" custom="readingOrder {index:0;}">
+                <Coords points="611,2560 1828,2560 1828,2634 611,2634"/>
+                <Baseline points="609,2660 1826,2660"/>
+                <Word id="w_336" custom="readingOrder {index:0;}">
+                    <Coords points="610,2587 691,2587 691,2618 610,2618"/>
+                    <TextEquiv>
+                        <Unicode>Dict.</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_333" custom="readingOrder {index:1;}">
+                    <Coords points="708,2581 943,2581 943,2623 708,2623"/>
+                    <TextEquiv>
+                        <Unicode>d'Archéologie</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_332" custom="readingOrder {index:2;}">
+                    <Coords points="957,2591 987,2591 987,2615 957,2615"/>
+                    <TextEquiv>
+                        <Unicode>et</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_331" custom="readingOrder {index:3;}">
+                    <Coords points="997,2585 1034,2585 1034,2615 997,2615"/>
+                    <TextEquiv>
+                        <Unicode>de</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_330" custom="readingOrder {index:4;}">
+                    <Coords points="1049,2577 1195,2577 1195,2628 1049,2628"/>
+                    <TextEquiv>
+                        <Unicode>Liturgie.</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_328" custom="readingOrder {index:5;}">
+                    <Coords points="1211,2585 1269,2585 1269,2613 1211,2613"/>
+                    <TextEquiv>
+                        <Unicode>art.</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_326" custom="readingOrder {index:6;}">
+                    <Coords points="1282,2563 1407,2563 1407,2622 1282,2622"/>
+                    <TextEquiv>
+                        <Unicode>النصرانيَّة</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_325" custom="readingOrder {index:7;}">
+                    <Coords points="1437,2560 1553,2560 1553,2624 1437,2624"/>
+                    <TextEquiv>
+                        <Unicode>العاديَّات</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_324" custom="readingOrder {index:8;}">
+                    <Coords points="1579,2591 1657,2591 1657,2633 1579,2633"/>
+                    <TextEquiv>
+                        <Unicode>معجم</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="w_323" custom="readingOrder {index:9;}">
+                    <Coords points="1684,2581 1758,2581 1758,2625 1684,2625"/>
+                    <TextEquiv>
+                        <Unicode>اطلب</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691839797_1686" custom="readingOrder {index:10;}">
+                    <Coords points="1790,2587 1803,2587 1803,2613 1790,2613"/>
+                    <TextEquiv>
+                        <Unicode>)‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <Word id="word_1617691839797_1685" custom="readingOrder {index:11;}">
+                    <Coords points="1815,2587 1825,2587 1825,2613 1815,2613"/>
+                    <TextEquiv>
+                        <Unicode>١‏</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>Dict. d'Archéologie et de Liturgie. art. النصرانيَّة العاديَّات معجم اطلب )‏ ١‏</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextLine id="line_1617688865446_1195" custom="readingOrder {index:1;}">
+                <Coords points="1760,2632 1896,2632 1896,2681 1760,2681"/>
+                <Word id="word_1617691853512_1691" custom="readingOrder {index:0;}">
+                    <Coords points="1763,2636 1895,2636 1895,2676 1763,2676"/>
+                    <TextEquiv>
+                        <Unicode>Carême</Unicode>
+                    </TextEquiv>
+                </Word>
+                <TextEquiv>
+                    <Unicode>Carême</Unicode>
+                </TextEquiv>
+            </TextLine>
+            <TextEquiv>
+                <Unicode>Dict. d'Archéologie et de Liturgie. art. النصرانيَّة العاديَّات معجم اطلب )‏ ١‏&#xD;
+Carême</Unicode>
+            </TextEquiv>
+        </TextRegion>
+    </Page>
+</PcGts>
