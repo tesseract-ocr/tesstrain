@@ -13,11 +13,11 @@ setup(
     author_email='info@ocr-d.de',
     url='https://github.com/tesseract-ocr/tesstrain',
     license='Apache License 2.0',
-    packages=['generate_sets'],
+    packages=['extract_sets'],
     install_requires=install_requires,
     entry_points={
         'console_scripts': [
-            'tesstrain-extract-gt=generate_sets.cli:main',
+            'tesstrain-extract-sets=extract_sets.cli:main',
         ]
     },
 )

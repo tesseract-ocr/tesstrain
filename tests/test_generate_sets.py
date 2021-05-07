@@ -15,7 +15,7 @@ import pytest
 import numpy as np
 import lxml.etree as etree
 
-from generate_sets import (
+from extract_sets import (
     TrainingSets,
     XML_NS
 )
