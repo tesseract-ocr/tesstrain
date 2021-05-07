@@ -179,7 +179,7 @@ class PageLine(TextLine):
             w.find(
                 f'.//{self.namespace}:Unicode',
                 XML_NS) for w in sorted_els]
-        self.text_words = [u.text.strip() for u in unicodes]
+        self.text_words = [u.text.strip() for u in unicodes if u.text]
 
         # elimiate read order mark
         for i, strip in enumerate(self.text_words):
