@@ -211,6 +211,14 @@ parser.add_argument(
     help="A list of exposure levels to use (e.g. -1,0,1).",
 )
 
+parser.add_argument(
+    "--ptsize",
+    metavar="PT_SIZE",
+    type=int,
+    default=12,
+    help="Size of printed text.",
+)
+
 
 # Does simple command-line parsing and initialization.
 def parse_flags(argv=None):
@@ -303,6 +311,7 @@ def initialize_fontconfig(ctx):
         f"--outputbase={sample_path}",
         f"--text={sample_path}",
         f"--fontconfig_tmpdir={ctx.font_config_cache}",
+        f"--ptsize={ctx.ptsize}",
     )
 
 
@@ -345,6 +354,7 @@ def generate_font_image(ctx, font, exposure, char_spacing):
         *common_args,
         f"--font={font}",
         f"--text={ctx.training_text}",
+        f"--ptsize={ctx.ptsize}",
         *ctx.text2image_extra_args,
     )
 
