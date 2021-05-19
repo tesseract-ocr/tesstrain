@@ -141,6 +141,13 @@ parser.add_argument(
     type=str,
     help="A list of fontnames to train on.",
 )
+parser.add_argument(
+    "--vertical_fontlist",
+    dest="vertical_fonts",
+    nargs="+",
+    type=str,
+    help="A list of fontnames to render vertical text.",
+)
 parser.add_argument("--fonts_dir", help="Path to font files.")
 parser.add_argument("--tmp_dir", help="Path to temporary training directory.")
 parser.add_argument(
@@ -337,7 +344,8 @@ def generate_font_image(ctx, font, exposure, char_spacing):
 
     # add --writing_mode=vertical-upright to common_args if the font is
     # specified to be rendered vertically.
-    if font in VERTICAL_FONTS:
+    vertical_fonts = ctx.vertical_fonts or VERTICAL_FONTS
+    if font in vertical_fonts:
         common_args.append("--writing_mode=vertical-upright")
 
     run_command(
