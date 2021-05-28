@@ -65,8 +65,12 @@ class TextLine(abc.ABC):
     def set_text(self):
         """Determine list of word tokens"""
 
-    def to_box(self, _):
-        """Return bounding box of TexLine shape"""
+    def get_shape(self, _):
+        """
+        Return TextLine shape
+        Optional(PAGE): Box filled with median color value
+        or greyscale tone to fit rectangular shape
+        """
 
     def get_textline_content(self) -> str:
         """
@@ -86,14 +90,12 @@ class TextLine(abc.ABC):
 class ALTOLine(TextLine):
     """Extract TextLine Information from ALTO Data"""
 
-    def __init__(self, element, namespace, sanitize=True):
+    def __init__(self, element, namespace):
         super().__init__(element, namespace)
         self.set_id()
         self.set_text()
         if self.valid:
-            self.box = self.to_box(self.element)
-        if sanitize:
-            self.sanitize_box()
+            self.shape = self.get_shape(self.element)
 
     def set_id(self):
         self.element_id = self.element.attrib['ID']
@@ -102,32 +104,17 @@ class ALTOLine(TextLine):
         strings = self.element.findall(f'{self.namespace}:String', XML_NS)
         self.text_words = [e.attrib['CONTENT'] for e in strings]
 
-    def to_box(self, element):
+    def get_shape(self, element):
         x_1 = int(element.attrib['HPOS'])
         y_1 = int(element.attrib['VPOS'])
         y_2 = y_1 + int(element.attrib['HEIGHT'])
         x_2 = x_1 + int(element.attrib['WIDTH'])
-        return (x_1, y_1, x_2, y_2)
+        return Polygon([(x_1, y_1), (x_2, y_1), (x_2, y_2), (x_1, y_2)])
 
     def get_next_element_height(self, element):
         y_start = int(element.attrib['VPOS'])
         y_height = int(element.attrib['HEIGHT'])
         return y_start + y_height
-
-    def sanitize_box(self):
-        line_tokens = self.element.findall(f"{self.namespace}String", XML_NS)
-        boxes = [self.to_box(s) for s in line_tokens]
-        word_heights = [(y2 - y1) for _, y1, _, y2 in boxes]
-        heights_std = np.std(word_heights)
-        i = 1
-        max_i = 4
-        while heights_std > 10 and i <= max_i:
-            outlier_height_index = np.argmax(word_heights)
-            word_heights.pop(outlier_height_index)
-            next_greatest_y2 = self.text_words[np.argmax(word_heights)]
-            self.y_2 = self.get_next_element_height(next_greatest_y2)
-            heights_std = np.std(word_heights)
-            i += 1
 
 
 class PageLine(TextLine):
@@ -139,7 +126,7 @@ class PageLine(TextLine):
         self.set_text()
         if self.valid:
             self.reorder = reorder
-            self.box = self.to_box(self.element)
+            self.shape = self.get_shape(self.element)
 
     def set_id(self):
         self.element_id = self.element.attrib['id']
@@ -195,10 +182,10 @@ class PageLine(TextLine):
         if len(points) > 0:
             return points[0].split(',')[0]
 
-    def to_box(self, element):
+    def get_shape(self, element):
         """
-        Coordinate data from current OCR-D-Workflows might contain
-        lots of points, therefore additional calculations required
+        Coordinate data from current OCR-D-Workflows can contain
+        lots of points, therefore additional calculations are required
         """
 
         p_attr = element.find(
@@ -209,9 +196,7 @@ class PageLine(TextLine):
         # group clustering idiom
         points = list(zip(*[iter(numbers)] * 2))
 
-        shape = Polygon(points)
-        box = [int(n) for n in shape.bounds]
-        return box
+        return Polygon(points)
 
 
 def text_line_factory(xml_data, min_len, reorder):
@@ -296,7 +281,7 @@ class TrainingSets:
     def _load_image(path_image_data):
         return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
 
-    def write_data(self, training_data: TextLine,
+    def write_data(self, text_line: TextLine,
                    image_handle, path_out, prefix):
         """Serialize training data pairs"""
 
@@ -305,16 +290,16 @@ class TrainingSets:
         self.path_out = path_out
         os.makedirs(path_out, exist_ok=True)
 
-        content = training_data.get_textline_content()
+        content = text_line.get_textline_content()
         if content:
-            file_name = self.set_label + '_' + training_data.element_id + '.gt.txt'
+            file_name = self.set_label + '_' + text_line.element_id + '.gt.txt'
             file_path = os.path.join(path_out, file_name)
             with open(file_path, 'w', encoding="utf8") as fhdl:
                 fhdl.write(content)
 
             img_frame = TrainingSets._extract_frame(
-                image_handle, training_data)
-            file_name = self.set_label + '_' + training_data.element_id + '.tif'
+                image_handle, text_line)
+            file_name = self.set_label + '_' + text_line.element_id + '.tif'
             file_path = os.path.join(path_out, file_name)
 
             if img_frame.any():
@@ -334,11 +319,13 @@ class TrainingSets:
             fhdl.writelines(contents)
 
     @staticmethod
-    def _extract_frame(image_handle, training_data):
-        start_vpos = training_data.box[1]
-        end_vpos = training_data.box[3]
-        start_hpos = training_data.box[0]
-        end_hpos = training_data.box[2]
+    def _extract_frame(image_handle, text_line):
+        the_shape = text_line.shape
+        the_box = the_shape.bounds
+        start_vpos = int(the_box[1])
+        end_vpos = int(the_box[3])
+        start_hpos = int(the_box[0])
+        end_hpos = int(the_box[2])
         return image_handle[start_vpos:end_vpos, start_hpos:end_hpos]
 
     def _calculate_tiff_param(self):
