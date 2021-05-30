@@ -297,8 +297,7 @@ class TrainingSets:
             with open(file_path, 'w', encoding="utf8") as fhdl:
                 fhdl.write(content)
 
-            img_frame = TrainingSets._extract_frame(
-                image_handle, text_line)
+            img_frame = extract_frame(image_handle, text_line)
             file_name = self.set_label + '_' + text_line.element_id + '.tif'
             file_path = os.path.join(path_out, file_name)
 
@@ -317,16 +316,6 @@ class TrainingSets:
         file_path = os.path.join(self.path_out, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
-
-    @staticmethod
-    def _extract_frame(image_handle, text_line):
-        the_shape = text_line.shape
-        the_box = the_shape.bounds
-        start_vpos = int(the_box[1])
-        end_vpos = int(the_box[3])
-        start_hpos = int(the_box[0])
-        end_hpos = int(the_box[2])
-        return image_handle[start_vpos:end_vpos, start_hpos:end_hpos]
 
     def _calculate_tiff_param(self):
         """
@@ -396,3 +385,76 @@ class TrainingSets:
             self.write_all(training_datas)
 
         return training_datas
+
+
+def grey_canvas(w, h, low=168, bound=32, in_data=None):
+    """
+    Create greyscale Canvas with given dimension and range or
+    calculate range from in_data
+    """
+    the_raw = np.random.randint(low, low+bound, (h, w)).astype(np.uint8)
+    if in_data is not None and len(in_data) > 0:
+        ref = calc_reference(in_data)
+        the_low = int(ref - (bound/2))
+        the_high = int(ref + (bound/2))
+        the_raw = np.random.randint(the_low, the_high, (h, w)).astype(np.uint8)
+
+    kernel = np.ones((5, 5), np.float32)/25
+    return cv2.filter2D(the_raw, -1, kernel)
+
+
+def calc_reference(arr):
+    """Calc reference val after removing background (pixel wit val 0)"""
+    filt = arr > 0
+    filt_arr = arr[filt]
+    return np.median(filt_arr)
+
+
+def shape_to_box(the_shape):
+    """
+    Get BBox from Polygon.shape
+    """
+    the_box = the_shape.bounds
+    start_vpos = int(the_box[1])
+    end_vpos = int(the_box[3])
+    start_hpos = int(the_box[0])
+    end_hpos = int(the_box[2])
+    return (start_hpos, start_vpos, end_hpos, end_vpos)
+
+
+def is_rectangular(a_shape: Polygon) -> bool:
+    """
+    The bounding box will always be greater or equals than enclosed polygon
+    https://stackoverflow.com/questions/62467829/python-check-if-shapely-polygon-is-a-rectangle
+    """
+    return (a_shape.area / a_shape.minimum_rotated_rectangle.area) > .99
+
+
+def extract_frame(image_handle, text_line):
+    """
+    Cut frame if it is rectangular, otherwise mask shape
+    and merge it with background
+    """
+    the_shape = text_line.shape
+    (start_h, start_v, end_h, end_v) = shape_to_box(the_shape)
+    the_bbox = image_handle[start_v:end_v, start_h:end_h]
+    if is_rectangular(the_shape):
+        return the_bbox
+
+    # get shape points
+    pts = np.array(the_shape.exterior.coords, dtype=np.int32)
+    # get shape bbox
+    (x, y, w, h) = cv2.boundingRect(pts)
+    # extract roi from image
+    roi_raw = image_handle[y:(y+h), x:(x+w)]
+    # translate coords
+    pts = pts - [x, y]
+    # create mask on roi
+    mask = np.zeros((roi_raw.shape[0], roi_raw.shape[1]))
+    cv2.fillConvexPoly(mask, pts, 1)
+    mask = mask.astype(bool)
+    # the_frame = np.zeros_like(roi_raw)
+    # stamp mask over grey canvas
+    the_canvas = grey_canvas(w, h, in_data=roi_raw)
+    the_canvas[mask] = roi_raw[mask]
+    return the_canvas

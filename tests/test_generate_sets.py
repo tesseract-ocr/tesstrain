@@ -12,11 +12,11 @@ from cv2 import (
     cv2
 )
 import pytest
-import numpy as np
 import lxml.etree as etree
 
 from extract_sets import (
     TrainingSets,
+    grey_canvas,
     XML_NS
 )
 
@@ -35,20 +35,22 @@ OCR_DATA_RAM110 = 'ram110'
 # data problem: empty TextLine, although Words with text exist
 OCR_FID_ERR_1123596 = '1123596'
 
+IMG_GEN_MAX = 224
+IMG_GEN_MIN = 168
+
 
 def generate_image(path_image, words, columns, rows, params=None):
-    """Generate synthetic in-memory image data"""
+    """Generate synthetic in-memory greyscale image data"""
 
-    arr_floats = np.random.rand(rows, columns) * 255
-    arr_ints = arr_floats.astype(np.uint8)
+    dst = grey_canvas(columns, rows, IMG_GEN_MIN, IMG_GEN_MAX)
     if words:
         for word in words:
             render_text = word[1]
             origin = (word[0][0] + 10, word[0][1] + 10)
-            arr_ints = cv2.putText(
-                arr_ints, render_text, origin, cv2.FONT_HERSHEY_COMPLEX, 1.0, (0, 0, 0), 3, bottomLeftOrigin=False)
+            dst = cv2.putText(
+                dst, render_text, origin, cv2.FONT_HERSHEY_COMPLEX, 1.0, (0, 0, 0), 3, bottomLeftOrigin=False)
 
-    cv2.imwrite(str(path_image), arr_ints, params)
+    cv2.imwrite(str(path_image), dst, params)
     return path_image
 
 
