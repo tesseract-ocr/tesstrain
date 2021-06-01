@@ -2,7 +2,9 @@
 """Generate TrainingSets Sets"""
 
 import abc
+import math
 import os
+
 from pathlib import (
     Path
 )
@@ -16,9 +18,6 @@ import numpy as np
 from cv2 import cv2
 from PIL import (
     Image
-)
-from shapely.geometry import (
-    Polygon
 )
 
 
@@ -34,13 +33,20 @@ DEFAULT_OUTDIR_PREFIX = 'training_data_'
 DEFAULT_USE_SUMMARY = False
 DEFAULT_USE_REORDER = False
 DEFAULT_DPI = 300
+DEFAULT_INTRUSION_RATIO = 0.125  # top 1/8 and bottom 1/8
+DEFAULT_ROTATION_THRESH = 0.1
+DEFAULT_BINARIZE = False
+DEFAULT_SANITIZE = True
+DEFAULT_PADDING = 0
 SUMMARY_SUFFIX = '_summary.gt.txt'
 
 # clear unwanted marks for single wordlike tokens
 CLEAR_MARKS = [
     u'\u200f',  # 'RIGHT-TO-LEFT-MARK'
     u'\u200e',  # 'LEFT-TO-RIGHT-MARK'
-    u'\ufeff'   # 'ZERO WIDTH NO-BREAK SPACE', the char formerly known as 'BOM'
+    u'\ufeff',  # 'ZERO WIDTH NO-BREAK SPACE', the char formerly known as 'BOM'
+    u'\u200c',  # 'ZERO WIDTH NON-JOINER
+    u'\u202c'   # 'POP DIRECTIONAL FORMATTING
 ]
 
 
@@ -69,7 +75,7 @@ class TextLine(abc.ABC):
         """
         Return TextLine shape
         Optional(PAGE): Box filled with median color value
-        or greyscale tone to fit rectangular shape
+        or the_gray tone to fit rectangular shape
         """
 
     def get_textline_content(self) -> str:
@@ -109,7 +115,7 @@ class ALTOLine(TextLine):
         y_1 = int(element.attrib['VPOS'])
         y_2 = y_1 + int(element.attrib['HEIGHT'])
         x_2 = x_1 + int(element.attrib['WIDTH'])
-        return Polygon([(x_1, y_1), (x_2, y_1), (x_2, y_2), (x_1, y_2)])
+        return [(x_1, y_1), (x_2, y_1), (x_2, y_2), (x_1, y_2)]
 
     def get_next_element_height(self, element):
         y_start = int(element.attrib['VPOS'])
@@ -196,7 +202,7 @@ class PageLine(TextLine):
         # group clustering idiom
         points = list(zip(*[iter(numbers)] * 2))
 
-        return Polygon(points)
+        return np.array((points), dtype=np.uint32)
 
 
 def text_line_factory(xml_data, min_len, reorder):
@@ -205,30 +211,38 @@ def text_line_factory(xml_data, min_len, reorder):
     text_lines = []
     ns_prefix = _determine_namespace(xml_data)
     if 'alto' in ns_prefix:
-        all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
-        all_lines_len = [l for l in all_lines if len(' '.join(
-            [s.attrib['CONTENT'] for s in l.findall(f'{ns_prefix}:String', XML_NS)])) >= min_len]
-        text_lines = [ALTOLine(line, ns_prefix) for line in all_lines_len]
+        text_lines = get_alto_lines(xml_data, ns_prefix, min_len)
     elif ns_prefix in ('page2013', 'page2019'):
-        all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
-        matchings = []
-        for textline in all_lines:
-            text_equiv = textline.find(
-                f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
-            if text_equiv.text:
-                stripped = text_equiv.text.strip()
-                if len(stripped) and len(stripped) >= min_len:
-                    matchings.append(textline)
-            else:
-                words = textline.findall(
-                    f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
-                if len(words):
-                    msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
-                    raise RuntimeError(msg)
-        text_lines = [PageLine(line, ns_prefix, reorder) for line in matchings]
+        text_lines = get_page_lines(xml_data, ns_prefix, min_len, reorder)
 
-    # deliver only valid lines
+    # proceed only valid lines
     return [t for t in text_lines if t.valid]
+
+
+def get_alto_lines(xml_data, ns_prefix, min_len):
+    all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
+    all_lines_len = [l for l in all_lines if len(' '.join(
+        [s.attrib['CONTENT'] for s in l.findall(f'{ns_prefix}:String', XML_NS)])) >= min_len]
+    return [ALTOLine(line, ns_prefix) for line in all_lines_len]
+
+
+def get_page_lines(xml_data, ns_prefix, min_len, reorder):
+    all_lines = xml_data.findall(f'.//{ns_prefix}:TextLine', XML_NS)
+    matchings = []
+    for textline in all_lines:
+        text_equiv = textline.find(
+            f'{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
+        if text_equiv.text:
+            stripped = text_equiv.text.strip()
+            if len(stripped) and len(stripped) >= min_len:
+                matchings.append(textline)
+        else:
+            words = textline.findall(
+                f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
+            if len(words):
+                msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
+                raise RuntimeError(msg)
+    return [PageLine(line, ns_prefix, reorder) for line in matchings]
 
 
 def resolve_image_path(path_xml_data):
@@ -266,27 +280,78 @@ class TrainingSets:
         self.xdpi = None
         self.ydpi = None
         self.path_out = None
+        if not isinstance(path_xml_data, str):
+            path_xml_data = str(path_xml_data)
+        if path_image_data is not None and not isinstance(path_image_data, str):
+            path_image_data = str(path_image_data)
         (self.set_label, _) = os.path.splitext(os.path.basename(path_xml_data))
         self.xml_data = etree.parse(path_xml_data).getroot()
         self.path_image_data = path_image_data
         if not self.path_image_data:
             self._resolve_image_path(path_xml_data)
-        self.image_data = TrainingSets._load_image(self.path_image_data)
+        self.image_data = load_image(self.path_image_data)
         self._read_dpi()
 
     def _resolve_image_path(self, path_xml_data):
         self.path_image_data = resolve_image_path(path_xml_data)
 
-    @staticmethod
-    def _load_image(path_image_data):
-        return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
+    def _calculate_tiff_param(self):
+        """
+        Value '2' means 'inches':
+        cf. https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml
+        """
+
+        if self.xdpi and self.ydpi:
+            return [cv2.IMWRITE_TIFF_RESUNIT, 2, cv2.IMWRITE_TIFF_XDPI, self.xdpi,
+                    cv2.IMWRITE_TIFF_YDPI, self.ydpi]
+        return []
+
+    def _read_dpi(self):
+        if str(self.path_image_data).endswith(".tif"):
+            (self.xdpi, self.ydpi) = read_dpi_from_tif(self.path_image_data)
+        elif str(self.path_image_data).endswith(".jpg"):
+            (self.xdpi, self.ydpi) = read_dpi_from_jpg(self.path_image_data)
+
+    def create(self, folder_out=None,
+               min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX,
+               summary=False, reorder=False, rotation_threshold=0.1,
+               sanitize=True, intrusion_ratio=0.125, binarize=False, padding=0):
+        """
+        Put training data sets which textlines consist of at least min_chars as
+        text-image part pairs starting with prefix into folder_out
+        """
+
+        training_datas = text_line_factory(
+            self.xml_data, min_len=min_chars, reorder=reorder)
+
+        for training_data in training_datas:
+            try:
+                self.write_data(
+                    training_data,
+                    self.image_data,
+                    path_out=folder_out,
+                    prefix=prefix,
+                    sanitize=sanitize,
+                    intrusion_ratio=intrusion_ratio,
+                    rotation_threshold=rotation_threshold,
+                    binarize=binarize,
+                    padding=padding)
+            except Exception as exc:
+                print("[ERROR] with '{}': {}".format(training_data.element_id, str(exc)))
+
+        if summary:
+            self.write_all(training_datas)
+
+        return training_datas
 
     def write_data(self, text_line: TextLine,
-                   image_handle, path_out, prefix):
+                   image_handle, path_out, prefix, sanitize, intrusion_ratio, rotation_threshold, binarize, padding):
         """Serialize training data pairs"""
 
         if not path_out:
             path_out = prefix + self.set_label
+        if not isinstance(path_out, str):
+            path_out = str(path_out)
         self.path_out = path_out
         os.makedirs(path_out, exist_ok=True)
 
@@ -297,7 +362,12 @@ class TrainingSets:
             with open(file_path, 'w', encoding="utf8") as fhdl:
                 fhdl.write(content)
 
-            img_frame = extract_frame(image_handle, text_line)
+            img_frame = extract_rectangular_frame(image_handle, text_line)
+            if sanitize:
+                img_frame = sanitize_frame(
+                    img_frame, text_line, intrusion_ratio, rotation_threshold, padding)
+            if binarize:
+                img_frame = binarize_frame(img_frame)
             file_name = self.set_label + '_' + text_line.element_id + '.tif'
             file_path = os.path.join(path_out, file_name)
 
@@ -317,88 +387,61 @@ class TrainingSets:
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
 
-    def _calculate_tiff_param(self):
-        """
-        Value '2' means 'inches':
-        cf. https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml
-        """
 
-        if self.xdpi and self.ydpi:
-            return [cv2.IMWRITE_TIFF_RESUNIT, 2, cv2.IMWRITE_TIFF_XDPI, self.xdpi,
-                    cv2.IMWRITE_TIFF_YDPI, self.ydpi]
-        return []
-
-    def _read_dpi(self):
-        if str(self.path_image_data).endswith(".tif"):
-            (self.xdpi, self.ydpi) = TrainingSets.read_dpi_from_tif(
-                self.path_image_data)
-        elif str(self.path_image_data).endswith(".jpg"):
-            (self.xdpi, self.ydpi) = TrainingSets.read_dpi_from_jpg(
-                self.path_image_data)
-
-    @staticmethod
-    def read_dpi_from_tif(path_image_data):
-        """Determine DPI of TIF-Image EXIF-Data"""
-
-        with open(path_image_data, 'rb') as fhdl:
-            tags = exifread.process_file(fhdl)
-            if tags:
-                xdpi = None
-                ydpi = None
-                if 'Image XResolution' in tags:
-                    xdpi = tags['Image XResolution'].values[0].num
-                if 'Image YResolution' in tags:
-                    ydpi = tags['Image YResolution'].values[0].num
-                if xdpi and ydpi:
-                    return (xdpi, xdpi)
-        return (DEFAULT_DPI, DEFAULT_DPI)
-
-    @staticmethod
-    def read_dpi_from_jpg(path_image_data):
-        """Determine DPI from JPG metadata"""
-
-        image_file = Image.open(path_image_data)
-        if 'dpi' in image_file.info:
-            x_dpi, y_dpi = image_file.info['dpi']
-            return (x_dpi, y_dpi)
-
-        return (DEFAULT_DPI, DEFAULT_DPI)
-
-    def create(self, folder_out=None,
-               min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX, summary=False, reorder=False):
-        """
-        Put training data sets which textlines consist of at least min_chars as
-        text-image part pairs starting with prefix into folder_out
-        """
-
-        training_datas = text_line_factory(
-            self.xml_data, min_len=min_chars, reorder=reorder)
-
-        for training_data in training_datas:
-            self.write_data(
-                training_data,
-                self.image_data,
-                path_out=folder_out,
-                prefix=prefix)
-
-        if summary:
-            self.write_all(training_datas)
-
-        return training_datas
+def load_image(path_image_data):
+    return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
 
 
-def grey_canvas(w, h, low=168, bound=32, in_data=None):
+def read_dpi_from_tif(path_image_data):
+    """Determine DPI of TIF-Image EXIF-Data"""
+
+    with open(path_image_data, 'rb') as fhdl:
+        tags = exifread.process_file(fhdl)
+        if tags:
+            xdpi = None
+            ydpi = None
+            if 'Image XResolution' in tags:
+                xdpi = tags['Image XResolution'].values[0].num
+            if 'Image YResolution' in tags:
+                ydpi = tags['Image YResolution'].values[0].num
+            if xdpi and ydpi:
+                return (xdpi, xdpi)
+    return (DEFAULT_DPI, DEFAULT_DPI)
+
+
+def read_dpi_from_jpg(path_image_data):
+    """Determine DPI from JPG metadata"""
+
+    image_file = Image.open(path_image_data)
+    if 'dpi' in image_file.info:
+        x_dpi, y_dpi = image_file.info['dpi']
+        return (x_dpi, y_dpi)
+
+    return (DEFAULT_DPI, DEFAULT_DPI)
+
+
+def calculate_grayscale(low=168, neighbourhood=32, in_data=None):
     """
-    Create greyscale Canvas with given dimension and range or
-    calculate range from in_data
+    Calculate the_gray via fixed limits or from given in_data
+    return triple (low, high, mean)
     """
-    the_raw = np.random.randint(low, low+bound, (h, w)).astype(np.uint8)
+    nb_center = int(neighbourhood/2)
+    if in_data is None:
+        return (low, low+neighbourhood, low+nb_center)
     if in_data is not None and len(in_data) > 0:
         ref = calc_reference(in_data)
-        the_low = int(ref - (bound/2))
-        the_high = int(ref + (bound/2))
-        the_raw = np.random.randint(the_low, the_high, (h, w)).astype(np.uint8)
+        the_low = int(ref - nb_center)
+        the_high = int(ref + nb_center)
+        return (the_low, the_high, the_low+nb_center)
 
+
+def gray_canvas(w, h, low=168, bound=32, in_data=None):
+    """
+    Create the_gray Canvas with given dimension and range or
+    calculate range from in_data
+    """
+    (start, end, _) = calculate_grayscale(low, bound, in_data)
+    the_raw = np.random.randint(start, end, (h, w)).astype(np.uint8)
     kernel = np.ones((5, 5), np.float32)/25
     return cv2.filter2D(the_raw, -1, kernel)
 
@@ -412,49 +455,191 @@ def calc_reference(arr):
 
 def shape_to_box(the_shape):
     """
-    Get BBox from Polygon.shape
+    Calculate bounding box
     """
-    the_box = the_shape.bounds
-    start_vpos = int(the_box[1])
-    end_vpos = int(the_box[3])
-    start_hpos = int(the_box[0])
-    end_hpos = int(the_box[2])
-    return (start_hpos, start_vpos, end_hpos, end_vpos)
+    p1 = np.min(the_shape, axis=0)
+    p2 = np.max(the_shape, axis=0)
+    return (p1[0], p1[1], p2[0], p2[1])
 
 
-def is_rectangular(a_shape: Polygon) -> bool:
+def is_rectangular(a_shape) -> bool:
     """
     The bounding box will always be greater or equals than enclosed polygon
     https://stackoverflow.com/questions/62467829/python-check-if-shapely-polygon-is-a-rectangle
     """
-    return (a_shape.area / a_shape.minimum_rotated_rectangle.area) > .99
+    (_, _, angle) = cv2.minAreaRect(np.array(a_shape, dtype=np.float32))
+    return angle == 90.0
 
 
-def extract_frame(image_handle, text_line):
+def extract_rectangular_frame(image_handle, text_line):
     """
     Cut frame if it is rectangular, otherwise mask shape
     and merge it with background
     """
     the_shape = text_line.shape
-    (start_h, start_v, end_h, end_v) = shape_to_box(the_shape)
-    the_bbox = image_handle[start_v:end_v, start_h:end_h]
-    if is_rectangular(the_shape):
-        return the_bbox
+    start_h = text_line.shape[0][0]
+    start_v = text_line.shape[0][1]
+    end_h = text_line.shape[2][0]
+    end_v = text_line.shape[2][1]
+    if not is_rectangular(the_shape):
+        (start_h, start_v, end_h, end_v) = shape_to_box(the_shape)
+    frame = image_handle[start_v:end_v, start_h:end_h]
+    # create new copy in memory, otherwise strange artefacts
+    # occour in preceeding lines
+    return frame.copy()
 
-    # get shape points
-    pts = np.array(the_shape.exterior.coords, dtype=np.int32)
-    # get shape bbox
+
+def sanitize_frame(image_frame, text_line, intrusion_ratio, rotation_threshold, padding):
+    """Apply several curation tasks on textline image"""
+
+    # remove intruders from top and bottom
+    (san_frame, _, _) = clear_vertical_borders(image_frame, intrusion_ratio)
+
+    # fit text_line to specific polygonal shape
+    the_shape = text_line.shape
+    if not is_rectangular(the_shape):
+        san_frame = fit_to_shape(san_frame, the_shape)
+
+    # optional central rotation of text line
+    san_frame = rotate_text_line_center(san_frame, rotation_threshold)[0]
+
+    # optional padding
+    if padding > 0:
+        san_frame = add_padding(san_frame, padding)
+
+    return san_frame
+
+
+def get_centroid_y(shape):
+    """Calculate shape centroid via image momentum"""
+    M = cv2.moments(shape)
+    divis = 1 if M['m00'] == 0 else M['m00']
+    return int(M['m01']/divis)
+
+
+def clear_vertical_borders(image_frame, intrusion_ratio):
+    """
+    Clear vertical overlappings by:
+    * binarize blurred input image data
+    * drawing artificial border
+    * collect only contours that touch this
+    * get contours that are specific ratio to close to the edge
+    * fill those with specific grey tone
+    """
+    thresh = binarize_frame(image_frame)
+    img = cv2.copyMakeBorder(
+        thresh, 1, 1, 1, 1, cv2.BORDER_CONSTANT, None, (255))
+    contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    (top_edge, btm_edge) = calculate_intrusion_aware_edge(
+        img.shape, intrusion_ratio)
+    top_cnts = [c for c in contours if 0 in c]
+    top_intruders = [c for c in top_cnts if get_centroid_y(c) <= top_edge]
+    btm_cnts = [c for c in contours if img.shape[0]-1 in c]
+    btm_intruders = [c for c in btm_cnts if get_centroid_y(c) >= btm_edge]
+    invasores = top_intruders + btm_intruders
+    if len(invasores) > 0:
+        the_gray = calculate_grayscale(in_data=image_frame)
+        # scale slightly up
+        scaled = [cv2.resize(i.astype(np.float32), None,
+                             fx=1.49, fy=1.49) for i in invasores]
+        scaled_pts = [s.astype(np.int32) for s in scaled]
+        cv2.fillPoly(image_frame, pts=scaled_pts,
+                     color=(the_gray), lineType=cv2.LINE_AA)
+    return (image_frame, len(top_intruders), len(btm_intruders))
+
+
+def calculate_intrusion_aware_edge(img_shape, intrusion_ratio):
+    """Calculate top and bottom edges of intrusion aware areas"""
+    height = img_shape[0]
+    if isinstance(intrusion_ratio, list):
+        return (int(height * intrusion_ratio[0]), int(height - height * intrusion_ratio[1]))
+    return (int(height * intrusion_ratio), int(height - height * intrusion_ratio))
+
+
+def binarize_frame(image_frame):
+    """Binarization with binary and otsu"""
+    blurred = cv2.GaussianBlur(image_frame, (3, 3), 0)
+    thresh_flags = cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    thresh = cv2.threshold(blurred, 0, 255, thresh_flags)
+    return thresh[1]
+
+
+def fit_to_shape(image_frame, shape_coords):
+    """
+    Get polygonal shape from image_frame by:
+    * translate shape coords to fit frame
+    * create polygonal mask from shape coords
+    * create the_gray canvas as background
+    * apply masked image to background
+    """
+    pts = np.array(shape_coords, dtype=np.int32)
     (x, y, w, h) = cv2.boundingRect(pts)
-    # extract roi from image
-    roi_raw = image_handle[y:(y+h), x:(x+w)]
     # translate coords
     pts = pts - [x, y]
-    # create mask on roi
-    mask = np.zeros((roi_raw.shape[0], roi_raw.shape[1]))
+    # create boolean mask where pixel color != 0
+    mask = np.zeros((image_frame.shape))
     cv2.fillConvexPoly(mask, pts, 1)
     mask = mask.astype(bool)
-    # the_frame = np.zeros_like(roi_raw)
-    # stamp mask over grey canvas
-    the_canvas = grey_canvas(w, h, in_data=roi_raw)
-    the_canvas[mask] = roi_raw[mask]
+    # reduce w/h since the refer to the bounding/enclosing box
+    the_canvas = gray_canvas(w-1, h-1, in_data=image_frame)
+    # apply mask
+    the_canvas[mask] = image_frame[mask]
     return the_canvas
+
+
+def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
+    """
+    Determine possible center rotation by dominant line orientation
+    * ensure img data has grayscale shape
+    * detect edges
+    * determine probalistic hough lines on edges
+    * transform lines to vector+angle form
+    * filter lines with to high angle (misfits)
+    * calculate afterwards mean angle
+    * check if mean angle is above rotation threshold:
+      only if so, enhance img to prevent rotation
+      black area artifacts with constant padding
+    * rotate
+    * slice rotation result due previous padding
+    """
+    angle = None
+    if img.ndim == 3:
+        img = np.mean(img, -1).astype(np.uint8)
+    edges = cv2.Canny(img, 100, 300, 5)
+    min_len = img.shape[1] / 4
+    max_gap = min_len
+    min_votes = int(img.shape[0] / 2)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, min_votes,
+                            minLineLength=min_len, maxLineGap=max_gap)
+    if lines is None:
+        return (img, angle)
+    ptn_quads = [(m[0], m[1], m[2], m[3])
+                 for l in np.take(lines, [0, 1, 2, 3], axis=2) for m in l]
+    angs = [math.atan2(x2-x1, y2-y1) * 180 / np.pi for x1,
+            y1, x2, y2 in ptn_quads]
+    fit_angles = [a for a in angs if (abs(90.0-a) < max_angle)]
+    mean_angle = np.mean(fit_angles)
+    if abs(90.0 - mean_angle) >= rotation_threshold:
+        angle = 90.0 - mean_angle
+        center = get_center(img)
+        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        img = add_padding(img, 50)
+        img = cv2.warpAffine(img, M, img.shape[1::-1], flags=cv2.INTER_LINEAR)
+        img = img[50:-50, 50:-50]
+
+    return (img, angle)
+
+
+def get_center(image):
+    M = cv2.moments(image)
+    divis = 1 if M['m00'] == 0 else M['m00']
+    return (int(M["m10"] / divis), int(M['m01'] / divis))
+
+
+def add_padding(image_frame, p):
+    """
+    Additional padding in every orientation
+    between existing image content and borders
+    """
+    (_, _, clr) = calculate_grayscale(in_data=image_frame)
+    return cv2.copyMakeBorder(image_frame, p, p, p, p, cv2.BORDER_CONSTANT, None, value=clr)

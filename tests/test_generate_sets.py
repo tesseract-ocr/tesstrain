@@ -11,12 +11,16 @@ import shutil
 from cv2 import (
     cv2
 )
+import numpy as np
 import pytest
 import lxml.etree as etree
 
 from extract_sets import (
     TrainingSets,
-    grey_canvas,
+    gray_canvas,
+    calculate_grayscale,
+    clear_vertical_borders,
+    rotate_text_line_center,
     XML_NS
 )
 
@@ -42,7 +46,7 @@ IMG_GEN_MIN = 168
 def generate_image(path_image, words, columns, rows, params=None):
     """Generate synthetic in-memory greyscale image data"""
 
-    dst = grey_canvas(columns, rows, IMG_GEN_MIN, IMG_GEN_MAX)
+    dst = gray_canvas(columns, rows, IMG_GEN_MIN, IMG_GEN_MAX)
     if words:
         for word in words:
             render_text = word[1]
@@ -137,7 +141,7 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
 
     training_data = TrainingSets(fixture_alto_tif, path_tif)
     data = training_data.create(
-        min_chars=32, folder_out=path_input_dir, summary=True)
+        min_chars=32, folder_out=path_input_dir, summary=True, padding=5)
 
     # assert
     assert len(data) == 225
@@ -362,7 +366,7 @@ def _fixture_page_devanagari(tmpdir):
     return str(tmpdir)
 
 
-def test_handle_page_devanagari_with_texlines(fixture_page_devanagari):
+def test_handle_page_devanagari_with_textlines(fixture_page_devanagari):
     """When procesing invalid coords, skip pair and alert user"""
 
     # arrange
@@ -388,7 +392,7 @@ def fixture_alto4_persian(tmpdir):
     shutil.copyfile(res, path_page)
     words = extract_words(path_page)
     file_path = tmpdir.join(f'{OCR_DATA_PERSIAN}.png')
-    generate_image(file_path, words=words, columns=593, rows=950)
+    generate_image(file_path, words=words, columns=1500, rows=2401)
     return str(tmpdir)
 
 
@@ -443,3 +447,142 @@ def test_error_1123596(page_1123596):
     # assert
     assert "no text but words for line 'line_1617688885509_1198'" in str(
         exc.value)
+
+
+def test_calculate_greyscale_simple():
+    """Create greyscale value from plain boundaries"""
+
+    # act
+    (l, h, c) = calculate_grayscale(192, 16)
+
+    # assert
+    assert l == 192
+    assert h == 208
+    assert c == 200
+
+
+@pytest.fixture
+def rowimage_0251_0011_tl36(tmp_path):
+    res = pathlib.Path(RES_ROOT) / 'img' / '1681877805_J_0011_0251_tl_36.tif'
+    assert os.path.isfile(res)
+    path_img = tmp_path / 'tl_36.tif'
+    shutil.copyfile(res, path_img)
+    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+
+    # check original image data distribution back - foreground
+    # 17.236 gray val <= 128 foreground, 161.594 brighter as background
+    (_, bins, vals) = np.unique((image_frame > 128),
+                                return_counts=True, return_index=True)
+    assert len(bins) == 2
+    assert vals[0] == 35981
+    assert vals[1] == 142849
+    # top intruder
+    assert image_frame[0][94] == 48
+    # bottom intruder
+    assert image_frame[89][1936] == 91
+
+    return image_frame
+
+
+def test_calculate_grayscale_from_frame(rowimage_0251_0011_tl36):
+
+    # act
+    (l, h, c) = calculate_grayscale(in_data=rowimage_0251_0011_tl36)
+
+    # assert
+    assert l == 207
+    assert h == 239
+    assert c == 223
+
+
+def test_remove_intruders_0251_tl36(rowimage_0251_0011_tl36):
+    """
+    Test intruder remove with real world newspaper textline
+    Saalezeitung (PPN 1681877805) film 0011, page 0251, tl_36
+    """
+
+    # arrange
+    assert rowimage_0251_0011_tl36.shape == (90, 1987)
+
+    # act
+    (img, intruder_top, intruder_btm) = clear_vertical_borders(
+        rowimage_0251_0011_tl36, 0.125)
+
+    # assert shape stays the same
+    assert img.shape == (90, 1987)
+    # change of previous top intruder
+    assert img[0][94] == 207
+    # change of previous bottom intruder
+    assert img[89][1936] == 207
+    assert intruder_top == 6
+    assert intruder_btm == 14
+
+    # re-check dark and bright distribution of fore-and
+    # background *after* sanitizing: dark regions have
+    # been decreased, bright pixels grow accordingly
+    (_, bins, vals) = np.unique((img > 127), return_counts=True, return_index=True)
+    assert len(bins) == 2
+    assert vals[0] == 35109  # 35981 < 35109
+    assert vals[1] == 143721  # 143721 > 142849
+
+
+@pytest.fixture
+def rowimage_0251_0011_tl04(tmp_path):
+    res = pathlib.Path(RES_ROOT) / 'img' / \
+        '1681877805_J_0011_0251_tl_4_clean.tif'
+    assert os.path.isfile(res)
+    path_img = tmp_path / 'tl_4.tif'
+    shutil.copyfile(res, path_img)
+    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+
+    # check original image data distribution back - foreground
+    (_, bins, vals) = np.unique((image_frame > 127),
+                                return_counts=True, return_index=True)
+    assert len(bins) == 2
+    assert vals[0] == 41742
+    assert vals[1] == 254058
+    return image_frame
+
+
+def test_no_intruders_0251_tl04_clean(rowimage_0251_0011_tl04):
+    """
+    Test intruder remove with real world newspaper textline
+    Saalezeitung (PPN 1681877805) film 0011, page 0251, tl_36
+    """
+
+    # arrange
+    assert rowimage_0251_0011_tl04.shape == (145, 2040)
+
+    # act
+    (img, intruder_top, intruder_btm) = clear_vertical_borders(
+        rowimage_0251_0011_tl04, 0.125)
+
+    # assert shape stays the same
+    assert img.shape == (145, 2040)
+    assert intruder_top == 0
+    assert intruder_btm == 0
+
+    # re-check dark and bright distribution of fore-and
+    # background *after* sanitizing: no change
+    (_, _, vals) = np.unique((img > 127), return_counts=True, return_index=True)
+    assert vals[0] == 41742
+    assert vals[1] == 254058
+
+
+@pytest.fixture
+def rowimage_inclined(tmp_path):
+    res = pathlib.Path(RES_ROOT) / 'img' / 'LINE_099_tl_407.png'
+    assert os.path.isfile(res)
+    path_img = tmp_path / 'LINE_099_tl_407.png'
+    shutil.copyfile(res, path_img)
+    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+    return image_frame
+
+
+def test_textline_rotated(rowimage_inclined):
+
+    # act
+    (_, delta) = rotate_text_line_center(rowimage_inclined)
+
+    # assert
+    assert delta == pytest.approx(-0.2, abs=0.1)
