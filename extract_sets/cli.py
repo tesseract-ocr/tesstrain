@@ -4,8 +4,6 @@
 import argparse
 import os
 
-from numpy import string_
-
 from . import (
     TrainingSets,
     DEFAULT_OUTDIR_PREFIX,
