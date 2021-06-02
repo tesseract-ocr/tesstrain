@@ -490,9 +490,9 @@ def test_calculate_grayscale_from_frame(rowimage_0251_0011_tl36):
     (l, h, c) = calculate_grayscale(in_data=rowimage_0251_0011_tl36)
 
     # assert
-    assert l == 207
-    assert h == 239
-    assert c == 223
+    assert l == 212
+    assert h == 244
+    assert c == 228
 
 
 def test_remove_intruders_0251_tl36(rowimage_0251_0011_tl36):
@@ -510,10 +510,10 @@ def test_remove_intruders_0251_tl36(rowimage_0251_0011_tl36):
 
     # assert shape stays the same
     assert img.shape == (90, 1987)
-    # change of previous top intruder
-    assert img[0][94] == 207
-    # change of previous bottom intruder
-    assert img[89][1936] == 207
+    # change of previous top intruder to the brighter side
+    assert img[0][94] == 212
+    # change of previous bottom intruder to the brighter side
+    assert img[89][1936] == 212
     assert intruder_top == 6
     assert intruder_btm == 14
 

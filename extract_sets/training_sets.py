@@ -446,9 +446,9 @@ def gray_canvas(w, h, low=168, bound=32, in_data=None):
     return cv2.filter2D(the_raw, -1, kernel)
 
 
-def calc_reference(arr):
-    """Calc reference val after removing background (pixel wit val 0)"""
-    filt = arr > 0
+def calc_reference(arr, threshold=127):
+    """Calc reference val after removing background below threshold (default: split by middle)"""
+    filt = arr > threshold
     filt_arr = arr[filt]
     return np.median(filt_arr)
 
