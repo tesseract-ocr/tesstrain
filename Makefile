@@ -372,3 +372,9 @@ clean-output:
 
 # Clean all generated files
 clean: clean-box clean-lstmf clean-output	
+
+# do not search for implicit rules here:
+Makefile: ;
+%.png: ;
+%.gt.txt: ;
+%.tif: ;
