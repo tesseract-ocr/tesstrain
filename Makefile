@@ -199,9 +199,9 @@ endif
 # Start training
 training: $(OUTPUT_DIR).traineddata
 
-$(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
+$(ALL_GT): $(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
+	find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
@@ -216,9 +216,9 @@ $(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
+$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
+	find -L $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
 	@if test -f "$*.png"; then \
@@ -357,12 +357,12 @@ $(TESSDATA)/eng.traineddata:
 # Clean generated .box files
 .PHONY: clean-box
 clean-box:
-	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+	find -L $(GROUND_TRUTH_DIR) -name '*.box' -delete
 
 # Clean generated .lstmf files
 .PHONY: clean-lstmf
 clean-lstmf:
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
+	find -L $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
 
 # Clean generated output files
 .PHONY: clean-output
