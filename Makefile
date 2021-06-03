@@ -1,8 +1,8 @@
 export
 
-# Disable built-in suffix rules.
+# Disable built-in suffix and implicit pattern rules (for software builds).
 # This makes starting with a very large number of GT lines much faster.
-.SUFFIXES:
+MAKEFLAGS += -r
 
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
@@ -321,7 +321,7 @@ leptonica: leptonica.built
 
 leptonica.built: leptonica-$(LEPTONICA_VERSION)
 	cd $< ; \
-		./configure --prefix=$(LOCAL) && \
+		./configure --prefix=$(LOCAL) && \bertsky:doc-fixes
 		make -j$(CORES) install SUBDIRS=src && \
 		date > "$@"
 
@@ -372,9 +372,3 @@ clean-output:
 
 # Clean all generated files
 clean: clean-box clean-lstmf clean-output	
-
-# do not search for implicit rules here:
-Makefile: ;
-%.png: ;
-%.gt.txt: ;
-%.tif: ;
