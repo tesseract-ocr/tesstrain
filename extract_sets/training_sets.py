@@ -33,7 +33,7 @@ DEFAULT_OUTDIR_PREFIX = 'training_data_'
 DEFAULT_USE_SUMMARY = False
 DEFAULT_USE_REORDER = False
 DEFAULT_DPI = 300
-DEFAULT_INTRUSION_RATIO = 0.125  # top 1/8 and bottom 1/8
+DEFAULT_INTRUSION_RATIO = 0.1  # top 1/10 and bottom 1/10
 DEFAULT_ROTATION_THRESH = 0.1
 DEFAULT_BINARIZE = False
 DEFAULT_SANITIZE = True
@@ -435,7 +435,7 @@ def calculate_grayscale(low=168, neighbourhood=32, in_data=None):
         return (the_low, the_high, the_low+nb_center)
 
 
-def gray_canvas(w, h, low=168, bound=16, in_data=None):
+def gray_canvas(w, h, low=168, bound=8, in_data=None):
     """
     Create the_gray Canvas with given dimension and range or
     calculate range from in_data
@@ -622,7 +622,6 @@ def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
     if abs(90.0 - mean_angle) >= rotation_threshold:
         angle = 90.0 - mean_angle
         center = get_center(img)
-        print(f"rotate frame by {angle} around {center}")
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
         img = add_padding(img, 50)
         img = cv2.warpAffine(img, M, img.shape[1::-1], flags=cv2.INTER_LINEAR)
@@ -643,4 +642,4 @@ def add_padding(image_frame, p):
     between existing image content and borders
     """
     (_, _, clr) = calculate_grayscale(in_data=image_frame)
-    return cv2.copyMakeBorder(image_frame, p, p, p, p, cv2.BORDER_CONSTANT, None, value=255)
+    return cv2.copyMakeBorder(image_frame, p, p, p, p, cv2.BORDER_CONSTANT, None, value=clr)
