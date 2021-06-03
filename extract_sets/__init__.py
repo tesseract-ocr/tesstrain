@@ -1,6 +1,7 @@
 from .training_sets import (
     TrainingSets,
     gray_canvas,
+    read_dpi,
     calculate_grayscale,
     clear_vertical_borders,
     rotate_text_line_center,

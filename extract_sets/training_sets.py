@@ -290,7 +290,7 @@ class TrainingSets:
         if not self.path_image_data:
             self._resolve_image_path(path_xml_data)
         self.image_data = load_image(self.path_image_data)
-        self._read_dpi()
+        (self.xdpi, self.ydpi) = read_dpi(self.path_image_data)
 
     def _resolve_image_path(self, path_xml_data):
         self.path_image_data = resolve_image_path(path_xml_data)
@@ -305,12 +305,6 @@ class TrainingSets:
             return [cv2.IMWRITE_TIFF_RESUNIT, 2, cv2.IMWRITE_TIFF_XDPI, self.xdpi,
                     cv2.IMWRITE_TIFF_YDPI, self.ydpi]
         return []
-
-    def _read_dpi(self):
-        if str(self.path_image_data).endswith(".tif"):
-            (self.xdpi, self.ydpi) = read_dpi_from_tif(self.path_image_data)
-        elif str(self.path_image_data).endswith(".jpg"):
-            (self.xdpi, self.ydpi) = read_dpi_from_jpg(self.path_image_data)
 
     def create(self, folder_out=None,
                min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX,
@@ -337,7 +331,8 @@ class TrainingSets:
                     binarize=binarize,
                     padding=padding)
             except Exception as exc:
-                print("[ERROR] with '{}': {}".format(training_data.element_id, str(exc)))
+                print("[ERROR] with '{}': {}".format(
+                    training_data.element_id, str(exc)))
 
         if summary:
             self.write_all(training_datas)
@@ -386,38 +381,6 @@ class TrainingSets:
         file_path = os.path.join(self.path_out, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
-
-
-def load_image(path_image_data):
-    return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
-
-
-def read_dpi_from_tif(path_image_data):
-    """Determine DPI of TIF-Image EXIF-Data"""
-
-    with open(path_image_data, 'rb') as fhdl:
-        tags = exifread.process_file(fhdl)
-        if tags:
-            xdpi = None
-            ydpi = None
-            if 'Image XResolution' in tags:
-                xdpi = tags['Image XResolution'].values[0].num
-            if 'Image YResolution' in tags:
-                ydpi = tags['Image YResolution'].values[0].num
-            if xdpi and ydpi:
-                return (xdpi, xdpi)
-    return (DEFAULT_DPI, DEFAULT_DPI)
-
-
-def read_dpi_from_jpg(path_image_data):
-    """Determine DPI from JPG metadata"""
-
-    image_file = Image.open(path_image_data)
-    if 'dpi' in image_file.info:
-        x_dpi, y_dpi = image_file.info['dpi']
-        return (x_dpi, y_dpi)
-
-    return (DEFAULT_DPI, DEFAULT_DPI)
 
 
 def calculate_grayscale(low=168, neighbourhood=32, in_data=None):
@@ -643,3 +606,37 @@ def add_padding(image_frame, p):
     """
     (_, _, clr) = calculate_grayscale(in_data=image_frame)
     return cv2.copyMakeBorder(image_frame, p, p, p, p, cv2.BORDER_CONSTANT, None, value=clr)
+
+
+def load_image(path_image_data):
+    return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
+
+
+def read_dpi_from_tif(path_image_data):
+    """Determine DPI of TIF-Image EXIF-Data"""
+
+    with open(path_image_data, 'rb') as fhdl:
+        tags = exifread.process_file(fhdl)
+        if tags:
+            xdpi = None
+            ydpi = None
+            if 'Image XResolution' in tags:
+                xdpi = tags['Image XResolution'].values[0].num
+            if 'Image YResolution' in tags:
+                ydpi = tags['Image YResolution'].values[0].num
+            if xdpi and ydpi:
+                return (xdpi, xdpi)
+    return (DEFAULT_DPI, DEFAULT_DPI)
+
+
+def read_dpi(path_image_data):
+    """Determine DPI from Image metadata"""
+
+    if str(path_image_data).endswith(".tif"):
+        return read_dpi_from_tif(path_image_data)
+    elif str(path_image_data).endswith(".jpg") or str(path_image_data).endswith(".png"):
+        with Image.open(path_image_data) as image_file:
+            if 'dpi' in image_file.info:
+                x_dpi, y_dpi = image_file.info['dpi']
+                return (x_dpi, y_dpi)
+    return (DEFAULT_DPI, DEFAULT_DPI)

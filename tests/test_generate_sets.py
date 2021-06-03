@@ -18,6 +18,7 @@ import lxml.etree as etree
 from extract_sets import (
     TrainingSets,
     gray_canvas,
+    read_dpi,
     calculate_grayscale,
     clear_vertical_borders,
     rotate_text_line_center,
@@ -586,3 +587,27 @@ def test_textline_rotated(rowimage_inclined):
 
     # assert
     assert delta == pytest.approx(-0.2, abs=0.1)
+
+
+def test_read_metadata_png():
+
+    res = pathlib.Path(RES_ROOT) / 'img' / 'LINE_099_tl_407.png'
+
+    # assert
+    assert read_dpi(res) == (72, 72)
+
+
+def test_read_metadata_tif():
+
+    res = pathlib.Path(RES_ROOT) / 'img' / '1681877805_J_0011_0251_tl_4.tif'
+
+    # assert
+    assert read_dpi(res) == (470, 470)
+
+
+def test_read_metadata_jpg():
+
+    res = pathlib.Path(RES_ROOT) / 'img' / '1681877805_J_0011_0251_tl_4.jpg'
+
+    # assert
+    assert read_dpi(res) == (470, 470)
