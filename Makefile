@@ -1,8 +1,8 @@
 export
 
-# Disable built-in suffix rules.
+# Disable built-in suffix and implicit pattern rules (for software builds).
 # This makes starting with a very large number of GT lines much faster.
-.SUFFIXES:
+MAKEFLAGS += -r
 
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
@@ -23,6 +23,9 @@ DATA_DIR = data
 
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = $(DATA_DIR)/$(MODEL_NAME)
+
+# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
+GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
 WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
@@ -52,9 +55,6 @@ TESSERACT_VERSION := 4.1.1
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
-
-# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
-GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # If EPOCHS is given, it is used to set MAX_ITERATIONS.
 ifeq ($(EPOCHS),)
@@ -131,9 +131,11 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    TESSDATA           Path to the .traineddata directory with traineddata suitable for training "
-	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata"
+	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(TESSDATA)"
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    DATA_DIR           Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)"
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
+	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    WORDLIST_FILE      Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)"
 	@echo "    NUMBERS_FILE       Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)"
 	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
@@ -142,8 +144,7 @@ help:
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
-	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: $(TESSDATA_REPO)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
@@ -320,7 +321,7 @@ leptonica: leptonica.built
 
 leptonica.built: leptonica-$(LEPTONICA_VERSION)
 	cd $< ; \
-		./configure --prefix=$(LOCAL) && \
+		./configure --prefix=$(LOCAL) && \bertsky:doc-fixes
 		make -j$(CORES) install SUBDIRS=src && \
 		date > "$@"
 
