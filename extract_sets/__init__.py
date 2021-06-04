@@ -5,6 +5,7 @@ from .training_sets import (
     calculate_grayscale,
     clear_vertical_borders,
     rotate_text_line_center,
+    coords_center,
     DEFAULT_OUTDIR_PREFIX,
     DEFAULT_MIN_CHARS,
     DEFAULT_USE_SUMMARY,

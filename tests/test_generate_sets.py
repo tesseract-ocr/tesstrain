@@ -22,6 +22,7 @@ from extract_sets import (
     calculate_grayscale,
     clear_vertical_borders,
     rotate_text_line_center,
+    coords_center,
     XML_NS
 )
 
@@ -611,3 +612,19 @@ def test_read_metadata_jpg():
 
     # assert
     assert read_dpi(res) == (470, 470)
+
+
+def test_coords_empty():
+
+    assert () == coords_center([])
+
+
+@pytest.mark.parametrize("in_data,expected", [
+    (['100, 100', '200, 200'], (150, 150)),
+    (['1673,576', '1863,605', '1879,589', '1935,601', '2015,558', '2063,602', '2190,603', '2258,587', '2259,464', '2155,443', '2036,455', '2016,474', '1673,472'], (2001.1, 540.7))])
+def test_coords_center(in_data, expected):
+
+    # assert
+    result = coords_center(in_data)
+    assert result[0] == pytest.approx(expected[0], abs=0.1)
+    assert result[1] == pytest.approx(expected[1], abs=0.1)

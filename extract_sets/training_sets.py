@@ -62,6 +62,7 @@ class TextLine(abc.ABC):
         self.valid = True
         self.text_words = []
         self.reorder = None
+        self.vertical = False
 
     @abc.abstractmethod
     def set_id(self):
@@ -147,7 +148,7 @@ class PageLine(TextLine):
         texts = []
         text_els = self.element.findall(f'{self.namespace}:Word', XML_NS)
         for t in text_els:
-            top_left = PageLine._pick_top_left(t, self.namespace)
+            top_left = to_center_coords(t, self.namespace, self.vertical)
             if not top_left:
                 elem_id = t.attrib['id']
                 msg = f"Invalid Coords of Word '{elem_id}' in '{self.element_id}'!"
@@ -156,7 +157,7 @@ class PageLine(TextLine):
 
         # if no Word assume at least TextLine exists
         if not text_els:
-            top_left = PageLine._pick_top_left(self.element, self.namespace)
+            top_left = to_center_coords(self.element, self.namespace, self.vertical)
             if not top_left:
                 elem_id = self.element.attrib['id']
                 print("[ERROR  ] skip '{}': invalid coords!".format(
@@ -167,7 +168,7 @@ class PageLine(TextLine):
 
         sorted_els = sorted(
             texts,
-            key=lambda w: int(PageLine._pick_top_left(w, self.namespace)))
+            key=lambda w: int(to_center_coords(w, self.namespace, self.vertical)))
         unicodes = [
             w.find(
                 f'.//{self.namespace}:Unicode',
@@ -181,12 +182,6 @@ class PageLine(TextLine):
                 if mark in strip:
                     self.text_words[i] = strip.replace(mark, '')
 
-    @staticmethod
-    def _pick_top_left(elem, namespace):
-        coords = elem.find(f'{namespace}:Coords', XML_NS)
-        points = coords.attrib['points'].split()
-        if len(points) > 0:
-            return points[0].split(',')[0]
 
     def get_shape(self, element):
         """
@@ -584,7 +579,7 @@ def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
     mean_angle = np.mean(fit_angles)
     if abs(90.0 - mean_angle) >= rotation_threshold:
         angle = 90.0 - mean_angle
-        center = get_center(img)
+        center = image_center(img)
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
         img = add_padding(img, 50)
         img = cv2.warpAffine(img, M, img.shape[1::-1], flags=cv2.INTER_LINEAR)
@@ -593,7 +588,7 @@ def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
     return (img, angle)
 
 
-def get_center(image):
+def image_center(image):
     M = cv2.moments(image)
     divis = 1 if M['m00'] == 0 else M['m00']
     return (int(M["m10"] / divis), int(M['m01'] / divis))
@@ -640,3 +635,18 @@ def read_dpi(path_image_data):
                 x_dpi, y_dpi = image_file.info['dpi']
                 return (x_dpi, y_dpi)
     return (DEFAULT_DPI, DEFAULT_DPI)
+
+def coords_center(coord_tokens):
+    """Calculate Shape center from textual represented coordinates data"""
+    vals = [int(b) for a in map(lambda e: e.split(','), coord_tokens) for b in a]
+    point_pairs = list(zip(*[iter(vals)]*2))
+    return tuple(map(lambda c: sum(c) / len(c), zip(*point_pairs)))
+
+def to_center_coords(elem, namespace, vertical=False):
+    coords = elem.find(f'{namespace}:Coords', XML_NS)
+    coord_tokens = coords.attrib['points'].split()
+    if len(coord_tokens) > 0:
+        center = coords_center(coord_tokens)
+        if vertical:
+            return center[1]
+        return center[0]
