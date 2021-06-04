@@ -175,15 +175,13 @@ cd ./plot
 ./plot_cer.sh 
 ```
 
-## Generate training data from ALTO/PAGE
+## Extract training data from ALTO/PAGE and images
 
-tesstrain provides a utility `tesstrain-extract-gt` to generate pairs of text
-line and corresponding line images from input data in the form of
+tesstrain provides a utility `tesstrain-extract-sets` to generate pairs of text lines and corresponding line images from input data in the form of
 [ALTO](https://www.loc.gov/standards/alto/) or
-[PAGE-XML](https://github.com/PRImA-Research-Lab/PAGE-XML) files that represent
-scanned pages (complete or partial) with existing OCR.
+[PAGE-XML](https://github.com/PRImA-Research-Lab/PAGE-XML) files that represent scanned pages (complete or partial) with existing OCR.
 
-To install the `tesstrain-extract-gt` tool, set up a virtual environment and install the project with `pip`:
+To install `tesstrain-extract-sets`, first set up a virtual environment and install the project via `pip`:
 
 ```
 # create virtual environment in subfolder "venv"
@@ -193,21 +191,19 @@ source venv/bin/activate
 # win
 venv\Scripts\activate.bat
 
-pip install -U pip
+# actual install 
 pip install .
 ```
 
-`tesstrain-extract-gt` currently supports ALTO V3, PAGE 2013 and PAGE 2019 as
-OCR formats and TIFF, JPEG and PNG images.
+`tesstrain-extract-sets` currently supports OCR data in ALTO V3, PAGE 2013 and PAGE 2019, as well as TIFF, JPEG and PNG images.
 
-Output is written as UTF-8 encoded plain text files and TIFF images.
+Output is written as UTF-8 encoded plain text files and TIFF images. The image frame is produced from the textline coordinates in the OCR data, so please take care of properly annotated geometrical information. Additionally, the tool can add a fixed synthetic padding around the textline or store it binarized (`--binarize`).
 
-See `tesstrain-extract-gt --help` for a brief listing of all supported command
-line flags and options.
+By default, several sanitize actions are performed at image line level, like deskewing or removement of top-bottom intruders. To disable this, add flag `--no-sanitze`. 
 
-**NOTE:** The text of the lines is extracted as-is, no automatic correction
-takes place. Therefore, it is required to manually review the generated data
-before training Tesseract with it.
+See `tesstrain-extract-sets --help` for a brief listing of all supported command line flags and options.
+
+**NOTE:** The text of the lines is extracted as-is, no automatic correction takes place. It is strongly recommended to review the generated data before training Tesseract with it.
 
 
 ## License
