@@ -185,14 +185,17 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
 	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
 
 ifdef START_MODEL
-$(OUTPUT_DIR)/unicharset: $(ALL_GT)
-	@mkdir -p $(DATA_DIR)/$(START_MODEL)
-	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata  $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME)
-	unicharset_extractor --output_unicharset "$(OUTPUT_DIR)/my.unicharset" --norm_mode $(NORM_MODE) "$(ALL_GT)"
-	merge_unicharsets $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset  "$@"
+$(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
+	@mkdir -p $(@D)
+	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata $(basename $@)
+$(OUTPUT_DIR)/my.unicharset: $(ALL_GT)
+	@mkdir -p $(@D)
+	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$^"
+$(OUTPUT_DIR)/unicharset: $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset
+	merge_unicharsets $^ "$@"
 else
 $(OUTPUT_DIR)/unicharset: $(ALL_GT)
-	@mkdir -p $(OUTPUT_DIR)
+	@mkdir -p $(@D)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
 
