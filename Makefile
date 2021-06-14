@@ -316,7 +316,10 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--model_output $@
 endif
 
-TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
+TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic
+TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
+TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
+TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
 
 TESSERACT_LANGDATA = $(DATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(DATA_DIR)/%.unicharset)
 
