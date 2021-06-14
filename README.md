@@ -4,7 +4,11 @@
 
 ## Install
 
-### leptonica, tesseract
+### Auxiliaries
+
+You will need at least GNU `make`, `wget`, `find`, `bash`, `unzip`.
+
+### Leptonica, Tesseract
 
 You will need a recent version (>= 4.0.0beta1) of tesseract built with the
 training tools and matching leptonica bindings.
@@ -29,17 +33,15 @@ repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.m
 You need a recent version of Python 3.x. For image processing the Python library `Pillow` is used.
 If you don't have a global installation, please use the provided requirements file `pip install -r requirements.txt`.
 
-<!-- radical-stroke will be fetched as requirement to proto-model, kba Wed Jan 30 10:58:10 CET 2019
+### Language data
 
-### language data
+Tesseract expects some configuration data (a file `radical-stroke.txt` and `*.unicharset` for all scripts) in `DATA_DIR`.
+To fetch them:
 
-Tesseract expects some configuration data (a file `fadical-stroke.txt`). To fetch it:
+    make tesseract-langdata
 
-``` sh
-  make langdata
-```
-
--->
+(This step is only needed once and already included implicitly in the `training` target,
+but you might want to run explicitly it in advance.)
 
 ## Choose model name
 
@@ -75,15 +77,15 @@ script](https://github.com/OCR-D/ocrd-train/issues/7#issuecomment-419714852).
 
 ## Train
 
-```
- make training MODEL_NAME=name-of-the-resulting-model
-```
+Run
+
+    make training MODEL_NAME=name-of-the-resulting-model
+
 
 which is basically a shortcut for
 
-```
-   make unicharset lists proto-model training
-```
+    make unicharset lists proto-model tesseract-langdata training
+
 
 Run `make help` to see all the possible targets and variables:
 
@@ -99,7 +101,8 @@ Run `make help` to see all the possible targets and variables:
     proto-model      Build the proto model
     leptonica        Build leptonica
     tesseract        Build tesseract
-    tesseract-langs  Download tesseract-langs
+    tesseract-langs  Download minimal stock models
+    tesseract-langdata  Download stock unicharsets
     clean            Clean all generated files
 
   Variables
