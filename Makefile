@@ -321,7 +321,7 @@ leptonica: leptonica.built
 
 leptonica.built: leptonica-$(LEPTONICA_VERSION)
 	cd $< ; \
-		./configure --prefix=$(LOCAL) && \bertsky:doc-fixes
+		./configure --prefix=$(LOCAL) && \
 		make -j$(CORES) install SUBDIRS=src && \
 		date > "$@"
 
