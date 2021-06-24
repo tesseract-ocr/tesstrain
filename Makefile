@@ -210,6 +210,7 @@ endif
 training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(ALL_FILES)
+	$(if $^,:,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
 	@mkdir -p $(@D)
 	paste -s $^ > "$@"
 
@@ -227,6 +228,7 @@ $(ALL_GT): $(ALL_FILES)
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
+	$(if $^,:,$(error found no $(GROUND_TRUTH_DIR)/*.lstmf for $@))
 	@mkdir -p $(@D)
 	paste -s $^ | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
