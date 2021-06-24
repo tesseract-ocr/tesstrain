@@ -1,8 +1,8 @@
 export
 
-# Disable built-in suffix rules.
+# Disable built-in suffix and implicit pattern rules (for software builds).
 # This makes starting with a very large number of GT lines much faster.
-.SUFFIXES:
+MAKEFLAGS += -r
 
 ## Make sure that sort always uses the same sort order.
 LC_ALL := C
@@ -26,6 +26,9 @@ LANGDATA_DIR = $(DATA_DIR)/langdata
 
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = $(DATA_DIR)/$(MODEL_NAME)
+
+# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
+GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)
 WORDLIST_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).wordlist
@@ -55,9 +58,6 @@ TESSERACT_VERSION := 4.1.1
 
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
-
-# Ground truth directory. Default: $(GROUND_TRUTH_DIR)
-GROUND_TRUTH_DIR := $(OUTPUT_DIR)-ground-truth
 
 # If EPOCHS is given, it is used to set MAX_ITERATIONS.
 ifeq ($(EPOCHS),)
@@ -135,11 +135,12 @@ help:
 	@echo "  Variables"
 	@echo ""
 	@echo "    TESSDATA           Path to the .traineddata directory with traineddata suitable for training "
-	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata"
+	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(TESSDATA)"
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
 	@echo "    DATA_DIR           Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)"
 	@echo "    LANGDATA_DIR       Data directory for langdata (downloaded from Tesseract langdata repo). Default: $(LANGDATA_DIR)"
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
+	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
 	@echo "    WORDLIST_FILE      Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)"
 	@echo "    NUMBERS_FILE       Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)"
 	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
@@ -148,8 +149,7 @@ help:
 	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
 	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
 	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
-	@echo "    TESSDATA_REPO      Tesseract model repo to use. Default: $(TESSDATA_REPO)"
-	@echo "    GROUND_TRUTH_DIR   Ground truth directory. Default: $(GROUND_TRUTH_DIR)"
+	@echo "    TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: $(TESSDATA_REPO)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
@@ -208,9 +208,9 @@ endif
 # Start training
 training: $(OUTPUT_DIR).traineddata
 
-$(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
+$(ALL_GT): $(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
+	find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
@@ -225,9 +225,9 @@ $(ALL_GT): $(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
+$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 	@mkdir -p $(OUTPUT_DIR)
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
+	find -L $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
 	@if test -f "$*.png"; then \
@@ -375,12 +375,12 @@ $(TESSDATA)/%.traineddata:
 # Clean generated .box files
 .PHONY: clean-box
 clean-box:
-	find $(GROUND_TRUTH_DIR) -name '*.box' -delete
+	find -L $(GROUND_TRUTH_DIR) -name '*.box' -delete
 
 # Clean generated .lstmf files
 .PHONY: clean-lstmf
 clean-lstmf:
-	find $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
+	find -L $(GROUND_TRUTH_DIR) -name '*.lstmf' -delete
 
 # Clean generated output files
 .PHONY: clean-output
