@@ -21,6 +21,9 @@ MODEL_NAME = foo
 # Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)
 DATA_DIR = data
 
+# Data directory for langdata (downloaded from Tesseract langdata repo). Default: $(LANGDATA_DIR)
+LANGDATA_DIR = $(DATA_DIR)/langdata
+
 # Output directory for generated files. Default: $(OUTPUT_DIR)
 OUTPUT_DIR = $(DATA_DIR)/$(MODEL_NAME)
 
@@ -134,6 +137,8 @@ help:
 	@echo "    TESSDATA           Path to the .traineddata directory with traineddata suitable for training "
 	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata"
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
+	@echo "    DATA_DIR           Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)"
+	@echo "    LANGDATA_DIR       Data directory for langdata (downloaded from Tesseract langdata repo). Default: $(LANGDATA_DIR)"
 	@echo "    OUTPUT_DIR         Output directory for generated files. Default: $(OUTPUT_DIR)"
 	@echo "    WORDLIST_FILE      Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)"
 	@echo "    NUMBERS_FILE       Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)"
@@ -267,7 +272,7 @@ proto-model: $(PROTO_MODEL)
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
-	  --script_dir $(DATA_DIR) \
+	  --script_dir $(LANGDATA_DIR) \
 	  --numbers $(NUMBERS_FILE) \
 	  --puncs $(PUNC_FILE) \
 	  --words $(WORDLIST_FILE) \
@@ -321,7 +326,7 @@ TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
 TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
 TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
 
-TESSERACT_LANGDATA = $(DATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(DATA_DIR)/%.unicharset)
+TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(LANGDATA_DIR)/%.unicharset)
 
 tesseract-langdata: $(TESSERACT_LANGDATA)
 
