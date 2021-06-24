@@ -167,6 +167,7 @@ help:
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset
 
+ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
@@ -208,9 +209,9 @@ endif
 # Start training
 training: $(OUTPUT_DIR).traineddata
 
-$(ALL_GT): $(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt')
-	@mkdir -p $(OUTPUT_DIR)
-	find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt' | xargs paste -s > "$@"
+$(ALL_GT): $(ALL_FILES)
+	@mkdir -p $(@D)
+	paste -s $^ > "$@"
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
@@ -225,9 +226,9 @@ $(ALL_GT): $(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt')
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
-$(ALL_LSTMF): $(patsubst %.gt.txt,%.lstmf,$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
-	@mkdir -p $(OUTPUT_DIR)
-	find -L $(GROUND_TRUTH_DIR) -name '*.lstmf' | python3 shuffle.py $(RANDOM_SEED) > "$@"
+$(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
+	@mkdir -p $(@D)
+	paste -s $^ | python3 shuffle.py $(RANDOM_SEED) > "$@"
 
 %.lstmf: %.box
 	@if test -f "$*.png"; then \
