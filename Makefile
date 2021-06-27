@@ -168,6 +168,7 @@ help:
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
+unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
@@ -210,9 +211,9 @@ endif
 training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(ALL_FILES)
-	$(if $^,:,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
+	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
 	@mkdir -p $(@D)
-	paste -s $^ > "$@"
+	$(file >$@) $(foreach F,$^,$(file >>$@,$(file <$F)))
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
@@ -228,9 +229,10 @@ $(ALL_GT): $(ALL_FILES)
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
 
 $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
-	$(if $^,:,$(error found no $(GROUND_TRUTH_DIR)/*.lstmf for $@))
+	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.lstmf for $@))
 	@mkdir -p $(@D)
-	paste -s $^ | python3 shuffle.py $(RANDOM_SEED) > "$@"
+	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
+	python3 shuffle.py $(RANDOM_SEED) "$@"
 
 %.lstmf: %.box
 	@if test -f "$*.png"; then \
