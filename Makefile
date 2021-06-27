@@ -119,6 +119,7 @@ help:
 	@echo "  Targets"
 	@echo ""
 	@echo "    unicharset       Create unicharset"
+	@echo "    charfreq         Show character histogram"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
 	@echo "    training         Start training"
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
@@ -165,7 +166,7 @@ help:
 
 .PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*_checkpoint
 
-.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset
+.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
@@ -174,6 +175,10 @@ ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
 unicharset: $(OUTPUT_DIR)/unicharset
+
+# Show character histogram
+charfreq: $(ALL_GT)
+	LC_ALL=C.UTF-8 grep -o . $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
 lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval

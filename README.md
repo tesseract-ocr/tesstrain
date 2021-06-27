@@ -95,6 +95,7 @@ Run `make help` to see all the possible targets and variables:
   Targets
 
     unicharset       Create unicharset
+    charfreq         Show character histogram
     lists            Create lists of lstmf filenames for training and eval
     training         Start training
     traineddata      Create best and fast .traineddata files from each .checkpoint file
