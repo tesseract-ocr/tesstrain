@@ -101,7 +101,7 @@ def main():
     BINARIZE = ARGS.binarize
     SANITIZE = ARGS.sanitize
     INTR_RATIO = ARGS.intrusion_ratio
-    if isinstance(INTR_RATIO, str) and',' in INTR_RATIO:
+    if isinstance(INTR_RATIO, str) and ',' in INTR_RATIO:
         INTR_RATIO = [float(n) for n in INTR_RATIO.split(',')]
     else:
         INTR_RATIO = float(INTR_RATIO)

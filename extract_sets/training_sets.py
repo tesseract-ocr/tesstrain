@@ -235,7 +235,7 @@ def get_page_lines(xml_data, ns_prefix, min_len, reorder):
             words = textline.findall(
                 f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
             if len(words):
-                msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
+                msg = f"[{xml_data.base}] contains invalid data: no text but words for line '{textline.attrib['id']}'"
                 raise RuntimeError(msg)
     return [PageLine(line, ns_prefix, reorder) for line in matchings]
 
@@ -359,6 +359,8 @@ class TrainingSets:
                     img_frame, text_line, intrusion_ratio, rotation_threshold, padding)
             if binarize:
                 img_frame = binarize_frame(img_frame)
+            if padding > 0:
+                img_frame = add_padding(img_frame, padding)
             file_name = self.set_label + '_' + text_line.element_id + '.tif'
             file_path = os.path.join(path_out, file_name)
 
