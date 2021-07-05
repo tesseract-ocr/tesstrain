@@ -326,8 +326,9 @@ class TrainingSets:
                     binarize=binarize,
                     padding=padding)
             except Exception as exc:
-                print("[ERROR] with '{}': {}".format(
-                    training_data.element_id, str(exc)))
+                txt = ' '.join(training_data.text_words)
+                print("[ERROR] '{}': '{}': {}".format(
+                    training_data.element_id, txt, str(exc)))
 
         if summary:
             self.write_all(training_datas)
