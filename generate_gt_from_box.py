@@ -21,12 +21,12 @@ args = arg_parser.parse_args()
 
 #
 # main
-# uses "λ" for substitution to  get the space delimiters - change for Greek text which uses "λ"
+# uses US (ASCII unit separator, U+001F) for substitution to  get the space delimiters
 #
 
 gtstring = io.StringIO()
 gtfile = open(args.txt, "w", encoding='utf-8')
 with io.open(args.box, "r", encoding='utf-8') as boxfile:
-    print(''.join(line.replace("  ", "λ ").split(' ', 1)[0] for line in boxfile if line), file=gtstring)
-gt = gtstring.getvalue().replace("λ", " ").replace("\t", "\n")
+    print(''.join(line.replace("  ", "\u001f ").split(' ', 1)[0] for line in boxfile if line), file=gtstring)
+gt = gtstring.getvalue().replace("\u001f", " ").replace("\t", "\n")
 print(gt, file=gtfile)
