@@ -341,6 +341,7 @@ TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(
 tesseract-langdata: $(TESSERACT_LANGDATA)
 
 $(TESSERACT_LANGDATA):
+	@mkdir -p $(@D)
 	wget -O $@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/$(@F)'
 
 # Build leptonica
