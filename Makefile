@@ -314,7 +314,7 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 endif
 
 $(DATA_DIR)/radical-stroke.txt:
-	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/radical-stroke.txt'
+	wget -O$@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/main/radical-stroke.txt'
 
 # Build leptonica
 leptonica: leptonica.built
@@ -353,7 +353,7 @@ tesseract-$(TESSERACT_VERSION):
 tesseract-langs: $(TESSDATA)/eng.traineddata
 
 $(TESSDATA)/eng.traineddata:
-	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(notdir $@)
+	cd $(TESSDATA) && wget https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/main/$(notdir $@)
 
 # Clean generated .box files
 .PHONY: clean-box
