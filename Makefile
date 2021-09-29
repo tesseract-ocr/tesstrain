@@ -342,7 +342,7 @@ tesseract-langdata: $(TESSERACT_LANGDATA)
 
 $(TESSERACT_LANGDATA):
 	@mkdir -p $(@D)
-	wget -O $@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/master/$(@F)'
+	wget -O $@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/main/$(@F)'
 
 # Build leptonica
 leptonica: leptonica.built
@@ -381,7 +381,7 @@ tesseract-$(TESSERACT_VERSION):
 tesseract-langs: $(TESSDATA)/eng.traineddata
 
 $(TESSDATA)/%.traineddata:
-	wget -O $@ 'https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/master/$(@F)'
+	wget -O $@ 'https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/main/$(@F)'
 
 # Clean generated .box files
 .PHONY: clean-box

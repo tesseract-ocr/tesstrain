@@ -26,7 +26,7 @@ Alternatively, you can build leptonica and tesseract within this project and ins
 Tesseract will be built from the git repository, which requires CMake,
 autotools (including autotools-archive) and some additional libraries for the
 training tools. See the [installation notes in the tesseract
-repository](https://github.com/tesseract-ocr/tesseract/blob/master/INSTALL.GIT.md).
+repository](https://github.com/tesseract-ocr/tesseract/blob/main/INSTALL.GIT.md).
 
 ### Python
 
