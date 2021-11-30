@@ -238,18 +238,22 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
 	python3 shuffle.py $(RANDOM_SEED) "$@"
 
-%.lstmf: %.box
-	@if test -f "$*.png"; then \
-	  image="$*.png"; \
-	elif test -f "$*.bin.png"; then \
-	  image="$*.bin.png"; \
-	elif test -f "$*.nrm.png"; then \
-	  image="$*.nrm.png"; \
-	else \
-	  image="$*.tif"; \
-	fi; \
+%.lstmf: %.png %.box
 	set -x; \
-	tesseract "$${image}" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) lstm.train
+
+%.lstmf: %.bin.png %.box
+	set -x; \
+	tesseract "$<" $* --psm $(PSM) lstm.train
+
+%.lstmf: %.nrm.png %.box
+	set -x; \
+	tesseract "$<" $* --psm $(PSM) lstm.train
+
+%.lstmf: %.tif %.box
+	set -x; \
+	tesseract "$<" $* --psm $(PSM) lstm.train
+
 
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
 .PHONY: traineddata
