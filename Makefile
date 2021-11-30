@@ -183,9 +183,11 @@ charfreq: $(ALL_GT)
 # Create lists of lstmf filenames for training and eval
 lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
 
+$(OUTPUT_DIR):
+	@mkdir -p $@
+
 $(OUTPUT_DIR)/list.eval \
-$(OUTPUT_DIR)/list.train: $(ALL_LSTMF)
-	@mkdir -p $(OUTPUT_DIR)
+$(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	@total=$$(wc -l < $(ALL_LSTMF)); \
 	  train=$$(echo "$$total * $(RATIO_TRAIN) / 1" | bc); \
 	  test "$$train" = "0" && \
@@ -201,23 +203,20 @@ ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
 	@mkdir -p $(@D)
 	combine_tessdata -u $(TESSDATA)/$(START_MODEL).traineddata $(basename $@)
-$(OUTPUT_DIR)/my.unicharset: $(ALL_GT)
-	@mkdir -p $(@D)
+$(OUTPUT_DIR)/my.unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$^"
 $(OUTPUT_DIR)/unicharset: $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset $(OUTPUT_DIR)/my.unicharset
 	merge_unicharsets $^ "$@"
 else
-$(OUTPUT_DIR)/unicharset: $(ALL_GT)
-	@mkdir -p $(@D)
+$(OUTPUT_DIR)/unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
 
 # Start training
 training: $(OUTPUT_DIR).traineddata
 
-$(ALL_GT): $(ALL_FILES)
+$(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
-	@mkdir -p $(@D)
 	$(file >$@) $(foreach F,$^,$(file >>$@,$(file <$F)))
 
 .PRECIOUS: %.box
@@ -261,14 +260,14 @@ traineddata: $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast
 traineddata: $(subst checkpoints,tessdata_best,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
 traineddata: $(subst checkpoints,tessdata_fast,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
 $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast:
-	mkdir $@
-$(OUTPUT_DIR)/tessdata_best/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint
+	@mkdir -p $@
+$(OUTPUT_DIR)/tessdata_best/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint | $(OUTPUT_DIR)/tessdata_best
 	lstmtraining \
           --stop_training \
           --continue_from $< \
           --traineddata $(PROTO_MODEL) \
           --model_output $@
-$(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint
+$(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint | $(OUTPUT_DIR)/tessdata_fast
 	lstmtraining \
           --stop_training \
           --continue_from $< \
