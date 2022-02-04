@@ -179,12 +179,13 @@ As an example, use the training data provided in
 [ocrd-testset.zip](./ocrd-testset.zip) to do training and generate the plots.
 Plotting can be done while training is running also to depict the training status till then.
 ```
+mkdir -p data
+mkdir -p data/logs
 unzip ocrd-testset.zip -d data/ocrd-ground-truth
-nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > plot/TESSTRAIN.LOG &
+nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > data/logs/TESSTRAIN.LOG &
 ```
 ```
-cd ./plot
-./plot_cer.sh 
+nohup make --debug=vij traineddata LSTMevalCER plotCER MODEL_NAME=ocrd Y_MAX_CER=6 > data/logs/TESSEVAL.LOG &
 ```
 
 ## License
