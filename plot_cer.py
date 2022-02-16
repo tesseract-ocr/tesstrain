@@ -13,30 +13,22 @@ ymaxcer = arg_list[1]
 
 ytsvfile =  arg_list[2] # modelname + "-iteration.tsv"
 ctsvfile =  arg_list[3] # modelname + "-checkpoint.tsv"
-etsvfile =  arg_list[4] # modelname + "-eval.tsv" - Not used as no training iterations number
+### etsvfile =  arg_list[4] # modelname + "-eval.tsv" - Not used as no training iterations number
 stsvfile =  arg_list[5] # modelname + "-sub.tsv"
 ltsvfile =  arg_list[6] # modelname + "-lstmeval.tsv"
-otsvfile =  arg_list[7] # modelname + "-ocreval.tsv"
-itsvfile =  arg_list[8] # modelname + "-isrieval.tsv"
 
 maxticks=10
 maxCER=int(ymaxcer) #max y axis to display
 
 ydf = pd.read_csv(ytsvfile,sep='\t', encoding='utf-8')
 cdf = pd.read_csv(ctsvfile,sep='\t', encoding='utf-8')
-#edf = pd.read_csv(etsvfile,sep='\t', encoding='utf-8')
 sdf = pd.read_csv(stsvfile,sep='\t', encoding='utf-8')
 ldf = pd.read_csv(ltsvfile,sep='\t', encoding='utf-8')
-odf = pd.read_csv(otsvfile,sep='\t', encoding='utf-8')
-idf = pd.read_csv(itsvfile,sep='\t', encoding='utf-8')
 
 ydf = ydf.sort_values('TrainingIteration')
 cdf = cdf.sort_values('TrainingIteration')
-#edf = edf.sort_values('LearningIteration') # TrainingIteration not available in training log file
 sdf = sdf.sort_values('TrainingIteration')
 ldf = ldf.sort_values('TrainingIteration')
-odf = odf.sort_values('TrainingIteration')
-idf = idf.sort_values('TrainingIteration')
 
 y = ydf['IterationCER']
 x = ydf['LearningIteration']
@@ -46,10 +38,6 @@ c = cdf['CheckpointCER']
 cx = cdf['LearningIteration']
 ct = cdf['TrainingIteration']
 
-#e = edf['EvalCER']
-#ex = edf['LearningIteration']
-#et = edf['TrainingIteration'] # Not available in training log file
-
 s = sdf['SubtrainerCER']
 sx = sdf['LearningIteration']
 st = sdf['TrainingIteration']
@@ -57,14 +45,6 @@ st = sdf['TrainingIteration']
 l = ldf['EvalCER']
 lx = ldf['LearningIteration']
 lt = ldf['TrainingIteration']
-
-o = odf['EvalCER']
-ox = odf['LearningIteration']
-ot = odf['TrainingIteration']
-
-i = 100-idf['EvalCER'] # 100 - Accuracy %
-ix = idf['LearningIteration']
-it = idf['TrainingIteration']
 
 plotfile = "data/" + modelname + "/plots/" + modelname + "-" + ymaxcer + ".png"
 
@@ -98,23 +78,13 @@ ax1.grid(True)
 
 if not c.dropna().empty: # not NaN or empty
     ax1.scatter(ct, c, c='blue', s=15,
-       label='BCER at Checkpoints during training', alpha=0.5)
-    annot_min('blue',-50,-50,cx,c,ct)
+       label='BCER at Checkpoints - lstmtraining - list.train', alpha=0.5)
+    annot_min('blue',0,-50,cx,c,ct)
 
 if not l.dropna().empty: # not NaN or empty
     ax1.plot(lt, l, 'indigo', linewidth=0.5, label='lstmeval BCER')
-    ax1.scatter(lt, l, c='indigo', s=10, label='BCER from lstmeval after training', alpha=0.5)
-    annot_min('indigo',40,-40,lx,l,lt)
-
-if not o.dropna().empty: # not NaN or empty
-    ax1.plot(ot, o, 'red', linewidth=0.5, label='impactcentre/ocrevalUAtion CER')
-    ax1.scatter(ot, o, c='red', s=10, label='CER from ocrevalUAtion', alpha=0.5)
-    annot_min('red',40,40,ox,o,ot)
-
-if not i.dropna().empty: # not NaN or empty
-    ax1.plot(it, i, 'green', linewidth=0.5, label='ISRI ocreval CER')
-    ax1.scatter(it, i, c='green', s=10, label='CER from ISRI ocreval', alpha=0.5)
-    annot_min('green',80,80,ix,i,it)
+    ax1.scatter(lt, l, c='indigo', s=10, label='BCER at Checkpoints - lstmeval - list.eval', alpha=0.5)
+    annot_min('indigo',0,-50,lx,l,lt)
 
 if not s.dropna().empty: # not NaN or empty
     ax1.plot(st, s, 'orange', linewidth=0.5, label='SubTrainer BCER')
@@ -129,7 +99,7 @@ boxtext= " {:.3f}% at \n  {:,} \n {:,} " .format(ymax,xmax,tmax)
 ax1.annotate(boxtext, xy=(tmax, ymax), xytext=(20,-10), textcoords='offset points', color='black',
             bbox=dict(boxstyle='round,pad=0.2', fc='teal', alpha=0.3))
 
-plt.title('CER by Training Iterations - from various OCR evaluation tools',fontsize=10)
+plt.title('BCER by Training Iterations - from separate lstmtraining and lstmeval runs',fontsize=10)
 plt.suptitle(PlotTitle, y=0.95, fontsize = 14, fontweight = 'bold')
 plt.legend(loc='upper right')
 
@@ -146,7 +116,5 @@ ax2.locator_params(axis='x', nbins=maxticks)  # limit ticks to same as x-axis
 ax2.xaxis.set_ticks_position('bottom') # set the position of ticks of the second x-axis to bottom
 ax2.xaxis.set_label_position('bottom') # set the position of labels of the second x-axis to bottom
 ax2.spines['bottom'].set_position(('outward', 36)) # positions the second x-axis below the first x-axis
-
-
 
 plt.savefig(plotfile)

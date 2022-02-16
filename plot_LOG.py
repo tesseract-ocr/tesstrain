@@ -97,7 +97,7 @@ if not s.dropna().empty: # not NaN or empty
        label='BCER for UpdateSubtrainer every 100 iterations', alpha=0.5)
     annot_min('orange',-100,-100,sx,s,st)
 
-plt.title('CER by Learning Iterations - from training log',fontsize=10)
+plt.title('BCER by Learning Iterations - from lstmtraining log',fontsize=10)
 plt.suptitle(PlotTitle, y=0.95, fontsize = 14, fontweight = 'bold')
 plt.legend(loc='upper right')
 
