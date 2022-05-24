@@ -21,3 +21,4 @@ master.zip
 main.zip
 plot/*.LOG
 plot/ocrd*
+.idea/

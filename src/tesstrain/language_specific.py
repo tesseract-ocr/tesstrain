@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # (C) Copyright 2014, Google Inc.
 # (C) Copyright 2018, James R Barlow
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,14 +9,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Set some language specific variables. Works in conjunction with
-# tesstrain.sh
-#
 
-# =============================================================================
-# Language specific info
-# =============================================================================
+"""
+Set some language specific variables.
+"""
 
 import logging
 import os
@@ -1408,7 +1403,3 @@ def set_lang_specific_parameters(ctx, lang):
             setattr(ctx, attr, value)
 
     return ctx
-
-# =============================================================================
-# END of Language specific info
-# =============================================================================
