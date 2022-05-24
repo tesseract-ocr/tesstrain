@@ -96,9 +96,9 @@ def check_file_readable(*filenames):
 
 
 def cleanup(ctx):
-    shutil.copy(ctx.log_file, ctx.output_dir)
+    if os.path.exists(ctx.log_file):
+        shutil.copy(ctx.log_file, ctx.output_dir)
     shutil.rmtree(ctx.training_dir)
-    return
 
 
 def initialize_fontconfig(ctx):
