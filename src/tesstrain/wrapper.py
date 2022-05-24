@@ -60,12 +60,12 @@ def run(
         temporary_directory: Optional[str] = None,
         language_code: Optional[str] = None,
         output_directory: Optional[str] = None,
-        overwrite: bool = False,  # TODO: Currently not used.
+        overwrite: bool = False,  # TODO: Not required anymore.
         save_box_tiff: bool = False,
         linedata_only: bool = False,
         training_text: Optional[str] = None,
         wordlist_file: Optional[str] = None,
-        extract_font_properties: bool = True,  # TODO: Document.
+        extract_font_properties: bool = True,
         distort_image: bool = False,
         tessdata_directory: Optional[str] = None,
         exposures: Optional[List[int]] = None,
@@ -91,7 +91,9 @@ def run(
     :param wordlist_file: File with the word list for the language ordered by
                           decreasing frequency. If unspecified, we will look for it in
                           the langdata directory.
-    :param extract_font_properties:
+    :param extract_font_properties: Assumes that the input file contains a list of
+                                    ngrams. Renders each ngram, extracts spacing
+                                    properties and records them in a `.fontinfo` file.
     :param distort_image: Degrade rendered image with noise, blur, invert.
     :param tessdata_directory: Specify location of existing traineddata files,
                                required during feature extraction. If set, it should be
