@@ -238,6 +238,7 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
 	python3 shuffle.py $(RANDOM_SEED) "$@"
 
+.PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
 	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
