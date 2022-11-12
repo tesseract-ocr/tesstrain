@@ -226,6 +226,9 @@ $(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 %.box: %.bin.png %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.bin.png" -t "$*.gt.txt" > "$@"
 
+%.box: %.raw.png %.gt.txt
+	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.raw.png" -t "$*.gt.txt" > "$@"
+
 %.box: %.nrm.png %.gt.txt
 	PYTHONIOENCODING=utf-8 python3 $(GENERATE_BOX_SCRIPT) -i "$*.nrm.png" -t "$*.gt.txt" > "$@"
 
@@ -238,11 +241,16 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
 	python3 shuffle.py $(RANDOM_SEED) "$@"
 
+.PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
 	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.bin.png %.box
+	set -x; \
+	tesseract "$<" $* --psm $(PSM) lstm.train
+
+%.lstmf: %.raw.png %.box
 	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
@@ -254,6 +262,10 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
+# do not search for implicit rules here:                                                                                                     
+%.png: ;
+%.tif: ;
+%.gt.txt: ;
 
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
 .PHONY: traineddata
