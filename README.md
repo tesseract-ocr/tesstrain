@@ -6,7 +6,7 @@
 
 ### Auxiliaries
 
-You will need at least GNU `make`, `wget`, `find`, `bash`, `unzip`.
+You will need at least GNU `make`, `wget`, `find`, `bash`, `unzip` and `bc`.
 
 ### Leptonica, Tesseract
 
