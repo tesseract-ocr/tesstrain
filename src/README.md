@@ -1,13 +1,13 @@
 # tesstrain.py
 
-Utilities for working with Tesseract 4 using artificial training data.
+Utilities for working with Tesseract >= 4 using artificial training data.
 
 ## Install
 
 This package requires the Tesseract training tools to be available on your system.
 
-To install the PIP package, either use `pip install tesstrain` or `python setup.py install`.
-It works with Python 3.6, but a supported Python version (at least 3.7) is recommended.
+To install the PIP package, either use `pip install tesstrain` (for existing packages) or `pip install .` (from source checkout).
+A supported Python version (at least 3.7) is required for running.
 
 ## Running
 
