@@ -84,6 +84,13 @@ def get_argument_parser():
         type=str,
         help="A list of fontnames to train on.",
     )
+    parser.add_argument(
+        "--vertical_fontlist",
+        dest="vertical_fonts",
+        nargs="+",
+        type=str,
+        help="A list of fontnames to render vertical text.",
+    )
     parser.add_argument("--fonts_dir", help="Path to font files.")
     parser.add_argument("--tmp_dir", help="Path to temporary training directory.")
     parser.add_argument(

@@ -154,7 +154,8 @@ def generate_font_image(ctx, font, exposure, char_spacing):
 
     # add --writing_mode=vertical-upright to common_args if the font is
     # specified to be rendered vertically.
-    if font in VERTICAL_FONTS:
+    vertical_fonts = ctx.vertical_fonts or VERTICAL_FONTS
+    if font in vertical_fonts:
         common_args.append("--writing_mode=vertical-upright")
 
     run_command(
