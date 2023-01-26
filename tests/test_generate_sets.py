@@ -8,9 +8,7 @@ import os
 import pathlib
 import shutil
 
-from cv2 import (
-    cv2
-)
+import cv2
 import numpy as np
 import pytest
 import lxml.etree as etree
@@ -58,6 +56,11 @@ def generate_image(path_image, words, columns, rows, params=None):
 
     cv2.imwrite(str(path_image), dst, params)
     return path_image
+
+
+def read_frame(path_img):
+    """Read image data as Mat-frame"""
+    return cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
 
 
 def extract_words(path_xml_data):
@@ -201,7 +204,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     assert len(txt_files) == 33
 
     # assert mixed content
-    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2])) as txt_file:
+    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2]), encoding='UTF-8') as txt_file:
         arab = txt_file.readline().strip()
         assert 'XIX' in arab
 
@@ -383,7 +386,7 @@ def test_handle_page_devanagari_with_textlines(fixture_page_devanagari):
     # assert
     assert len(data) == 24
     assert 'tl_24' in [l.element_id for l in data]
-    assert not 'tl_25' in [l.element_id for l in data]
+    assert 'tl_25' not in [l.element_id for l in data]
 
 
 @pytest.fixture
@@ -469,7 +472,7 @@ def rowimage_0251_0011_tl36(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'tl_36.tif'
     shutil.copyfile(res, path_img)
-    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+    image_frame = read_frame(str(path_img))
 
     # check original image data distribution back - foreground
     # 17.236 gray val <= 128 foreground, 161.594 brighter as background
@@ -535,7 +538,7 @@ def rowimage_0251_0011_tl04(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'tl_4.tif'
     shutil.copyfile(res, path_img)
-    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+    image_frame = read_frame(str(path_img))
 
     # check original image data distribution back - foreground
     (_, bins, vals) = np.unique((image_frame > 127),
@@ -577,7 +580,7 @@ def rowimage_inclined(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'LINE_099_tl_407.png'
     shutil.copyfile(res, path_img)
-    image_frame = cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
+    image_frame = read_frame(str(path_img))
     return image_frame
 
 

@@ -636,7 +636,7 @@ def read_dpi(path_image_data):
         with Image.open(path_image_data) as image_file:
             if 'dpi' in image_file.info:
                 x_dpi, y_dpi = image_file.info['dpi']
-                return (x_dpi, y_dpi)
+                return (int(x_dpi), int(y_dpi))
     return (DEFAULT_DPI, DEFAULT_DPI)
 
 def coords_center(coord_tokens):
