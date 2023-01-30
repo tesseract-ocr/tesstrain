@@ -204,7 +204,11 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
 	  set -x; \
 	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
+	test "$(OS)" == "Windows_NT" && \
+		dos2unix "$(ALL_LSTMF)"; \
+		dos2unix "$(OUTPUT_DIR)/list.train"; \
+		dos2unix "$(OUTPUT_DIR)/list.eval";
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
