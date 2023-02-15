@@ -302,6 +302,12 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
+	if [ "$(OS)" = "Windows_NT" ]; then \
+		dos2unix "$(NUMBERS_FILE)"; \
+		dos2unix "$(PUNC_FILE)"; \
+		dos2unix "$(WORDLIST_FILE)"; \
+		dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"; \
+	fi
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
