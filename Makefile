@@ -205,10 +205,11 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	  set -x; \
 	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
 	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
-	test "$(OS)" == "Windows_NT" && \
+	if [ "$(OS)" = "Windows_NT" ]; then \
 		dos2unix "$(ALL_LSTMF)"; \
 		dos2unix "$(OUTPUT_DIR)/list.train"; \
-		dos2unix "$(OUTPUT_DIR)/list.eval";
+		dos2unix "$(OUTPUT_DIR)/list.eval"; \
+	fi
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
