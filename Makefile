@@ -255,23 +255,18 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 
 .PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.bin.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.nrm.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.raw.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.tif %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
