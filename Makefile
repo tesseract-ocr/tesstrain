@@ -171,7 +171,7 @@ help:
 
 # END-EVAL
 
-.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*_checkpoint
+.PRECIOUS: $(LAST_CHECKPOINT)
 
 .PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
 
