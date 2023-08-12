@@ -6,7 +6,7 @@
 
 ### Auxiliaries
 
-You will need at least GNU `make`, `wget`, `find`, `bash`, `unzip` and `bc`.
+You will need at least GNU `make` (minimal version 4.2), `wget`, `find`, `bash`, `unzip` and `bc`.
 
 ### Leptonica, Tesseract
 
@@ -41,6 +41,7 @@ repository](https://github.com/tesseract-ocr/tesseract/blob/main/INSTALL.GIT.md)
 You need a recent version of Python 3.x. For image processing the Python library `Pillow` is used.
 If you don't have a global installation, please use the provided requirements file `pip install -r requirements.txt`.
 
+
 ### Language data
 
 Tesseract expects some configuration data (a file `radical-stroke.txt` and `*.unicharset` for all scripts) in `DATA_DIR`.
@@ -50,6 +51,7 @@ To fetch them:
 
 (This step is only needed once and already included implicitly in the `training` target,
 but you might want to run explicitly it in advance.)
+
 
 ## Choose model name
 
