@@ -174,7 +174,7 @@ help: default
 default:
 ifeq (4.2, $(firstword $(sort $(MAKE_VERSION) 4.2)))
    # stuff that requires make-3.81 or higher
-	@echo "    You are useing make version: $(MAKE_VERSION)"
+	@echo "    You are using make version: $(MAKE_VERSION)"
 else
 	$(error This version of GNU Make is too low ($(MAKE_VERSION)). Check your path, or upgrade to 4.2 or newer.)
 endif
