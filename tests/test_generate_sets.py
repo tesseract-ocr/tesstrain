@@ -8,7 +8,16 @@ import os
 import pathlib
 import shutil
 
-import cv2
+from cv2 import (
+    imread,
+    imwrite,
+    putText,
+    FONT_HERSHEY_COMPLEX,
+    IMREAD_UNCHANGED,
+    IMWRITE_TIFF_RESUNIT,
+    IMWRITE_TIFF_XDPI,
+    IMWRITE_TIFF_YDPI,
+)
 import numpy as np
 import pytest
 import lxml.etree as etree
@@ -51,16 +60,11 @@ def generate_image(path_image, words, columns, rows, params=None):
         for word in words:
             render_text = word[1]
             origin = (word[0][0] + 10, word[0][1] + 10)
-            dst = cv2.putText(
-                dst, render_text, origin, cv2.FONT_HERSHEY_COMPLEX, 1.0, (0, 0, 0), 3, bottomLeftOrigin=False)
+            dst = putText(
+                dst, render_text, origin, FONT_HERSHEY_COMPLEX, 1.0, (0, 0, 0), 3, bottomLeftOrigin=False)
 
-    cv2.imwrite(str(path_image), dst, params)
+    imwrite(str(path_image), dst, params)
     return path_image
-
-
-def read_frame(path_img):
-    """Read image data as Mat-frame"""
-    return cv2.imread(str(path_img), cv2.IMREAD_UNCHANGED)
 
 
 def extract_words(path_xml_data):
@@ -115,12 +119,10 @@ def fixture_alto_tif(tmpdir):
 
     file_path = tmpdir.mkdir('scan').join('1667522809_J_0073_0512.tif')
     tif_params = [
-        cv2.IMWRITE_TIFF_RESUNIT,
-        2,
-        cv2.IMWRITE_TIFF_XDPI,
-        300,
-        cv2.IMWRITE_TIFF_YDPI,
-        300]
+        IMWRITE_TIFF_RESUNIT, 2,
+        IMWRITE_TIFF_XDPI, 300,
+        IMWRITE_TIFF_YDPI, 300
+    ]
 
     # 6619x9976px
     generate_image(
@@ -146,7 +148,7 @@ def test_create_sets_from_alto_and_tif(fixture_alto_tif):
 
     training_data = TrainingSets(fixture_alto_tif, path_tif)
     data = training_data.create(
-        min_chars=32, folder_out=path_input_dir, summary=True, padding=5)
+        min_chars=32, output_prefix=path_input_dir, summary=True, padding=5)
 
     # assert
     assert len(data) == 225
@@ -191,7 +193,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=8, folder_out=path_input_dir, summary=True, reorder=True)
+        min_chars=8, output_prefix=path_input_dir, summary=True, reorder=True)
 
     # assert
     assert len(data) == 32
@@ -204,7 +206,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     assert len(txt_files) == 33
 
     # assert mixed content
-    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2]), encoding='UTF-8') as txt_file:
+    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2])) as txt_file:
         arab = txt_file.readline().strip()
         assert 'XIX' in arab
 
@@ -221,7 +223,7 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     # act
     training_data = TrainingSets(fixture_page2013_jpg, path_image)
     data = training_data.create(
-        min_chars=3, folder_out=path_input_dir, summary=False, reorder=True)
+        min_chars=3, output_prefix=path_input_dir, summary=False, reorder=True)
 
     # assert
     expected_len = 33
@@ -272,7 +274,7 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     training_data = TrainingSets(fixture_page2019_png, path_image)
     data = training_data.create(
         min_chars=8, summary=True,
-        folder_out=path_input_dir)
+        output_prefix=path_input_dir)
 
     # assert
     expected_len = 33
@@ -306,7 +308,7 @@ def test_create_sets_from_ocrd_workdspace(fixture_ocrd_workspace):
 
     # act
     training_data = TrainingSets(fixture_ocrd_workspace, None)
-    data = training_data.create(min_chars=8, folder_out=path_input_dir)
+    data = training_data.create(min_chars=8, output_prefix=path_input_dir)
 
     # assert
     assert len(data) == 33
@@ -352,7 +354,7 @@ def test_handle_invalid_coords(fixture_invalid_coords):
 
     # act
     with pytest.raises(RuntimeError) as exc:
-        training_data.create(folder_out=fixture_invalid_coords)
+        training_data.create(output_prefix=fixture_invalid_coords)
 
     # assert: one line was skipped
     expected = "Invalid Coords of Word 'word_1595308100448_546' in 'tl_13'!"
@@ -381,12 +383,12 @@ def test_handle_page_devanagari_with_textlines(fixture_page_devanagari):
 
     # act
     data = training_data.create(
-        folder_out=fixture_page_devanagari, summary=True)
+        output_prefix=fixture_page_devanagari, summary=True)
 
     # assert
     assert len(data) == 24
     assert 'tl_24' in [l.element_id for l in data]
-    assert 'tl_25' not in [l.element_id for l in data]
+    assert not 'tl_25' in [l.element_id for l in data]
 
 
 @pytest.fixture
@@ -414,7 +416,7 @@ def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
 
     # act
     data = training_data.create(
-        folder_out=fixture_alto4_persian, summary=True)
+        output_prefix=fixture_alto4_persian, summary=True)
 
     # assert
     assert len(data) == 23
@@ -447,7 +449,7 @@ def test_error_1123596(page_1123596):
 
     # act
     with pytest.raises(RuntimeError) as exc:
-        training_data.create(folder_out=page_1123596)
+        training_data.create(output_prefix=page_1123596)
 
     # assert
     assert "no text but words for line 'line_1617688885509_1198'" in str(
@@ -472,7 +474,7 @@ def rowimage_0251_0011_tl36(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'tl_36.tif'
     shutil.copyfile(res, path_img)
-    image_frame = read_frame(str(path_img))
+    image_frame = imread(str(path_img), IMREAD_UNCHANGED)
 
     # check original image data distribution back - foreground
     # 17.236 gray val <= 128 foreground, 161.594 brighter as background
@@ -538,7 +540,7 @@ def rowimage_0251_0011_tl04(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'tl_4.tif'
     shutil.copyfile(res, path_img)
-    image_frame = read_frame(str(path_img))
+    image_frame = imread(str(path_img), IMREAD_UNCHANGED)
 
     # check original image data distribution back - foreground
     (_, bins, vals) = np.unique((image_frame > 127),
@@ -580,7 +582,7 @@ def rowimage_inclined(tmp_path):
     assert os.path.isfile(res)
     path_img = tmp_path / 'LINE_099_tl_407.png'
     shutil.copyfile(res, path_img)
-    image_frame = read_frame(str(path_img))
+    image_frame = imread(str(path_img), IMREAD_UNCHANGED)
     return image_frame
 
 

@@ -15,7 +15,36 @@ import exifread
 import lxml.etree as etree
 import numpy as np
 
-from cv2 import cv2
+from cv2 import (
+    BORDER_CONSTANT,
+    CHAIN_APPROX_SIMPLE,
+    IMREAD_GRAYSCALE,
+    IMWRITE_TIFF_RESUNIT,
+    IMWRITE_TIFF_XDPI,
+    IMWRITE_TIFF_YDPI,
+    INTER_LINEAR,
+    LINE_AA,
+    RETR_TREE,
+    THRESH_BINARY,
+    THRESH_OTSU,
+    boundingRect,
+    copyMakeBorder,
+    fillConvexPoly,
+    fillPoly,
+    filter2D,
+    findContours,
+    getRotationMatrix2D,
+    imread,
+    imwrite,
+    minAreaRect,
+    moments,
+    resize,
+    threshold,
+    warpAffine,
+    Canny,
+    GaussianBlur,
+    HoughLinesP,
+)
 from PIL import (
     Image
 )
@@ -42,13 +71,17 @@ SUMMARY_SUFFIX = '_summary.gt.txt'
 
 # clear unwanted marks for single wordlike tokens
 CLEAR_MARKS = [
-    u'\u200f',  # 'RIGHT-TO-LEFT-MARK'
-    u'\u200e',  # 'LEFT-TO-RIGHT-MARK'
-    u'\ufeff',  # 'ZERO WIDTH NO-BREAK SPACE', the char formerly known as 'BOM'
-    u'\u200c',  # 'ZERO WIDTH NON-JOINER
-    u'\u202c'   # 'POP DIRECTIONAL FORMATTING
+    '\u200f',  # 'RIGHT-TO-LEFT-MARK'
+    '\u200e',  # 'LEFT-TO-RIGHT-MARK'
+    '\ufeff',  # 'ZERO WIDTH NO-BREAK SPACE', the char formerly known as 'BOM'
+    '\u200c',  # 'ZERO WIDTH NON-JOINER
+    '\u202c'   # 'POP DIRECTIONAL FORMATTING
 ]
 
+class ExtractPairException(Exception):
+    """Mark State Failure to create
+    valid imagedata - text line pair
+    """
 
 class TextLine(abc.ABC):
     """
@@ -91,7 +124,7 @@ class TextLine(abc.ABC):
         return aggregat
 
     def __repr__(self):
-        return '{}[{}]:{}'.format(self.__class__.__name__, self.element_id, self.get_textline_content())
+        return f'{self.__class__.__name__}[{self.element_id}]:{self.get_textline_content()}'
 
 
 class ALTOLine(TextLine):
@@ -160,8 +193,7 @@ class PageLine(TextLine):
             top_left = to_center_coords(self.element, self.namespace, self.vertical)
             if not top_left:
                 elem_id = self.element.attrib['id']
-                print("[ERROR  ] skip '{}': invalid coords!".format(
-                    elem_id), file=sys.stderr)
+                print(f"[ERROR  ] skip '{elem_id}': invalid coords!", file=sys.stderr)
                 self.valid = False
                 return
             texts.append(self.element)
@@ -235,7 +267,7 @@ def get_page_lines(xml_data, ns_prefix, min_len, reorder):
             words = textline.findall(
                 f'{ns_prefix}:Word/{ns_prefix}:TextEquiv/{ns_prefix}:Unicode', XML_NS)
             if len(words):
-                msg = f"[{xml_data.base}] contains invalid data: no text but words for line '{textline.attrib['id']}'"
+                msg = f"[{xml_data.base}] no text but words for line '{textline.attrib['id']}'"
                 raise RuntimeError(msg)
     return [PageLine(line, ns_prefix, reorder) for line in matchings]
 
@@ -279,7 +311,7 @@ class TrainingSets:
             path_xml_data = str(path_xml_data)
         if path_image_data is not None and not isinstance(path_image_data, str):
             path_image_data = str(path_image_data)
-        (self.set_label, _) = os.path.splitext(os.path.basename(path_xml_data))
+        self.label = int(os.path.splitext(os.path.basename(path_xml_data))[0])
         self.xml_data = etree.parse(path_xml_data).getroot()
         self.path_image_data = path_image_data
         if not self.path_image_data:
@@ -297,12 +329,12 @@ class TrainingSets:
         """
 
         if self.xdpi and self.ydpi:
-            return [cv2.IMWRITE_TIFF_RESUNIT, 2, cv2.IMWRITE_TIFF_XDPI, self.xdpi,
-                    cv2.IMWRITE_TIFF_YDPI, self.ydpi]
+            return [IMWRITE_TIFF_RESUNIT, 2, IMWRITE_TIFF_XDPI, self.xdpi,
+                    IMWRITE_TIFF_YDPI, self.ydpi]
         return []
 
-    def create(self, folder_out=None,
-               min_chars=DEFAULT_MIN_CHARS, prefix=DEFAULT_OUTDIR_PREFIX,
+    def create(self, output_prefix=DEFAULT_OUTDIR_PREFIX,
+               min_chars=DEFAULT_MIN_CHARS,
                summary=False, reorder=False, rotation_threshold=0.1,
                sanitize=True, intrusion_ratio=0.125, binarize=False, padding=0):
         """
@@ -315,67 +347,67 @@ class TrainingSets:
 
         for training_data in training_datas:
             try:
-                self.write_data(
+                self.write_pair(
                     training_data,
                     self.image_data,
-                    path_out=folder_out,
-                    prefix=prefix,
+                    output_prefix=output_prefix,
+                    # prefix=prefix,
                     sanitize=sanitize,
                     intrusion_ratio=intrusion_ratio,
                     rotation_threshold=rotation_threshold,
                     binarize=binarize,
                     padding=padding)
-            except Exception as exc:
-                txt = ' '.join(training_data.text_words)
-                print("[ERROR] '{}': '{}': {}".format(
-                    training_data.element_id, txt, str(exc)))
+            except ExtractPairException as exc:
+                print(f"[ERROR] {exc}' for {training_data.element_id}")
 
         if summary:
-            self.write_all(training_datas)
+            self.write_summary(training_datas)
 
         return training_datas
 
-    def write_data(self, text_line: TextLine,
-                   image_handle, path_out, prefix, sanitize, intrusion_ratio, rotation_threshold, binarize, padding):
+    def write_pair(self, text_line: TextLine,
+                   image_handle, output_prefix, sanitize, intrusion_ratio, rotation_threshold, binarize, padding):
         """Serialize training data pairs"""
 
-        if not path_out:
-            path_out = prefix + self.set_label
-        if not isinstance(path_out, str):
-            path_out = str(path_out)
-        self.path_out = path_out
-        os.makedirs(path_out, exist_ok=True)
+        # if not dir_out:
+        #     dir_out = prefix + self.set_label
+        # if not isinstance(output_prefix, str):
+        #     output_prefix = str(output_prefix)
+        # self.path_out = output_prefix
+        os.makedirs(output_prefix, exist_ok=True)
+
+        # determine output paths
+        gt_txt_name = f'{output_prefix}_p{self.label}_{text_line.element_id}.gt.txt'
+        gt_txt_path = os.path.join(output_prefix, gt_txt_name)
+        img_name = f'{output_prefix}_p{self.label}_{text_line.element_id}.gt.tif'
+        img_path = os.path.join(output_prefix, img_name)
 
         content = text_line.get_textline_content()
-        if content:
-            file_name = self.set_label + '_' + text_line.element_id + '.gt.txt'
-            file_path = os.path.join(path_out, file_name)
-            with open(file_path, 'w', encoding="utf8") as fhdl:
-                fhdl.write(content)
-
-            img_frame = extract_rectangular_frame(image_handle, text_line)
+        img_frame = extract_rectangular_frame(image_handle, text_line)
+        if content and img_frame.any():
+            # write image
             if sanitize:
                 img_frame = sanitize_frame(
                     img_frame, text_line, intrusion_ratio, rotation_threshold, padding)
             if binarize:
                 img_frame = binarize_frame(img_frame)
-            if padding > 0:
-                img_frame = add_padding(img_frame, padding)
-            file_name = self.set_label + '_' + text_line.element_id + '.tif'
-            file_path = os.path.join(path_out, file_name)
+            params = self._calculate_tiff_param()
+            if params:
+                imwrite(img_path, img_frame, params)
+            else:
+                imwrite(img_path, img_frame)
+            # write text file
+            with open(gt_txt_path, 'w', encoding="utf8") as fhdl:
+                fhdl.write(content)
+        else:
+            _msg = f"Can't extract pair {gt_txt_path}/{img_path} for {text_line}"
+            raise ExtractPairException(_msg)
 
-            if img_frame.any():
-                params = self._calculate_tiff_param()
-                if params:
-                    cv2.imwrite(file_path, img_frame, params)
-                else:
-                    cv2.imwrite(file_path, img_frame)
-
-    def write_all(self, training_datas):
+    def write_summary(self, training_datas):
         """Serialize training data pairs"""
 
         contents = [d.get_textline_content() + '\n' for d in training_datas]
-        file_name = self.set_label + SUMMARY_SUFFIX
+        file_name = self.label + SUMMARY_SUFFIX
         file_path = os.path.join(self.path_out, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
@@ -404,12 +436,12 @@ def gray_canvas(w, h, low=168, bound=8, in_data=None):
     (start, end, _) = calculate_grayscale(low, bound, in_data)
     the_raw = np.random.randint(start, end, (h, w)).astype(np.uint8)
     kernel = np.ones((5, 5), np.float32)/25
-    return cv2.filter2D(the_raw, -1, kernel)
+    return filter2D(the_raw, -1, kernel)
 
 
-def calc_reference(arr, threshold=127):
+def calc_reference(arr, the_threshold=127):
     """Calc reference val after removing background below threshold (default: split by middle)"""
-    filt = arr > threshold
+    filt = arr > the_threshold
     filt_arr = arr[filt]
     return np.median(filt_arr)
 
@@ -428,7 +460,7 @@ def is_rectangular(a_shape) -> bool:
     The bounding box will always be greater or equals than enclosed polygon
     https://stackoverflow.com/questions/62467829/python-check-if-shapely-polygon-is-a-rectangle
     """
-    (_, _, angle) = cv2.minAreaRect(np.array(a_shape, dtype=np.float32))
+    (_, _, angle) = minAreaRect(np.array(a_shape, dtype=np.float32))
     return angle == 90.0
 
 
@@ -473,7 +505,7 @@ def sanitize_frame(image_frame, text_line, intrusion_ratio, rotation_threshold, 
 
 def get_centroid_y(shape):
     """Calculate shape centroid via image momentum"""
-    M = cv2.moments(shape)
+    M = moments(shape)
     divis = 1 if M['m00'] == 0 else M['m00']
     return int(M['m01']/divis)
 
@@ -488,9 +520,9 @@ def clear_vertical_borders(image_frame, intrusion_ratio):
     * fill those with specific grey tone
     """
     thresh = binarize_frame(image_frame)
-    img = cv2.copyMakeBorder(
-        thresh, 1, 1, 1, 1, cv2.BORDER_CONSTANT, None, (255))
-    contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    img = copyMakeBorder(
+        thresh, 1, 1, 1, 1, BORDER_CONSTANT, None, (255))
+    contours, _ = findContours(img, RETR_TREE, CHAIN_APPROX_SIMPLE)
     (top_edge, btm_edge) = calculate_intrusion_aware_edge(
         img.shape, intrusion_ratio)
     top_cnts = [c for c in contours if 0 in c]
@@ -501,11 +533,11 @@ def clear_vertical_borders(image_frame, intrusion_ratio):
     if len(invasores) > 0:
         the_gray = calculate_grayscale(in_data=image_frame)
         # scale slightly up
-        scaled = [cv2.resize(i.astype(np.float32), None,
+        scaled = [resize(i.astype(np.float32), None,
                              fx=1.49, fy=1.49) for i in invasores]
         scaled_pts = [s.astype(np.int32) for s in scaled]
-        cv2.fillPoly(image_frame, pts=scaled_pts,
-                     color=(the_gray), lineType=cv2.LINE_AA)
+        fillPoly(image_frame, pts=scaled_pts,
+                     color=(the_gray), lineType=LINE_AA)
     return (image_frame, len(top_intruders), len(btm_intruders))
 
 
@@ -519,9 +551,9 @@ def calculate_intrusion_aware_edge(img_shape, intrusion_ratio):
 
 def binarize_frame(image_frame):
     """Binarization with binary and otsu"""
-    blurred = cv2.GaussianBlur(image_frame, (3, 3), 0)
-    thresh_flags = cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    thresh = cv2.threshold(blurred, 0, 255, thresh_flags)
+    blurred = GaussianBlur(image_frame, (3, 3), 0)
+    thresh_flags = THRESH_BINARY + THRESH_OTSU
+    thresh = threshold(blurred, 0, 255, thresh_flags)
     return thresh[1]
 
 
@@ -534,12 +566,12 @@ def fit_to_shape(image_frame, shape_coords):
     * apply masked image to background
     """
     pts = np.array(shape_coords, dtype=np.int32)
-    (x, y, w, h) = cv2.boundingRect(pts)
+    (x, y, w, h) = boundingRect(pts)
     # translate coords
     pts = pts - [x, y]
     # create boolean mask where pixel color != 0
     mask = np.zeros((image_frame.shape))
-    cv2.fillConvexPoly(mask, pts, 1)
+    fillConvexPoly(mask, pts, 1)
     mask = mask.astype(bool)
     # reduce w/h since the refer to the bounding/enclosing box
     the_canvas = gray_canvas(w-1, h-1, in_data=image_frame)
@@ -566,11 +598,11 @@ def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
     angle = None
     if img.ndim == 3:
         img = np.mean(img, -1).astype(np.uint8)
-    edges = cv2.Canny(img, 100, 300, 5)
+    edges = Canny(img, 100, 300, 5)
     min_len = img.shape[1] / 4
     max_gap = min_len
     min_votes = int(img.shape[0] / 2)
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, min_votes,
+    lines = HoughLinesP(edges, 1, np.pi/180, min_votes,
                             minLineLength=min_len, maxLineGap=max_gap)
     if lines is None:
         return (img, angle)
@@ -583,16 +615,16 @@ def rotate_text_line_center(img, rotation_threshold=0.1, max_angle=10.0):
     if abs(90.0 - mean_angle) >= rotation_threshold:
         angle = 90.0 - mean_angle
         center = image_center(img)
-        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        M = getRotationMatrix2D(center, angle, 1.0)
         img = add_padding(img, 50)
-        img = cv2.warpAffine(img, M, img.shape[1::-1], flags=cv2.INTER_LINEAR)
+        img = warpAffine(img, M, img.shape[1::-1], flags=INTER_LINEAR)
         img = img[50:-50, 50:-50]
 
     return (img, angle)
 
 
 def image_center(image):
-    M = cv2.moments(image)
+    M = moments(image)
     divis = 1 if M['m00'] == 0 else M['m00']
     return (int(M["m10"] / divis), int(M['m01'] / divis))
 
@@ -603,11 +635,11 @@ def add_padding(image_frame, p):
     between existing image content and borders
     """
     (_, _, clr) = calculate_grayscale(in_data=image_frame)
-    return cv2.copyMakeBorder(image_frame, p, p, p, p, cv2.BORDER_CONSTANT, None, value=clr)
+    return copyMakeBorder(image_frame, p, p, p, p, BORDER_CONSTANT, None, value=clr)
 
 
 def load_image(path_image_data):
-    return cv2.imread(path_image_data, cv2.IMREAD_GRAYSCALE)
+    return imread(path_image_data, IMREAD_GRAYSCALE)
 
 
 def read_dpi_from_tif(path_image_data):
@@ -639,11 +671,13 @@ def read_dpi(path_image_data):
                 return (int(x_dpi), int(y_dpi))
     return (DEFAULT_DPI, DEFAULT_DPI)
 
+
 def coords_center(coord_tokens):
     """Calculate Shape center from textual represented coordinates data"""
     vals = [int(b) for a in map(lambda e: e.split(','), coord_tokens) for b in a]
     point_pairs = list(zip(*[iter(vals)]*2))
     return tuple(map(lambda c: sum(c) / len(c), zip(*point_pairs)))
+
 
 def to_center_coords(elem, namespace, vertical=False):
     coords = elem.find(f'{namespace}:Coords', XML_NS)
