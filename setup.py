@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 
-install_requires = open('requirements.txt').read().split('\n')
+install_requires = open('requirements.txt', encoding='utf-8').read().split('\n')
 
 setup(
     name='tesstrain-python',
     version='0.0.1',
     description='tesstrain helpers',
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     author='tesstrain community',
     author_email='info@ocr-d.de',

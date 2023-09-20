@@ -1,10 +1,10 @@
-Pillow
-python-bidi
+Pillow>=6.2.1
+python-bidi>=0.4
 lxml
-exifread
+exifread>=2.3.0
 # due https://github.com/opencv/opencv-python/issues/676
-opencv-python-headless==4.5.5.64
+opencv-python-headless>=4.7
 numpy
-Shapely
+Shapely>=1.7.0
 matplotlib
 pandas
