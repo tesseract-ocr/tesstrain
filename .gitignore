@@ -1,4 +1,5 @@
-data/ground-truth/*
+data/*ground-truth/*
+data/langdata/*
 !data/ground-truth/.gitkeep
 data/all-*
 data/list.*
@@ -6,7 +7,6 @@ data/unicharset
 dta19-reduced
 dta19-reduced.tar.gz
 *.built
-build
 tesseract-*
 leptonica-*
 *.BAK
@@ -22,5 +22,6 @@ master.zip
 main.zip
 plot/*.LOG
 plot/ocrd*
-__pycache__
-*.egg-info
+
+# ignore temporary training data
+*checkpoints*

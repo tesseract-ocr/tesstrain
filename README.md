@@ -6,7 +6,7 @@
 
 ### Auxiliaries
 
-You will need at least GNU `make`, `wget`, `find`, `bash`, `unzip` and `bc`.
+You will need at least GNU `make` (minimal version 4.2), `wget`, `find`, `bash`, `unzip` and `bc`.
 
 ### Leptonica, Tesseract
 
@@ -28,10 +28,19 @@ autotools (including autotools-archive) and some additional libraries for the
 training tools. See the [installation notes in the tesseract
 repository](https://github.com/tesseract-ocr/tesseract/blob/main/INSTALL.GIT.md).
 
+#### Windows
+
+  1. Install the latest tesseract (e.g. from https://digi.bib.uni-mannheim.de/tesseract/) make sure that tesseract is add to your PATH.
+  2. Install [Python 3](https://www.python.org/downloads/)
+  3. Install [Git SCM to Windows](https://gitforwindows.org/) - it provides a lot of linux utilities on Windows (e.g. `find`, `unzip`, `rm`) and put `C:\Program Files\Git\usr\bin` to the begining of your PATH variable (temporarely you can do it in `cmd` with `set PATH=C:\Program Files\Git\usr\bin;%PATH%` - unfornatelly there are several Windows tools with the same name as on linux (`find`, `sort`) with different behaviour/functionality and there is need to avoid them during training.
+  4. Install winget/[Windows Package Manager](https://github.com/microsoft/winget-cli/releases/) and then run `winget install GnuWin32.Make` and `winget install wget` to install missing tools.
+  5. Download [Bc and dc calculator in Windows](https://embedeo.org/ws/command_line/bc_dc_calculator_windows/) and unzip bc.exe somewhere to your path (e.g. in my case `unzip -j bc-1.07.1-win32-embedeo-02.zip "bc-1.07.1-win32-embedeo-02/bin/bc.exe" -d "c:\Program Files\Tools"`)
+
 ### Python
 
 You need a recent version of Python 3.x. For image processing the Python library `Pillow` is used.
 If you don't have a global installation, please use the provided requirements file `pip install -r requirements.txt`.
+
 
 ### Language data
 
@@ -42,6 +51,7 @@ To fetch them:
 
 (This step is only needed once and already included implicitly in the `training` target,
 but you might want to run explicitly it in advance.)
+
 
 ## Choose model name
 

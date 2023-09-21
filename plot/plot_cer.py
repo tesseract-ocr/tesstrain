@@ -58,7 +58,7 @@ plt.legend(loc='upper right')
 
 ax2 = ax1.twiny() # ax1 and ax2 share y-axis
 ax2.set_xlabel("Training Iterations")
-ax2.set_xlim(ax1.get_xlim()) # ensure the independant x-axes now span the same range
+ax2.set_xlim(ax1.get_xlim()) # ensure the independent x-axes now span the same range
 ax2.set_xticks(x) # copy over the locations of the x-ticks from Learning Iterations
 ax2.tick_params(axis='x', rotation=45, labelsize='small')
 ax2.set_xticklabels(t) # But give value of Training Iterations

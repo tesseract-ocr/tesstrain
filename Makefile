@@ -121,7 +121,7 @@ endif
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
-help:
+help: default
 	@echo ""
 	@echo "  Targets"
 	@echo ""
@@ -171,9 +171,17 @@ help:
 
 # END-EVAL
 
-.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*_checkpoint
+default:
+ifeq (4.2, $(firstword $(sort $(MAKE_VERSION) 4.2)))
+   # stuff that requires make-3.81 or higher
+	@echo "    You are using make version: $(MAKE_VERSION)"
+else
+	$(error This version of GNU Make is too low ($(MAKE_VERSION)). Check your path, or upgrade to 4.2 or newer.)
+endif
 
-.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
+.PRECIOUS: $(LAST_CHECKPOINT)
+
+.PHONY: default clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
@@ -181,10 +189,10 @@ ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
-unicharset: $(OUTPUT_DIR)/unicharset
+unicharset: default $(OUTPUT_DIR)/unicharset
 
 # Show character histogram
-charfreq: $(ALL_GT)
+charfreq: default $(ALL_GT)
 	LC_ALL=C.UTF-8 grep -o . $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
@@ -204,7 +212,12 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
 	  set -x; \
 	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
+	if [ "$(OS)" = "Windows_NT" ]; then \
+		dos2unix "$(ALL_LSTMF)"; \
+		dos2unix "$(OUTPUT_DIR)/list.train"; \
+		dos2unix "$(OUTPUT_DIR)/list.eval"; \
+	fi
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
@@ -220,7 +233,7 @@ $(OUTPUT_DIR)/unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 endif
 
 # Start training
-training: $(OUTPUT_DIR).traineddata
+training: default $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
@@ -250,23 +263,18 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 
 .PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.bin.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.nrm.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.raw.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.tif %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
@@ -297,6 +305,12 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
+	if [ "$(OS)" = "Windows_NT" ]; then \
+		dos2unix "$(NUMBERS_FILE)"; \
+		dos2unix "$(PUNC_FILE)"; \
+		dos2unix "$(WORDLIST_FILE)"; \
+		dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"; \
+	fi
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
@@ -416,4 +430,4 @@ clean-output:
 	rm -rf $(OUTPUT_DIR)
 
 # Clean all generated files
-clean: clean-box clean-lstmf clean-output	
+clean: default clean-box clean-lstmf clean-output
