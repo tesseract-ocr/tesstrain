@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
-"""Generate TrainingSets Sets"""
+"""Generate Training Sets from images data
+and corresponding ALTO or PAGE files
+"""
 
 import abc
 import math
 import os
+import sys
 
+from functools import (
+	reduce
+)
 from pathlib import (
     Path
 )
-from functools import reduce
-import sys
+from typing import (
+    List
+)
 
 import exifread
 import lxml.etree as etree
@@ -303,21 +310,40 @@ class TrainingSets:
     source if text_len > min
     """
 
-    def __init__(self, path_xml_data, path_image_data):
-        self.xdpi = None
-        self.ydpi = None
-        self.path_out = None
-        if not isinstance(path_xml_data, str):
-            path_xml_data = str(path_xml_data)
+    def __init__(self, path_ocr_data, path_image_data, output_dir):
+        if not isinstance(path_ocr_data, str):
+            path_ocr_data = str(path_ocr_data)
+        self._pair_prefix = None
+        self.path_ocr_data = path_ocr_data
+        self.xml_data = etree.parse(path_ocr_data).getroot()
         if path_image_data is not None and not isinstance(path_image_data, str):
             path_image_data = str(path_image_data)
-        self.label = int(os.path.splitext(os.path.basename(path_xml_data))[0])
-        self.xml_data = etree.parse(path_xml_data).getroot()
         self.path_image_data = path_image_data
         if not self.path_image_data:
-            self._resolve_image_path(path_xml_data)
+            self._resolve_image_path(path_ocr_data)
         self.image_data = load_image(self.path_image_data)
+        self.output_dir = output_dir
+        self.xdpi = None
+        self.ydpi = None
         (self.xdpi, self.ydpi) = read_dpi(self.path_image_data)
+
+    @property
+    def pair_prefix(self) -> str:
+        """label for pair files"""
+
+        if self._pair_prefix is None:
+            _raw_label = Path(self.path_ocr_data).stem
+            if _raw_label.isnumeric():
+                self._pair_prefix = f'page{int(_raw_label)}'
+            else:
+                self._pair_prefix = _raw_label
+        return self._pair_prefix
+
+    @pair_prefix.setter
+    def pair_prefix(self, pair_prefix):
+        """Set output dir explicitely"""
+
+        self._path_ocr_data = pair_prefix
 
     def _resolve_image_path(self, path_xml_data):
         self.path_image_data = resolve_image_path(path_xml_data)
@@ -333,8 +359,7 @@ class TrainingSets:
                     IMWRITE_TIFF_YDPI, self.ydpi]
         return []
 
-    def create(self, output_prefix=DEFAULT_OUTDIR_PREFIX,
-               min_chars=DEFAULT_MIN_CHARS,
+    def create(self, min_chars=DEFAULT_MIN_CHARS,
                summary=False, reorder=False, rotation_threshold=0.1,
                sanitize=True, intrusion_ratio=0.125, binarize=False, padding=0):
         """
@@ -350,8 +375,6 @@ class TrainingSets:
                 self.write_pair(
                     training_data,
                     self.image_data,
-                    output_prefix=output_prefix,
-                    # prefix=prefix,
                     sanitize=sanitize,
                     intrusion_ratio=intrusion_ratio,
                     rotation_threshold=rotation_threshold,
@@ -366,22 +389,17 @@ class TrainingSets:
         return training_datas
 
     def write_pair(self, text_line: TextLine,
-                   image_handle, output_prefix, sanitize, intrusion_ratio, rotation_threshold, binarize, padding):
+                   image_handle, sanitize, intrusion_ratio, rotation_threshold, binarize, padding):
         """Serialize training data pairs"""
 
-        # if not dir_out:
-        #     dir_out = prefix + self.set_label
-        # if not isinstance(output_prefix, str):
-        #     output_prefix = str(output_prefix)
-        # self.path_out = output_prefix
-        os.makedirs(output_prefix, exist_ok=True)
-
-        # determine output paths
-        gt_txt_name = f'{output_prefix}_p{self.label}_{text_line.element_id}.gt.txt'
-        gt_txt_path = os.path.join(output_prefix, gt_txt_name)
-        img_name = f'{output_prefix}_p{self.label}_{text_line.element_id}.gt.tif'
-        img_path = os.path.join(output_prefix, img_name)
-
+        _data_label = Path( self.path_ocr_data).stem
+        _dir_path = os.path.join(self.output_dir, self.pair_prefix)
+        if not os.path.isdir(_dir_path):
+            os.makedirs(_dir_path)
+        gt_txt_name = f'{_data_label}_{self.pair_prefix}_{text_line.element_id}.gt.txt'
+        gt_txt_path = os.path.join(_dir_path, gt_txt_name)
+        img_name = f'{_data_label}_{self.pair_prefix}_{text_line.element_id}.gt.tif'
+        img_path = os.path.join(_dir_path, img_name)
         content = text_line.get_textline_content()
         img_frame = extract_rectangular_frame(image_handle, text_line)
         if content and img_frame.any():
@@ -403,12 +421,12 @@ class TrainingSets:
             _msg = f"Can't extract pair {gt_txt_path}/{img_path} for {text_line}"
             raise ExtractPairException(_msg)
 
-    def write_summary(self, training_datas):
+    def write_summary(self, training_datas: List):
         """Serialize training data pairs"""
 
         contents = [d.get_textline_content() + '\n' for d in training_datas]
-        file_name = self.label + SUMMARY_SUFFIX
-        file_path = os.path.join(self.path_out, file_name)
+        file_name = self.pair_prefix + SUMMARY_SUFFIX
+        file_path = os.path.join(self.output_dir, self.pair_prefix, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
 

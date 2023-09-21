@@ -4,7 +4,7 @@
 import argparse
 import os
 
-from extract_sets.training_sets import (
+from tesstrain.training_sets import (
     TrainingSets,
     DEFAULT_OUTDIR_PREFIX,
     DEFAULT_MIN_CHARS,
@@ -36,7 +36,7 @@ def main():
         "-o",
         "--prefix-output",
         required=False,
-        help=f"optional: output directory, re-created if already exists. (default: <script-dir>/<{DEFAULT_OUTDIR_PREFIX}-ocr-name>)")
+        help=f"optional: output directory, re-created if already exists. (default: <script-dir>/<{DEFAULT_OUTDIR_PREFIX}>)")
     PARSER.add_argument(
         "-m",
         "--minchars",
@@ -122,9 +122,10 @@ def main():
             sanitize=SANITIZE,
             padding=PADDING)
         print(f"[DONE ] got '{len(RESULT)}' pairs from '{PATH_OCR}'"
-              f" and '{PATH_IMG}' in '{TRAINING_DATA.path_out}', please review")
+              f" and '{PATH_IMG}' in '{TRAINING_DATA.label}', please review")
     # if os.path.isdir(PATH_OCR) and os.path.isdir(PATH_IMG):
-    #     print(f"[INFO ] inspect OCR-dir '{PATH_OCR}' and image dir '{PATH_IMG}")
+    #   TODO handle lists of inputs
+    #   print(f"[INFO ] inspect OCR-dir '{PATH_OCR}' and image dir '{PATH_IMG}")
     else:
         print(f"[ERROR  ] invalid OCR '{PATH_OCR}' or Image '{PATH_IMG}'!")
 

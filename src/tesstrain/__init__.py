@@ -11,5 +11,15 @@
 # limitations under the License.
 
 from tesstrain.wrapper import run
+from tesstrain.training_sets import (
+    XML_NS,
+	TrainingSets,
+    gray_canvas,
+    read_dpi,
+    calculate_grayscale,
+    clear_vertical_borders,
+    rotate_text_line_center,
+    coords_center,
+)
 
 __version__ = '0.1'

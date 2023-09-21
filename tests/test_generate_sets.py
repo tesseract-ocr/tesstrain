@@ -22,7 +22,7 @@ import numpy as np
 import pytest
 import lxml.etree as etree
 
-from extract_sets import (
+from tesstrain import (
     TrainingSets,
     gray_canvas,
     read_dpi,
@@ -36,9 +36,11 @@ from extract_sets import (
 RES_ROOT = os.path.join('tests', 'resources')
 
 GT_SUFFIX = '.gt.txt'
-OCR_TRANSK_IMAG = '288652.jpg'
-OCR_TRANSK_DATA = '288652.xml'
-OCR_D_PAGE_DATA = 'OCR-RESULT_0001.xml'
+OCR_TRANSK = '288652'
+OCR_TRANSK_IMAG = f'{OCR_TRANSK}.jpg'
+OCR_TRANSK_DATA = f'{OCR_TRANSK}.xml'
+OCR_D_RESULT_01 = 'OCR-RESULT_0001'
+OCR_D_PAGE_DATA = f'{OCR_D_RESULT_01}.xml'
 OCR_DATA_729422 = '729422'
 OCR_DATA_PERSIAN = 'Lubab_alAlbab.pdf_000003'
 
@@ -110,7 +112,7 @@ def _extract_texts(elements, ns_prefix):
 
 
 @pytest.fixture
-def fixture_alto_tif(tmpdir):
+def fixture_newspaper_p512(tmpdir):
     res_alto = os.path.join(RES_ROOT, 'xml', '1667522809_J_0073_0512.xml')
     path = tmpdir.mkdir('training').join('1667522809_J_0073_0512.xml')
     shutil.copyfile(res_alto, path)
@@ -135,24 +137,24 @@ def fixture_alto_tif(tmpdir):
     return str(path)
 
 
-def test_create_sets_from_alto_and_tif(fixture_alto_tif):
+def test_create_sets_from_alto_and_tif(fixture_newspaper_p512):
     """Create text-image pairs from ALTO V3 and TIF"""
 
-    path_input_dir = os.path.dirname(fixture_alto_tif)
-    path_input_parent = pathlib.Path(path_input_dir).parent
+    output_dir = os.path.dirname(fixture_newspaper_p512)
+    path_input_parent = pathlib.Path(output_dir).parent
     path_tif = os.path.join(
         path_input_parent,
         'scan',
         '1667522809_J_0073_0512.tif')
     assert os.path.exists(path_tif)
 
-    training_data = TrainingSets(fixture_alto_tif, path_tif)
-    data = training_data.create(
-        min_chars=32, output_prefix=path_input_dir, summary=True, padding=5)
+    _t_sets = TrainingSets(fixture_newspaper_p512, path_tif, output_dir)
+    data = _t_sets.create(min_chars=32, summary=True, padding=5)
 
     # assert
     assert len(data) == 225
-    path_items = os.listdir(os.path.dirname(fixture_alto_tif))
+    _output_dir = os.path.join(output_dir, '1667522809_J_0073_0512')
+    path_items = os.listdir(_output_dir)
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == 225
     lines = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
@@ -191,13 +193,14 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     assert os.path.exists(path_image)
 
     # act
-    training_data = TrainingSets(fixture_page2013_jpg, path_image)
-    data = training_data.create(
-        min_chars=8, output_prefix=path_input_dir, summary=True, reorder=True)
+    training_data = TrainingSets(fixture_page2013_jpg, path_image, output_dir=path_input_dir)
+    training_data.pair_prefix = OCR_TRANSK
+    data = training_data.create(min_chars=8, summary=True)
 
     # assert
     assert len(data) == 32
-    path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
+    _output_dir = os.path.join(path_input_dir, f'page{OCR_TRANSK}')
+    path_items = os.listdir(_output_dir)
     assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 32
     txt_files = sorted(
         [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)])
@@ -206,7 +209,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
     assert len(txt_files) == 33
 
     # assert mixed content
-    with open(os.path.join(os.path.dirname(fixture_page2013_jpg), txt_files[2])) as txt_file:
+    with open(os.path.join(_output_dir, txt_files[1]), encoding='utf-8') as txt_file:
         arab = txt_file.readline().strip()
         assert 'XIX' in arab
 
@@ -221,14 +224,14 @@ def test_create_sets_from_page2013_and_jpg_no_summary(
     assert os.path.exists(path_image)
 
     # act
-    training_data = TrainingSets(fixture_page2013_jpg, path_image)
-    data = training_data.create(
-        min_chars=3, output_prefix=path_input_dir, summary=False, reorder=True)
+    training_data = TrainingSets(fixture_page2013_jpg, path_image, output_dir=path_input_dir)
+    data = training_data.create(min_chars=3, summary=False, reorder=True)
 
     # assert
     expected_len = 33
     assert len(data) == expected_len
-    path_items = os.listdir(os.path.dirname(fixture_page2013_jpg))
+    _output_dir = os.path.join(path_input_dir, f'page{OCR_TRANSK}')
+    path_items = os.listdir(_output_dir)
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == expected_len
     txt_files = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
@@ -271,15 +274,14 @@ def test_create_sets_from_page2019_and_png(fixture_page2019_png):
     assert os.path.exists(path_image)
 
     # act
-    training_data = TrainingSets(fixture_page2019_png, path_image)
-    data = training_data.create(
-        min_chars=8, summary=True,
-        output_prefix=path_input_dir)
+    training_data = TrainingSets(fixture_page2019_png, path_image, output_dir=path_input_dir)
+    data = training_data.create(min_chars=8, summary=True)
 
     # assert
     expected_len = 33
     assert len(data) == expected_len
-    path_items = os.listdir(os.path.dirname(fixture_page2019_png))
+    _output_dir = os.path.join(path_input_dir, f'{OCR_D_RESULT_01}')
+    path_items = os.listdir(_output_dir)
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == expected_len
 
@@ -307,8 +309,8 @@ def test_create_sets_from_ocrd_workdspace(fixture_ocrd_workspace):
     path_input_dir = os.path.dirname(fixture_ocrd_workspace)
 
     # act
-    training_data = TrainingSets(fixture_ocrd_workspace, None)
-    data = training_data.create(min_chars=8, output_prefix=path_input_dir)
+    training_data = TrainingSets(fixture_ocrd_workspace, None, output_dir=path_input_dir)
+    data = training_data.create(min_chars=8)
 
     # assert
     assert len(data) == 33
@@ -327,7 +329,7 @@ def test_create_sets_from_ocrd_workdspace_fails(fixture_ocrd_workspace_invalid):
 
     # act
     with pytest.raises(RuntimeError) as excinfo:
-        TrainingSets(fixture_ocrd_workspace_invalid, None)
+        TrainingSets(fixture_ocrd_workspace_invalid, None, '/home')
 
     # assert
     assert 'invalid image_path' in str(excinfo.value)
@@ -350,11 +352,11 @@ def test_handle_invalid_coords(fixture_invalid_coords):
     # arrange
     ocr_data = os.path.join(fixture_invalid_coords, f'{OCR_DATA_729422}.xml')
     img_data = os.path.join(fixture_invalid_coords, f'{OCR_DATA_729422}.jpg')
-    training_data = TrainingSets(ocr_data, img_data)
+    training_data = TrainingSets(ocr_data, img_data, output_dir=fixture_invalid_coords)
 
     # act
     with pytest.raises(RuntimeError) as exc:
-        training_data.create(output_prefix=fixture_invalid_coords)
+        training_data.create()
 
     # assert: one line was skipped
     expected = "Invalid Coords of Word 'word_1595308100448_546' in 'tl_13'!"
@@ -379,16 +381,15 @@ def test_handle_page_devanagari_with_textlines(fixture_page_devanagari):
     # arrange
     ocr_data = os.path.join(fixture_page_devanagari, f'{OCR_DATA_RAM110}.xml')
     img_data = os.path.join(fixture_page_devanagari, f'{OCR_DATA_RAM110}.png')
-    training_data = TrainingSets(ocr_data, img_data)
+    training_data = TrainingSets(ocr_data, img_data, output_dir=fixture_page_devanagari)
 
     # act
-    data = training_data.create(
-        output_prefix=fixture_page_devanagari, summary=True)
+    data = training_data.create(summary=True)
 
     # assert
     assert len(data) == 24
     assert 'tl_24' in [l.element_id for l in data]
-    assert not 'tl_25' in [l.element_id for l in data]
+    assert 'tl_25' not in [l.element_id for l in data]
 
 
 @pytest.fixture
@@ -412,11 +413,10 @@ def test_handle_alto4_persian_without_strange_strings(fixture_alto4_persian):
     # arrange
     ocr_data = os.path.join(fixture_alto4_persian, f'{OCR_DATA_PERSIAN}.xml')
     img_data = os.path.join(fixture_alto4_persian, f'{OCR_DATA_PERSIAN}.png')
-    training_data = TrainingSets(ocr_data, img_data)
+    training_data = TrainingSets(ocr_data, img_data, output_dir=fixture_alto4_persian)
 
     # act
-    data = training_data.create(
-        output_prefix=fixture_alto4_persian, summary=True)
+    data = training_data.create(summary=True)
 
     # assert
     assert len(data) == 23
@@ -445,11 +445,11 @@ def test_error_1123596(page_1123596):
     # arrange
     ocr_data = os.path.join(page_1123596, f'{OCR_FID_ERR_1123596}.xml')
     img_data = os.path.join(page_1123596, f'{OCR_FID_ERR_1123596}.png')
-    training_data = TrainingSets(ocr_data, img_data)
+    training_data = TrainingSets(ocr_data, img_data, output_dir=page_1123596)
 
     # act
     with pytest.raises(RuntimeError) as exc:
-        training_data.create(output_prefix=page_1123596)
+        training_data.create()
 
     # assert
     assert "no text but words for line 'line_1617688885509_1198'" in str(
