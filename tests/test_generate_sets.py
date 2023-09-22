@@ -157,6 +157,8 @@ def test_create_sets_from_alto_and_tif(fixture_newspaper_p512):
     path_items = os.listdir(_output_dir)
     tifs = [tif for tif in path_items if str(tif).endswith(".tif")]
     assert len(tifs) == 225
+    # please no *.gt.tif !!
+    assert not [tif for tif in path_items if str(tif).endswith(".gt.tif")]
     lines = [txt for txt in path_items if str(txt).endswith(GT_SUFFIX)]
 
     # one more txt since summery
@@ -199,7 +201,7 @@ def test_create_sets_from_page2013_and_jpg(fixture_page2013_jpg):
 
     # assert
     assert len(data) == 32
-    _output_dir = os.path.join(path_input_dir, f'page{OCR_TRANSK}')
+    _output_dir = os.path.join(path_input_dir, f'{OCR_TRANSK}')
     path_items = os.listdir(_output_dir)
     assert len([tif for tif in path_items if str(tif).endswith(".tif")]) == 32
     txt_files = sorted(

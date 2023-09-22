@@ -74,7 +74,9 @@ DEFAULT_ROTATION_THRESH = 0.1
 DEFAULT_BINARIZE = False
 DEFAULT_SANITIZE = True
 DEFAULT_PADDING = 0
-SUMMARY_SUFFIX = '_summary.gt.txt'
+SUFFIX_SUMMARY = '_summary.gt.txt'
+SUFFIX_GT_TXT_='.gt.txt'
+SUFFIX_GT_IMG_TIF = '.tif'
 
 # clear unwanted marks for single wordlike tokens
 CLEAR_MARKS = [
@@ -343,7 +345,7 @@ class TrainingSets:
     def pair_prefix(self, pair_prefix):
         """Set output dir explicitely"""
 
-        self._path_ocr_data = pair_prefix
+        self._pair_prefix = pair_prefix
 
     def _resolve_image_path(self, path_xml_data):
         self.path_image_data = resolve_image_path(path_xml_data)
@@ -393,12 +395,14 @@ class TrainingSets:
         """Serialize training data pairs"""
 
         _data_label = Path( self.path_ocr_data).stem
+        if _data_label.isnumeric():
+            _data_label = f'p{int(_data_label)}'
         _dir_path = os.path.join(self.output_dir, self.pair_prefix)
         if not os.path.isdir(_dir_path):
             os.makedirs(_dir_path)
-        gt_txt_name = f'{_data_label}_{self.pair_prefix}_{text_line.element_id}.gt.txt'
+        gt_txt_name = f'{self.pair_prefix}_{_data_label}_{text_line.element_id}{SUFFIX_GT_TXT_}'
         gt_txt_path = os.path.join(_dir_path, gt_txt_name)
-        img_name = f'{_data_label}_{self.pair_prefix}_{text_line.element_id}.gt.tif'
+        img_name = f'{self.pair_prefix}_{_data_label}_{text_line.element_id}{SUFFIX_GT_IMG_TIF}'
         img_path = os.path.join(_dir_path, img_name)
         content = text_line.get_textline_content()
         img_frame = extract_rectangular_frame(image_handle, text_line)
@@ -425,7 +429,7 @@ class TrainingSets:
         """Serialize training data pairs"""
 
         contents = [d.get_textline_content() + '\n' for d in training_datas]
-        file_name = self.pair_prefix + SUMMARY_SUFFIX
+        file_name = self.pair_prefix + SUFFIX_SUMMARY
         file_path = os.path.join(self.output_dir, self.pair_prefix, file_name)
         with open(file_path, 'w', encoding="utf8") as fhdl:
             fhdl.writelines(contents)
