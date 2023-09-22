@@ -60,25 +60,30 @@ def _run_single_page(args: Namespace):
         binarize=do_binarize,
         sanitize=do_opt,
         padding=padding)
-    print(f"[DONE ] got '{len(res)}' pairs from '{path_ocr}'"
+    print(f"[DEBUG] got '{len(res)}' pairs from '{path_ocr}'"
             f" and '{path_img}' in '{output_dir}', better review")
+    return len(res)
 
 
 def _run_dir(args):
     path_ocr_dir = args.data
     path_img_dir = args.image
-    _all_ocrs = [os.path.join(path_ocr_dir, _f) 
+    _all_ocrs = sorted([os.path.join(path_ocr_dir, _f) 
                  for _f in os.listdir(path_ocr_dir)
-                 if str(_f).endswith('.xml')]
-    print(f"[DEBUG] found total {len(_all_ocrs)} in {path_ocr_dir} and sub_dirs")
+                 if str(_f).endswith('.xml')])
+    print(f"[DEBUG] found total {len(_all_ocrs)} OCR files in {path_ocr_dir} ")
+    _n_pairs = 0
     for _an_ocr in _all_ocrs:
-        _img_match = __get_image(path_img_dir, Path(_an_ocr).stem)
+        _ocr_label = Path(_an_ocr).stem
+        _img_match = __get_image(path_img_dir, _ocr_label)
         if _img_match:
             args.data = _an_ocr
             args.image = _img_match
-            _run_single_page(args)
+            _n_pairs += _run_single_page(args)
             _all_ocrs.remove(_an_ocr)
-    print(f"[INFO] missed {len(_all_ocrs)} in {path_img_dir}")
+        else:
+            print(f"[WARNING] no img for {_ocr_label}")
+    print(f"[INFO] created {_n_pairs} pairs, missed {len(_all_ocrs)} in {path_img_dir}")
 
 
 def __get_image(path_image_dir, label):
