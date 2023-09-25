@@ -68,11 +68,12 @@ def _run_single_page(args: Namespace):
 def _run_dir(args):
     path_ocr_dir = args.data
     path_img_dir = args.image
-    _all_ocrs = sorted([os.path.join(path_ocr_dir, _f) 
+    _all_ocrs = sorted([os.path.join(path_ocr_dir, _f)
                  for _f in os.listdir(path_ocr_dir)
                  if str(_f).endswith('.xml')])
     print(f"[DEBUG] found total {len(_all_ocrs)} OCR files in {path_ocr_dir} ")
     _n_pairs = 0
+    _misses = []
     for _an_ocr in _all_ocrs:
         _ocr_label = Path(_an_ocr).stem
         _img_match = __get_image(path_img_dir, _ocr_label)
@@ -80,10 +81,10 @@ def _run_dir(args):
             args.data = _an_ocr
             args.image = _img_match
             _n_pairs += _run_single_page(args)
-            _all_ocrs.remove(_an_ocr)
         else:
             print(f"[WARNING] no img for {_ocr_label}")
-    print(f"[INFO] created {_n_pairs} pairs, missed {len(_all_ocrs)} in {path_img_dir}")
+            _misses.append(_an_ocr)
+    print(f"[INFO] created {_n_pairs} pairs, missed {len(_misses)} in {path_img_dir}")
 
 
 def __get_image(path_image_dir, label):
