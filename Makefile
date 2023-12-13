@@ -47,15 +47,6 @@ LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)_checkpoint
 # Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
 
-# No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
-CORES = 4
-
-# Leptonica version. Default: $(LEPTONICA_VERSION)
-LEPTONICA_VERSION := 1.83.0
-
-# Tesseract commit. Default: $(TESSERACT_VERSION)
-TESSERACT_VERSION := 5.3.0
-
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
 
@@ -131,9 +122,6 @@ help: default
 	@echo "    training         Start training"
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
-	@echo "    leptonica        Build leptonica"
-	@echo "    tesseract        Build tesseract"
-	@echo "    tesseract-langs  Download minimal stock models"
 	@echo "    tesseract-langdata  Download stock unicharsets"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
@@ -154,9 +142,6 @@ help: default
 	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
-	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
-	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
-	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: $(TESSDATA_REPO)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
@@ -181,7 +166,7 @@ endif
 
 .PRECIOUS: $(LAST_CHECKPOINT)
 
-.PHONY: default clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
+.PHONY: default clean help lists proto-model tesseract-langdata training unicharset charfreq
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
@@ -374,42 +359,6 @@ tesseract-langdata: $(TESSERACT_LANGDATA)
 $(TESSERACT_LANGDATA):
 	@mkdir -p $(@D)
 	wget -O $@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/main/$(@F)'
-
-# Build leptonica
-leptonica: leptonica.built
-
-leptonica.built: leptonica-$(LEPTONICA_VERSION)
-	cd $< ; \
-		./configure --prefix=$(LOCAL) && \
-		make -j$(CORES) install SUBDIRS=src && \
-		date > "$@"
-
-leptonica-$(LEPTONICA_VERSION): leptonica-$(LEPTONICA_VERSION).tar.gz
-	tar xf "$<"
-
-leptonica-$(LEPTONICA_VERSION).tar.gz:
-	wget 'http://www.leptonica.org/source/$@'
-
-# Build tesseract
-tesseract: tesseract.built tesseract-langs
-
-tesseract.built: tesseract-$(TESSERACT_VERSION)
-	cd $< && \
-		sh autogen.sh && \
-		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
-			./configure --prefix=$(LOCAL) && \
-		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) install && \
-		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) training-install && \
-		date > "$@"
-
-tesseract-$(TESSERACT_VERSION):
-	wget https://github.com/tesseract-ocr/tesseract/archive/$(TESSERACT_VERSION).zip
-	unzip $(TESSERACT_VERSION).zip
-
-# Download tesseract-langs
-tesseract-langs: $(TESSDATA)/eng.traineddata
 
 $(TESSDATA)/%.traineddata:
 	wget -O $@ 'https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/main/$(@F)'
