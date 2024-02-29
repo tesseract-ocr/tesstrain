@@ -304,6 +304,8 @@ ifeq (Windows_NT, $(OS))
 	dos2unix "$(WORDLIST_FILE)"
 	dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
 endif
+	$(if $(filter-out $(realpath $@),$(realpath $(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata)),\
+	$(error $@!=$(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata -- consider setting different values for DATA_DIR, OUTPUT_DIR, or PROTO_MODEL))
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
