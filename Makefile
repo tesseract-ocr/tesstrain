@@ -203,13 +203,14 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	  test "$$eval" = "0" && \
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
 	  set -x; \
-	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
-	if [ "$(OS)" = "Windows_NT" ]; then \
-		dos2unix "$(ALL_LSTMF)"; \
-		dos2unix "$(OUTPUT_DIR)/list.train"; \
-		dos2unix "$(OUTPUT_DIR)/list.eval"; \
-	fi
+	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train" && \
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(ALL_LSTMF)"
+	dos2unix "$(OUTPUT_DIR)/list.train"
+	dos2unix "$(OUTPUT_DIR)/list.eval"
+endif
+
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
@@ -297,12 +298,12 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
-	if [ "$(OS)" = "Windows_NT" ]; then \
-		dos2unix "$(NUMBERS_FILE)"; \
-		dos2unix "$(PUNC_FILE)"; \
-		dos2unix "$(WORDLIST_FILE)"; \
-		dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"; \
-	fi
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(NUMBERS_FILE)"
+	dos2unix "$(PUNC_FILE)"
+	dos2unix "$(WORDLIST_FILE)"
+	dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
+endif
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
