@@ -47,15 +47,6 @@ LAST_CHECKPOINT = $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)_checkpoint
 # Name of the proto model. Default: '$(PROTO_MODEL)'
 PROTO_MODEL = $(OUTPUT_DIR)/$(MODEL_NAME).traineddata
 
-# No of cores to use for compiling leptonica/tesseract. Default: $(CORES)
-CORES = 4
-
-# Leptonica version. Default: $(LEPTONICA_VERSION)
-LEPTONICA_VERSION := 1.83.0
-
-# Tesseract commit. Default: $(TESSERACT_VERSION)
-TESSERACT_VERSION := 5.3.0
-
 # Tesseract model repo to use. Default: $(TESSDATA_REPO)
 TESSDATA_REPO = _best
 
@@ -79,6 +70,13 @@ endif
 
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx192 O1c\#\#\#]
+
+TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic
+TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
+TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
+TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
+
+TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(LANGDATA_DIR)/%.unicharset)
 
 # Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
@@ -121,7 +119,7 @@ endif
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
-help:
+help: default
 	@echo ""
 	@echo "  Targets"
 	@echo ""
@@ -131,9 +129,6 @@ help:
 	@echo "    training         Start training"
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
-	@echo "    leptonica        Build leptonica"
-	@echo "    tesseract        Build tesseract"
-	@echo "    tesseract-langs  Download minimal stock models"
 	@echo "    tesseract-langdata  Download stock unicharsets"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
@@ -154,9 +149,6 @@ help:
 	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
 	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
 	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
-	@echo "    CORES              No of cores to use for compiling leptonica/tesseract. Default: $(CORES)"
-	@echo "    LEPTONICA_VERSION  Leptonica version. Default: $(LEPTONICA_VERSION)"
-	@echo "    TESSERACT_VERSION  Tesseract commit. Default: $(TESSERACT_VERSION)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: $(TESSDATA_REPO)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
@@ -171,9 +163,17 @@ help:
 
 # END-EVAL
 
-.PRECIOUS: $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*_checkpoint
+default:
+ifeq (4.2, $(firstword $(sort $(MAKE_VERSION) 4.2)))
+   # stuff that requires make-3.81 or higher
+	@echo "    You are using make version: $(MAKE_VERSION)"
+else
+	$(error This version of GNU Make is too low ($(MAKE_VERSION)). Check your path, or upgrade to 4.2 or newer.)
+endif
 
-.PHONY: clean help leptonica lists proto-model tesseract tesseract-langs tesseract-langdata training unicharset charfreq
+.PRECIOUS: $(LAST_CHECKPOINT)
+
+.PHONY: default clean help lists proto-model tesseract-langdata training unicharset charfreq
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
@@ -181,10 +181,10 @@ ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
-unicharset: $(OUTPUT_DIR)/unicharset
+unicharset: default $(OUTPUT_DIR)/unicharset
 
 # Show character histogram
-charfreq: $(ALL_GT)
+charfreq: default $(ALL_GT)
 	LC_ALL=C.UTF-8 grep -o . $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
@@ -203,12 +203,14 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	  test "$$eval" = "0" && \
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
 	  set -x; \
-	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
-	test "$(OS)" == "Windows_NT" && \
-		dos2unix "$(ALL_LSTMF)"; \
-		dos2unix "$(OUTPUT_DIR)/list.train"; \
-		dos2unix "$(OUTPUT_DIR)/list.eval";
+	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train" && \
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(ALL_LSTMF)"
+	dos2unix "$(OUTPUT_DIR)/list.train"
+	dos2unix "$(OUTPUT_DIR)/list.eval"
+endif
+
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
@@ -224,7 +226,7 @@ $(OUTPUT_DIR)/unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 endif
 
 # Start training
-training: $(OUTPUT_DIR).traineddata
+training: default $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
@@ -254,23 +256,18 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 
 .PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.bin.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.nrm.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.raw.png %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 %.lstmf: %.tif %.box
-	set -x; \
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
 CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
@@ -301,6 +298,14 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(NUMBERS_FILE)"
+	dos2unix "$(PUNC_FILE)"
+	dos2unix "$(WORDLIST_FILE)"
+	dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
+endif
+	$(if $(filter-out $(realpath $@),$(realpath $(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata)),\
+	$(error $@!=$(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata -- consider setting different values for DATA_DIR, OUTPUT_DIR, or PROTO_MODEL))
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
@@ -356,54 +361,11 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--model_output $@
 endif
 
-TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic
-TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
-TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
-TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
-
-TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(LANGDATA_DIR)/%.unicharset)
-
 tesseract-langdata: $(TESSERACT_LANGDATA)
 
 $(TESSERACT_LANGDATA):
 	@mkdir -p $(@D)
 	wget -O $@ 'https://github.com/tesseract-ocr/langdata_lstm/raw/main/$(@F)'
-
-# Build leptonica
-leptonica: leptonica.built
-
-leptonica.built: leptonica-$(LEPTONICA_VERSION)
-	cd $< ; \
-		./configure --prefix=$(LOCAL) && \
-		make -j$(CORES) install SUBDIRS=src && \
-		date > "$@"
-
-leptonica-$(LEPTONICA_VERSION): leptonica-$(LEPTONICA_VERSION).tar.gz
-	tar xf "$<"
-
-leptonica-$(LEPTONICA_VERSION).tar.gz:
-	wget 'http://www.leptonica.org/source/$@'
-
-# Build tesseract
-tesseract: tesseract.built tesseract-langs
-
-tesseract.built: tesseract-$(TESSERACT_VERSION)
-	cd $< && \
-		sh autogen.sh && \
-		PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig" \
-			./configure --prefix=$(LOCAL) && \
-		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) install && \
-		LDFLAGS="-L$(LOCAL)/lib"\
-			make -j$(CORES) training-install && \
-		date > "$@"
-
-tesseract-$(TESSERACT_VERSION):
-	wget https://github.com/tesseract-ocr/tesseract/archive/$(TESSERACT_VERSION).zip
-	unzip $(TESSERACT_VERSION).zip
-
-# Download tesseract-langs
-tesseract-langs: $(TESSDATA)/eng.traineddata
 
 $(TESSDATA)/%.traineddata:
 	wget -O $@ 'https://github.com/tesseract-ocr/tessdata$(TESSDATA_REPO)/raw/main/$(@F)'
@@ -424,4 +386,4 @@ clean-output:
 	rm -rf $(OUTPUT_DIR)
 
 # Clean all generated files
-clean: clean-box clean-lstmf clean-output	
+clean: default clean-box clean-lstmf clean-output
