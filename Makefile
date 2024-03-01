@@ -314,6 +314,7 @@ $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
 ifdef START_MODEL
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
+	@echo
 	lstmtraining \
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
@@ -326,6 +327,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
+	@echo
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
@@ -334,6 +336,7 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 else
 $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	@mkdir -p $(OUTPUT_DIR)/checkpoints
+	@echo
 	lstmtraining \
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
@@ -345,6 +348,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
+	@echo
 	lstmtraining \
 	--stop_training \
 	--continue_from $(LAST_CHECKPOINT) \
