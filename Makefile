@@ -71,6 +71,13 @@ endif
 # Network specification. Default: $(NET_SPEC)
 NET_SPEC := [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx192 O1c\#\#\#]
 
+TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic
+TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
+TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
+TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
+
+TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(LANGDATA_DIR)/%.unicharset)
+
 # Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'
 LANG_TYPE ?=
 
@@ -196,13 +203,14 @@ $(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
 	  test "$$eval" = "0" && \
 	    echo "Error: missing ground truth for evaluation" && exit 1; \
 	  set -x; \
-	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train"; \
-	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"; \
-	if [ "$(OS)" = "Windows_NT" ]; then \
-		dos2unix "$(ALL_LSTMF)"; \
-		dos2unix "$(OUTPUT_DIR)/list.train"; \
-		dos2unix "$(OUTPUT_DIR)/list.eval"; \
-	fi
+	  head -n "$$train" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.train" && \
+	  tail -n "$$eval" $(ALL_LSTMF) > "$(OUTPUT_DIR)/list.eval"
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(ALL_LSTMF)"
+	dos2unix "$(OUTPUT_DIR)/list.train"
+	dos2unix "$(OUTPUT_DIR)/list.eval"
+endif
+
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
@@ -290,12 +298,14 @@ $(OUTPUT_DIR)/tessdata_fast/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoin
 proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
-	if [ "$(OS)" = "Windows_NT" ]; then \
-		dos2unix "$(NUMBERS_FILE)"; \
-		dos2unix "$(PUNC_FILE)"; \
-		dos2unix "$(WORDLIST_FILE)"; \
-		dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"; \
-	fi
+ifeq (Windows_NT, $(OS))
+	dos2unix "$(NUMBERS_FILE)"
+	dos2unix "$(PUNC_FILE)"
+	dos2unix "$(WORDLIST_FILE)"
+	dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
+endif
+	$(if $(filter-out $(realpath $@),$(realpath $(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata)),\
+	$(error $@!=$(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata -- consider setting different values for DATA_DIR, OUTPUT_DIR, or PROTO_MODEL))
 	combine_lang_model \
 	  --input_unicharset $(OUTPUT_DIR)/unicharset \
 	  --script_dir $(LANGDATA_DIR) \
@@ -346,13 +356,6 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 endif
-
-TESSERACT_SCRIPTS := Arabic Armenian Bengali Bopomofo Canadian_Aboriginal Cherokee Cyrillic
-TESSERACT_SCRIPTS += Devanagari Ethiopic Georgian Greek Gujarati Gurmukhi
-TESSERACT_SCRIPTS += Hangul Han Hebrew Hiragana Kannada Katakana Khmer Lao Latin
-TESSERACT_SCRIPTS += Malayalam Myanmar Ogham Oriya Runic Sinhala Syriac Tamil Telugu Thai
-
-TESSERACT_LANGDATA = $(LANGDATA_DIR)/radical-stroke.txt $(TESSERACT_SCRIPTS:%=$(LANGDATA_DIR)/%.unicharset)
 
 tesseract-langdata: $(TESSERACT_LANGDATA)
 
