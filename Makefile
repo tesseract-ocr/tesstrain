@@ -163,17 +163,16 @@ help: default
 
 # END-EVAL
 
-default:
 ifeq (4.2, $(firstword $(sort $(MAKE_VERSION) 4.2)))
-   # stuff that requires make-3.81 or higher
-	@echo "    You are using make version: $(MAKE_VERSION)"
+# stuff that requires make-3.81 or higher
+$(info You are using make version: $(MAKE_VERSION))
 else
-	$(error This version of GNU Make is too low ($(MAKE_VERSION)). Check your path, or upgrade to 4.2 or newer.)
+$(error This version of GNU Make is too low ($(MAKE_VERSION)). Check your path, or upgrade to 4.2 or newer.)
 endif
 
 .PRECIOUS: $(LAST_CHECKPOINT)
 
-.PHONY: default clean help lists proto-model tesseract-langdata training unicharset charfreq
+.PHONY: clean help lists proto-model tesseract-langdata training unicharset charfreq
 
 ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
 unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
@@ -181,10 +180,10 @@ ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
 
 # Create unicharset
-unicharset: default $(OUTPUT_DIR)/unicharset
+unicharset: $(OUTPUT_DIR)/unicharset
 
 # Show character histogram
-charfreq: default $(ALL_GT)
+charfreq: $(ALL_GT)
 	LC_ALL=C.UTF-8 grep -o . $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
@@ -226,7 +225,7 @@ $(OUTPUT_DIR)/unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 endif
 
 # Start training
-training: default $(OUTPUT_DIR).traineddata
+training: $(OUTPUT_DIR).traineddata
 
 $(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
@@ -386,4 +385,4 @@ clean-output:
 	rm -rf $(OUTPUT_DIR)
 
 # Clean all generated files
-clean: default clean-box clean-lstmf clean-output
+clean: clean-box clean-lstmf clean-output
