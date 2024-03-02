@@ -184,7 +184,7 @@ unicharset: $(OUTPUT_DIR)/unicharset
 
 # Show character histogram
 charfreq: $(ALL_GT)
-	LC_ALL=C.UTF-8 grep -o . $< | sort | uniq -c | sort -rn
+	LC_ALL=C.UTF-8 grep -P -o "\X" $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
 lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
