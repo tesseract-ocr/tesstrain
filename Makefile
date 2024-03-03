@@ -345,7 +345,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --debug_interval $(DEBUG_INTERVAL) \
 	  --traineddata $(PROTO_MODEL) \
 	  --learning_rate $(LEARNING_RATE) \
-	  --net_spec "$(subst c###,c`head -n1 $(OUTPUT_DIR)/unicharset`,$(NET_SPEC))" \
+	  --net_spec "$(subst c###,c$(firstword $(file <$(OUTPUT_DIR)/unicharset)),$(NET_SPEC))" \
 	  --model_output $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME) \
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
