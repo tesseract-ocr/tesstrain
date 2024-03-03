@@ -119,7 +119,7 @@ endif
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
-help: default
+help:
 	@echo ""
 	@echo "  Targets"
 	@echo ""
