@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sys
 
-arg_list = sys.argv[1].split(',') 
-modelname = arg_list[0]
-ymaxcer = arg_list[1]
+outputdir = sys.argv[1]
+modelname = sys.argv[2]
 
-ytsvfile =  arg_list[2] # modelname + "-iteration.tsv"
-ctsvfile =  arg_list[3] # modelname + "-checkpoint.tsv"
-### etsvfile =  arg_list[4] # modelname + "-eval.tsv" - Not used as no training iterations number
-stsvfile =  arg_list[5] # modelname + "-sub.tsv"
-ltsvfile =  arg_list[6] # modelname + "-lstmeval.tsv"
+ytsvfile =  sys.argv[3] # modelname + ".iteration.tsv"
+ctsvfile =  sys.argv[4] # modelname + ".checkpoint.tsv"
+etsvfile =  sys.argv[5] # modelname + ".eval.tsv" - Not used as no training iterations number
+stsvfile =  sys.argv[6] # modelname + ".sub.tsv"
+ltsvfile =  sys.argv[7] # modelname + ".lstmeval.tsv"
 
 maxticks=10
-maxCER=int(ymaxcer) #max y axis to display
 
 ydf = pd.read_csv(ytsvfile,sep='\t', encoding='utf-8')
 cdf = pd.read_csv(ctsvfile,sep='\t', encoding='utf-8')
@@ -46,7 +45,7 @@ l = ldf['EvalCER']
 lx = ldf['LearningIteration']
 lt = ldf['TrainingIteration']
 
-plotfile = "data/" + modelname + "/plots/" + modelname + "-" + ymaxcer + ".png"
+plotfile = os.path.join(outputdir, modelname + ".plot_cer.png")
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
     tmin = z[np.argmin(y)]
@@ -57,7 +56,7 @@ def annot_min(boxcolor, xpos, ypos, x, y, z):
         arrowprops=dict(shrinkA=1, shrinkB=1, fc=boxcolor,alpha=0.7, ec='white', connectionstyle="arc3"),
         bbox=dict(boxstyle='round,pad=0.2', fc=boxcolor, alpha=0.3))
 
-PlotTitle="Tesseract LSTM Training - Model Name = " + modelname
+PlotTitle="Tesseract LSTM Training : " + modelname
 fig = plt.figure(figsize=(11,8.5)) #size is in inches
 ax1 = fig.add_subplot()
 
@@ -72,19 +71,19 @@ ax1.locator_params(axis='x', nbins=maxticks)  # limit ticks on x-axis
 ax1.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
 ax1.xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
 
-ax1.scatter(t, y, c='teal', alpha=0.7, s=0.5, label='BCER every 100 Training Iterations')
+ax1.scatter(t, y, c='teal', alpha=0.7, s=0.5, label='BCER at #iterations/100 - lstmtraining - list.train')
 ax1.plot(t, y, 'teal', alpha=0.3, linewidth=0.5, label='Training BCER')
 ax1.grid(True)
 
 if not c.dropna().empty: # not NaN or empty
-    ax1.scatter(ct, c, c='blue', s=15,
-       label='BCER at Checkpoints - lstmtraining - list.train', alpha=0.5)
-    annot_min('blue',0,-50,cx,c,ct)
+    ax1.scatter(ct, c, c='teal', marker='x', s=35,
+       label='BCER at checkpoints - lstmtraining - list.train', alpha=0.5)
+    annot_min('teal',0,-50,cx,c,ct)
 
 if not l.dropna().empty: # not NaN or empty
-    ax1.plot(lt, l, 'indigo', linewidth=0.5, label='lstmeval BCER')
-    ax1.scatter(lt, l, c='indigo', s=10, label='BCER at Checkpoints - lstmeval - list.eval', alpha=0.5)
-    annot_min('indigo',0,-50,lx,l,lt)
+    ax1.plot(lt, l, 'magenta', linewidth=0.5, label='Validation BCER')
+    ax1.scatter(lt, l, c='magenta', s=10, label='BCER at checkpoints - lstmeval - list.eval', alpha=0.5)
+    annot_min('magenta',0,-50,lx,l,lt)
 
 if not s.dropna().empty: # not NaN or empty
     ax1.plot(st, s, 'orange', linewidth=0.5, label='SubTrainer BCER')
@@ -99,11 +98,11 @@ boxtext= " {:.3f}% at \n  {:,} \n {:,} " .format(ymax,xmax,tmax)
 ax1.annotate(boxtext, xy=(tmax, ymax), xytext=(20,-10), textcoords='offset points', color='black',
             bbox=dict(boxstyle='round,pad=0.2', fc='teal', alpha=0.3))
 
-plt.title('BCER by Training Iterations - from separate lstmtraining and lstmeval runs',fontsize=10)
+plt.title('character error rate over training iterations - from lstmtraining and lstmeval',fontsize=10)
 plt.suptitle(PlotTitle, y=0.95, fontsize = 14, fontweight = 'bold')
 plt.legend(loc='upper right')
 
-ax1.set_ylim([-0.5,maxCER])
+ax1.set_ylim([-0.5,100])
 
 # Secondary x axis on top to display Learning Iterations
 ax2 = ax1.twiny() # ax1 and ax2 share y-axis

@@ -117,40 +117,6 @@ else
     PY_CMD := python3
 endif
 
-# Directory for logs. Default: $(LOGS_DIR)
-LOGS_DIR = $(DATA_DIR)/logs
-
-# Directory for plot and tsv files for the model. Default: $(PLOT_DIR)
-PLOT_DIR = $(OUTPUT_DIR)/plots
-
-# Directory for evaluation reports for the model. Default: $(REPORT_DIR)
-REPORT_DIR = $(OUTPUT_DIR)/reports
-
-# Directory for Temporary files used in plotting. Default: $(TMP_DIR)
-TMP_DIR = $(OUTPUT_DIR)/tmp
-
-# Training log file. This should match logfile name from training. Default: $(MODEL_LOG)
-MODEL_LOG = ${LOGS_DIR}/$(MODEL_NAME).LOG
-
-# Maximum CER to display on y axis of plot. Default: $(Y_MAX_CER)
-Y_MAX_CER = 10
-
-# lstmeval BCER and filenames.  Default: $(LSTMEVAL_CER)
-LSTMEVAL_CER = ${REPORT_DIR}/$(MODEL_NAME)-lstmeval.txt
-
-# TSV file with header, iteration, checkpoint, eval and validation CER. Default: $(TSV_ALL_CER)
-# Info only. Individual temporary tsv files are used for plotting.
-TSV_ALL_CER = $(PLOT_DIR)/$(MODEL_NAME)-cer.tsv
-
-# Temporary files.
-TSV_100_ITERATIONS = $(TMP_DIR)/$(MODEL_NAME)-iteration.tsv
-TSV_CHECKPOINT = $(TMP_DIR)/$(MODEL_NAME)-checkpoint.tsv
-TSV_EVAL = $(TMP_DIR)/$(MODEL_NAME)-eval.tsv
-TSV_SUB = $(TMP_DIR)/$(MODEL_NAME)-sub.tsv
-TSV_LSTMEVAL = $(TMP_DIR)/$(MODEL_NAME)-lstmeval.tsv
-TMP_FAST_LOG = $(TMP_DIR)/$(MODEL_NAME)-lstmeval-fast.log
-TMP_LSTMEVAL_LOG = $(TMP_DIR)/$(MODEL_NAME)-lstmeval.log
-
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -164,6 +130,7 @@ help:
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    tesseract-langdata  Download stock unicharsets"
+	@echo "    plot             Generate train/eval error rate charts from training log"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
 	@echo "    clean-output     Clean generated output files"
@@ -303,97 +270,14 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 %.lstmf: %.tif %.box
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
-# plotting
-
-LSTMevalCER: $(TSV_LSTMEVAL) $(LSTMEVAL_CER) $(TMP_LSTMEVAL_LOG) $(TMP_FAST_LOG) $(FAST_LSTMEVAL_FILES)
-plotCER: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_ALL_CER)
-
-# Make TSV with CER at every 100 iterations.
-$(TSV_100_ITERATIONS): $(MODEL_LOG)
-	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
-	@grep 'At iteration' $(MODEL_LOG) \
-		| sed -e '/^Sub/d' \
-		| sed -e '/^Update/d' \
-		| sed -e '/^ New worst BCER/d' \
-		| sed -e 's/At iteration \([0-9]*\)\/\([0-9]*\)\/.*BCER train=/\t\t\1\t\2\t\t/' \
-		| sed -e 's/%, BWER.*/\t/' >>  "$@"
-
-# Make TSV with Checkpoint CER.
-$(TSV_CHECKPOINT): $(MODEL_LOG)
-	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
-	@grep 'best model' $(MODEL_LOG) \
-		| sed -e 's/^.*\///' \
-		| sed -e 's/\.checkpoint.*$$/\t\t\t/' \
-		| sed -e 's/_/\t/g' >>  "$@"
-
-# Make TSV with Eval CER.
-$(TSV_EVAL): $(MODEL_LOG)
-	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
-	@grep 'BCER eval' $(MODEL_LOG) \
-		| sed -e 's/^.*[0-9]At iteration //' \
-		| sed -e 's/,.* BCER eval=/\t\t/'  \
-		| sed -e 's/, BWER.*$$/\t\t/' \
-		| sed -e 's/^/\t\t/' >>  "$@"
-
-# Make TSV with Subtrainer CER.
-$(TSV_SUB): $(MODEL_LOG)
-	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
-	@grep '^UpdateSubtrainer' $(MODEL_LOG) \
-		| sed -e 's/^.*At iteration \([0-9]*\)\/\([0-9]*\)\/.*BCER train=/\t\t\1\t\2\t\t\t/' \
-		| sed -e 's/%, BWER.*//' >>  "$@"
-
-# Make TSV with lstmeval CER.
-$(TSV_LSTMEVAL): $(LSTMEVAL_CER)
-	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
-	@grep 'BCER eval' $(LSTMEVAL_CER) \
-		| sed -e 's/^BCER eval=\(.*\), BWER.*\t.*_\(.*\)_\(.*\)\.eval.log/\t\t\2\t\3\t\1\t\t/' >>  "$@"
-
-# Combine TSV files with all required CER values, generated from training log and validation logs. Plot.
-$(TSV_ALL_CER): $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL) 
-	@cat $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)  > "$@"
-	python plot_LOG.py $(MODEL_NAME),$(Y_MAX_CER),$(TSV_100_ITERATIONS),$(TSV_CHECKPOINT),$(TSV_EVAL),$(TSV_SUB)
-	python plot_cer.py $(MODEL_NAME),$(Y_MAX_CER),$(TSV_100_ITERATIONS),$(TSV_CHECKPOINT),$(TSV_EVAL),$(TSV_SUB),$(TSV_LSTMEVAL)
-
-# Build fast traineddata file list with CER in range [0-1].[0-9].
-FAST_DATA_FILES := $(wildcard $(OUTPUT_DIR)/tessdata_fast/$(MODEL_NAME)_[0-1]\.[0-9]*.traineddata)
-
-# Build lstmeval files list based on above traineddata list.
-FAST_LSTMEVAL_FILES := $(subst tessdata_fast,tessdata_fast,$(patsubst %.traineddata,%.eval.log,$(FAST_DATA_FILES)))
-
-$(FAST_LSTMEVAL_FILES): %.eval.log: %.traineddata
-	time -p lstmeval  \
-		--verbosity=0 \
-		--model $< \
-		--eval_listfile $(OUTPUT_DIR)/list.eval 2>&1 | grep "^BCER eval" > $@
-
-# Concatenate all lstmeval files along with their filenames.
-$(TMP_FAST_LOG): $(FAST_LSTMEVAL_FILES)
-	@for i in $^; do \
-		echo Filename : "$$i";echo;cat "$$i"; \
-	done > $@
-
-$(LSTMEVAL_CER): $(TMP_FAST_LOG)
-	@grep -E "eval.log$$|BCER" $(TMP_FAST_LOG) > $(TMP_LSTMEVAL_LOG)
-	sed -i '/^Filename/N;s/\n/ /' $(TMP_LSTMEVAL_LOG)
-	sort -n -r -o $(TMP_LSTMEVAL_LOG) $(TMP_LSTMEVAL_LOG)
-	sed -e 's/\(Filename.*.log\).*\(BCER.*\)/\2 \t \1/g' $(TMP_LSTMEVAL_LOG) > $@
-
 .PHONY: traineddata
-
-# Rename checkpoints with one/two decimal digits to 3 decimal digts for correct sorting later.
-fixcheckpoints:
-	@rm -rf $(PLOT_DIR) $(REPORT_DIR) $(TMP_DIR)
-	@mkdir $(PLOT_DIR) $(REPORT_DIR) $(TMP_DIR)
-	@find $(OUTPUT_DIR)/checkpoints/ -regex ^.*$(MODEL_NAME)_[0-9]\.[0-9]_.*_.*.checkpoint -exec rename -v 's/(.[0-9])_/$${1}00_/' {} \;
-	@find $(OUTPUT_DIR)/checkpoints/ -regex ^.*$(MODEL_NAME)_[0-9]*\.[0-9][0-9]_.*_.*.checkpoint -exec rename -v 's/(.[0-9][0-9])_/$${1}0_/' {} \;
-
-traineddata: fixcheckpoints
-CHECKPOINT_FILES := $(sort $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint))
+CHECKPOINT_FILES = $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
+BESTMODEL_FILES = $(subst checkpoints,tessdata_best,$(CHECKPOINT_FILES:%.checkpoint=%.traineddata))
+FASTMODEL_FILES = $(subst checkpoints,tessdata_fast,$(CHECKPOINT_FILES:%.checkpoint=%.traineddata))
 # Create best and fast .traineddata files from each .checkpoint file
-traineddata: $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast
-traineddata: $(subst checkpoints,tessdata_best,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
-traineddata: $(subst checkpoints,tessdata_fast,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
-$(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast:
+traineddata: $(BESTMODEL_FILES)
+traineddata: $(FASTMODEL_FILES)
+$(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast $(OUTPUT_DIR)/eval:
 	@mkdir -p $@
 $(OUTPUT_DIR)/tessdata_best/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint | $(OUTPUT_DIR)/tessdata_best
 	lstmtraining \
@@ -446,7 +330,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE) \
-	| tee $(MODEL_LOG)
+	| tee $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -468,7 +352,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE) \
-	| tee $(MODEL_LOG)
+	| tee $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -477,6 +361,73 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 endif
+
+# plotting
+
+# Build lstmeval files list based on respective fast traineddata models
+FAST_LSTMEVAL_FILES = $(subst tessdata_fast,eval,$(FASTMODEL_FILES:%.traineddata=%.eval.log))
+$(FAST_LSTMEVAL_FILES): $(OUTPUT_DIR)/eval/%.eval.log: $(OUTPUT_DIR)/tessdata_fast/%.traineddata | $(OUTPUT_DIR)/eval
+	time -p lstmeval  \
+		--verbosity=0 \
+		--model $< \
+		--eval_listfile $(OUTPUT_DIR)/list.eval 2>&1 | grep "^BCER eval" > $@
+# Make TSV with lstmeval CER and checkpoint filename parts
+TSV_LSTMEVAL = $(OUTPUT_DIR)/$(MODEL_NAME).lstmeval.tsv
+.INTERMEDIATE: $(TSV_LSTMEVAL)
+$(TSV_LSTMEVAL): $(FAST_LSTMEVAL_FILES)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@{ $(foreach F,$^,echo -n "$F "; grep BCER $F;) } | sort -rn | \
+	sed -e 's|^$(OUTPUT_DIR)/eval/$(MODEL_NAME)_\([0-9.]*\)_\([0-9]*\)_\([0-9]*\).eval.log BCER eval=\([0-9.]*\).*$$|\t\1\t\2\t\3\t\4\t\t|' >>  "$@"
+# Make TSV with CER at every 100 iterations.
+TSV_100_ITERATIONS = $(OUTPUT_DIR)/$(MODEL_NAME).iteration.tsv
+.INTERMEDIATE: $(TSV_100_ITERATIONS)
+$(TSV_100_ITERATIONS): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'At iteration' $< \
+		| sed -e '/^Sub/d' \
+		| sed -e '/^Update/d' \
+		| sed -e '/^ New worst BCER/d' \
+		| sed -e 's|At iteration \([0-9]*\)/\([0-9]*\)/.*BCER train=|\t\t\1\t\2\t\t|' \
+		| sed -e 's/%, BWER.*/\t/' >>  "$@"
+# Make TSV with Checkpoint CER.
+TSV_CHECKPOINT = $(OUTPUT_DIR)/$(MODEL_NAME).checkpoint.tsv
+.INTERMEDIATE: $(TSV_CHECKPOINT)
+$(TSV_CHECKPOINT): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'best model' $< \
+		| sed -e 's/^.*\///' \
+		| sed -e 's/\.checkpoint.*$$/\t\t\t/' \
+		| sed -e 's/_/\t/g' >>  "$@"
+# Make TSV with Eval CER.
+TSV_EVAL = $(OUTPUT_DIR)/$(MODEL_NAME).eval.tsv
+.INTERMEDIATE: $(TSV_EVAL)
+$(TSV_EVAL): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'BCER eval' $< \
+		| sed -e 's/^.*[0-9]At iteration //' \
+		| sed -e 's/,.* BCER eval=/\t\t/'  \
+		| sed -e 's/, BWER.*$$/\t\t/' \
+		| sed -e 's/^/\t\t/' >>  "$@"
+# Make TSV with Subtrainer CER.
+TSV_SUB = $(OUTPUT_DIR)/$(MODEL_NAME).sub.tsv
+.INTERMEDIATE: $(TSV_SUB)
+$(TSV_SUB): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep '^UpdateSubtrainer' $< \
+		| sed -e 's/^.*At iteration \([0-9]*\)\/\([0-9]*\)\/.*BCER train=/\t\t\1\t\2\t\t\t/' \
+		| sed -e 's/%, BWER.*//' >>  "$@"
+
+$(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+	python plot_LOG.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+$(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
+	python plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
+
+.PHONY: lstmeval plot
+# run lstmeval on list.eval data for each checkpoint model
+lstmeval: $(FAST_LSTMEVAL_FILES)
+# combine TSV files with all required CER values, generated from training log and validation logs, then plot
+plot: $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png
+
 
 tesseract-langdata: $(TESSERACT_LANGDATA)
 

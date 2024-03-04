@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sys
 
-arg_list = sys.argv[1].split(',') 
-modelname = arg_list[0]
-ymaxcer = arg_list[1]
+outputdir = sys.argv[1]
+modelname = sys.argv[2]
 
-ytsvfile =  arg_list[2] # modelname + "-iteration.tsv"
-ctsvfile =  arg_list[3] # modelname + "-checkpoint.tsv"
-etsvfile =  arg_list[4] # modelname + "-eval.tsv"
-stsvfile =  arg_list[5] # modelname + "-sub.tsv"
+ytsvfile =  sys.argv[3] # modelname + ".iteration.tsv"
+ctsvfile =  sys.argv[4] # modelname + ".checkpoint.tsv"
+etsvfile =  sys.argv[5] # modelname + ".eval.tsv"
+stsvfile =  sys.argv[6] # modelname + ".sub.tsv"
 
 maxticks=4
-maxCER=int(ymaxcer) #max y axis to display
 
 ydf = pd.read_csv(ytsvfile,sep='\t', encoding='utf-8')
 cdf = pd.read_csv(ctsvfile,sep='\t', encoding='utf-8')
@@ -45,7 +44,7 @@ s = sdf['SubtrainerCER']
 sx = sdf['LearningIteration']
 st = sdf['TrainingIteration']
 
-plotfile = "data/" + modelname + "/plots/" + modelname + "-LOG-" + ymaxcer + ".png"
+plotfile = os.path.join(outputdir, modelname + ".plot_log.png")
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
     if z.isnull().values.any():
@@ -61,7 +60,7 @@ def annot_min(boxcolor, xpos, ypos, x, y, z):
         arrowprops=dict(shrinkA=1, shrinkB=1, fc=boxcolor,alpha=0.7, ec='white', connectionstyle="arc3"),
         bbox=dict(boxstyle='round,pad=0.2', fc=boxcolor, alpha=0.3))
 
-PlotTitle="Tesseract LSTM Training - Model Name = " + modelname
+PlotTitle="Tesseract LSTM Training : " + modelname
 fig = plt.figure(figsize=(11,8.5)) #size is in inches
 ax1 = fig.add_subplot()
 
@@ -76,19 +75,19 @@ ax1.locator_params(axis='x', nbins=maxticks)  # limit ticks on x-axis
 ax1.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
 ax1.xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
 
-ax1.scatter(x, y, c='teal', alpha=0.7, s=0.5, label='BCER every 100 Training Iterations')
+ax1.scatter(x, y, c='teal', alpha=0.7, s=0.5, label='BCER at #iterations/100 - lstmtraining - list.train')
 ax1.plot(x, y, 'teal', alpha=0.3, linewidth=0.5, label='Training BCER')
 ax1.grid(True)
 
 if not c.dropna().empty: # not NaN or empty
-    ax1.scatter(cx, c, c='blue', s=15,
-       label='BCER at Checkpoints during training)', alpha=0.5)
-    annot_min('blue',-50,-50,cx,c,ct)
+    ax1.scatter(cx, c, c='teal', marker='x', s=35,
+       label='BCER at checkpoints - lstmtraining - list.train', alpha=0.5)
+    annot_min('teal',-50,-50,cx,c,ct)
 
 if not e.dropna().empty: # not NaN or empty
-    ax1.plot(ex, e, 'magenta', linewidth=1.0)
+    ax1.plot(ex, e, 'magenta', linewidth=1.0, label='Validation BCER')
     ax1.scatter(ex, e, c='magenta', s=30,
-       label='BCER from evaluation during training', alpha=0.5)
+       label='BCER at checkpoints - lstmtraining - list.eval', alpha=0.5)
     annot_min('magenta',-50,50,ex,e,et)
 
 if not s.dropna().empty: # not NaN or empty
@@ -97,11 +96,11 @@ if not s.dropna().empty: # not NaN or empty
        label='BCER for UpdateSubtrainer every 100 iterations', alpha=0.5)
     annot_min('orange',-100,-100,sx,s,st)
 
-plt.title('BCER by Learning Iterations - from lstmtraining log',fontsize=10)
+plt.title('character error rate over learning iterations - from lstmtraining',fontsize=10)
 plt.suptitle(PlotTitle, y=0.95, fontsize = 14, fontweight = 'bold')
 plt.legend(loc='upper right')
 
-ax1.set_ylim([-0.5,maxCER])
+ax1.set_ylim([-0.5,100])
 
 # Secondary x axis on top to display Training Iterations
 ax2 = ax1.twiny() # ax1 and ax2 share y-axis
