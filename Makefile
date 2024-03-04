@@ -445,8 +445,8 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
-	  --target_error_rate $(TARGET_ERROR_RATE)\
-	  > $(MODEL_LOG)  2>&1
+	  --target_error_rate $(TARGET_ERROR_RATE) \
+	| tee $(MODEL_LOG)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -468,7 +468,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE) \
-	  > $(MODEL_LOG)  2>&1
+	| tee $(MODEL_LOG)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
