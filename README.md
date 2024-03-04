@@ -2,7 +2,22 @@
 
 > Training workflow for Tesseract 5 as a Makefile for dependency tracking.
 
-## Install
+* [Installation](#installation)
+    * [Auxiliaries](#auxiliaries)
+    * [Leptonica, Tesseract](#leptonica-tesseract)
+       * [Windows](#windows)
+    * [Python](#python)
+    * [Language data](#language-data)
+* [Usage](#usage)    
+    * [Choose model name](#choose-model-name)
+    * [Provide ground truth data](#provide-ground-truth-data)
+    * [Train](#train)
+    * [Change directory assumptions](#change-directory-assumptions)
+    * [Make model files (traineddata)](#make-model-files-traineddata)
+    * [Plotting CER](#plotting-cer)
+* [License](#license)
+
+## Installation
 
 ### Auxiliaries
 
@@ -40,8 +55,9 @@ To fetch them:
 (This step is only needed once and already included implicitly in the `training` target,
 but you might want to run explicitly it in advance.)
 
+## Usage
 
-## Choose model name
+### Choose model name
 
 Choose a name for your model. By convention, Tesseract stack models including
 language-specific resources use (lowercase) three-letter codes defined in
@@ -52,7 +68,7 @@ models use the capitalized name of the script type as identifier. E.g.,
 `Hangul_vert` for Hangul script with vertical typesetting. In the following,
 the model name is referenced by `MODEL_NAME`.
 
-## Provide ground truth
+### Provide ground truth data
 
 Place ground truth consisting of line images and transcriptions in the folder
 `data/MODEL_NAME-ground-truth`. This list of files will be split into training and
@@ -73,7 +89,7 @@ page, see tips in [issue 7](https://github.com/OCR-D/ocrd-train/issues/7) and
 in particular [@Shreeshrii's shell
 script](https://github.com/OCR-D/ocrd-train/issues/7#issuecomment-419714852).
 
-## Train
+### Train
 
 Run
 
@@ -82,7 +98,7 @@ Run
 
 which is basically a shortcut for
 
-    make unicharset lists proto-model tesseract-langdata training
+    make unicharset lists proto-model tesseract-langdata training MODEL_NAME=name-of-the-resulting-model
 
 
 Run `make help` to see all the possible targets and variables:
@@ -95,10 +111,12 @@ Run `make help` to see all the possible targets and variables:
     unicharset       Create unicharset
     charfreq         Show character histogram
     lists            Create lists of lstmf filenames for training and eval
-    training         Start training
+    training         Start training (i.e. create .checkpoint files)
     traineddata      Create best and fast .traineddata files from each .checkpoint file
     proto-model      Build the proto model
     tesseract-langdata  Download stock unicharsets
+    lstmeval         Evaluate .checkpoint models on eval dataset via lstmeval
+    plot             Generate train/eval error rate charts from training log
     clean            Clean all generated files
 
   Variables
@@ -169,25 +187,22 @@ It is also possible to create models for selected checkpoints only. Examples:
 
 Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` by the output directory if needed.
 
-## Plotting CER (experimental)
+### Plotting CER
 
-Training and Evaluation CER can be plotted using matplotlib. A couple of scripts are provided
-as a starting point for plotting of different training scenarios. 
+Training and Evaluation Character Error Rate (CER) can be plotted using matplotlib:
 
-As an example, use the training data provided in 
-[ocrd-testset.zip](./ocrd-testset.zip) to do training and generate the plots.
-Plotting can be done while training is running also to depict the training status till then.
-```
-mkdir -p data
-mkdir -p data/logs
-unzip ocrd-testset.zip -d data/ocrd-ground-truth
-nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=20000 > data/logs/TESSTRAIN.LOG &
-```
-After training is completed, you can plot the CER. Use the followingcommands:
-```
-nohup make traineddata  MODEL_NAME=ocrd > data/logs/TESSDATA.LOG &
-nohup make traineddata LSTMevalCER plotCER MODEL_NAME=ocrd Y_MAX_CER=4 > data/logs/TESSEVAL.LOG &
-```
+    # Make OUTPUT_DIR/MODEL_FILE.plot_*.png
+    make plot
+
+All the variables defined above apply, but there is no explicit dependency on training.
+
+Still, the target hinges on the log file intercepted during training (just will not trigger
+training itself). Besides the log file, this also evaluates the trained models (for each checkpoint)
+on the eval dataset. The latter is also available as an independent target:
+
+    # Make OUTPUT_DIR/eval/MODEL_FILE*.*.log
+    make lstmeval
+
 
 ## License
 
