@@ -126,10 +126,11 @@ help:
 	@echo "    unicharset       Create unicharset"
 	@echo "    charfreq         Show character histogram"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
-	@echo "    training         Start training"
+	@echo "    training         Start training (i.e. create .checkpoint files)"
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    tesseract-langdata  Download stock unicharsets"
+	@echo "    lstmeval         Evaluate .checkpoint models on eval dataset via lstmeval"
 	@echo "    plot             Generate train/eval error rate charts from training log"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
@@ -418,7 +419,7 @@ $(TSV_SUB): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 		| sed -e 's/%, BWER.*//' >>  "$@"
 
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
-	python plot_LOG.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+	python plot_log.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
 	python plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
 
