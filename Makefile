@@ -117,6 +117,8 @@ else
     PY_CMD := python3
 endif
 
+LOG_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -162,6 +164,7 @@ help:
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 	@echo "    TARGET_ERROR_RATE  Default Target Error Rate. Default: $(TARGET_ERROR_RATE)"
+	@echo "    LOG_FILE           File to copy training output to and read plot figures from. Default: $(LOG_FILE)"
 
 # END-EVAL
 
@@ -331,7 +334,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE) \
-	2>&1 | tee $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	2>&1 | tee $(LOG_FILE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -353,7 +356,7 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
 	  --target_error_rate $(TARGET_ERROR_RATE) \
-	2>&1 | tee $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+	2>&1 | tee $(LOG_FILE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
