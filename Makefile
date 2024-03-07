@@ -422,9 +422,9 @@ $(TSV_SUB): $(LOG_FILE)
 		| sed -e 's/%, BWER.*//' >>  "$@"
 
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
-	python plot_log.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+	$(PY_CMD) plot_log.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
-	python plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
+	$(PY_CMD) plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
 
 .PHONY: evaluation plot
 # run lstmeval on list.eval data for each checkpoint model
