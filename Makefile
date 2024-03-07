@@ -110,7 +110,7 @@ RATIO_TRAIN := 0.90
 # Default Target Error Rate. Default: $(TARGET_ERROR_RATE)
 TARGET_ERROR_RATE := 0.01
 
-#Use corrent python program name on Windows
+# Use current Python program name on Windows
 ifeq ($(OS),Windows_NT)
     PY_CMD := python
 else

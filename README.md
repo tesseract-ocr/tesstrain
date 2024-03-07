@@ -20,7 +20,7 @@ and more can be found in the [Tesseract User Manual](https://tesseract-ocr.githu
 
   1. Install the latest tesseract (e.g. from https://digi.bib.uni-mannheim.de/tesseract/), make sure that tesseract is added to your PATH.
   2. Install [Python 3](https://www.python.org/downloads/)
-  3. Install [Git SCM to Windows](https://gitforwindows.org/) - it provides a lot of linux utilities on Windows (e.g. `find`, `unzip`, `rm`) and put `C:\Program Files\Git\usr\bin` to the begining of your PATH variable (temporarely you can do it in `cmd` with `set PATH=C:\Program Files\Git\usr\bin;%PATH%` - unfornatelly there are several Windows tools with the same name as on linux (`find`, `sort`) with different behaviour/functionality and there is need to avoid them during training.
+  3. Install [Git SCM to Windows](https://gitforwindows.org/) - it provides a lot of linux utilities on Windows (e.g. `find`, `unzip`, `rm`) and put `C:\Program Files\Git\usr\bin` to the beginning of your PATH variable (temporarily you can do it in `cmd` with `set PATH=C:\Program Files\Git\usr\bin;%PATH%` - unfortunately there are several Windows tools with the same name as on linux (`find`, `sort`) with different behaviour/functionality and there is need to avoid them during training.
   4. Install winget/[Windows Package Manager](https://github.com/microsoft/winget-cli/releases/) and then run `winget install GnuWin32.Make` and `winget install wget` to install missing tools.
   5. Download [Bc and dc calculator in Windows](https://embedeo.org/ws/command_line/bc_dc_calculator_windows/) and unzip bc.exe somewhere to your path (e.g. in my case `unzip -j bc-1.07.1-win32-embedeo-02.zip "bc-1.07.1-win32-embedeo-02/bin/bc.exe" -d "c:\Program Files\Tools"`)
 
