@@ -194,14 +194,14 @@ Training and Evaluation Character Error Rate (CER) can be plotted using matplotl
     # Make OUTPUT_DIR/MODEL_FILE.plot_*.png
     make plot
 
-All the variables defined above apply, but there is no explicit dependency on training.
+All the variables defined above apply, but there is no explicit dependency on `training`.
 
 Still, the target hinges on the log file intercepted during training (just will not trigger
 training itself). Besides the log file, this also evaluates the trained models (for each checkpoint)
-on the eval dataset. The latter is also available as an independent target:
+on the eval dataset. The latter is also available as an independent target `evaluation`:
 
     # Make OUTPUT_DIR/eval/MODEL_FILE*.*.log
-    make lstmeval
+    make evaluation
 
 
 ## License

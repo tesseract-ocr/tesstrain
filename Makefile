@@ -132,7 +132,7 @@ help:
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    tesseract-langdata  Download stock unicharsets"
-	@echo "    lstmeval         Evaluate .checkpoint models on eval dataset via lstmeval"
+	@echo "    evaluation       Evaluate .checkpoint models on eval dataset via lstmeval"
 	@echo "    plot             Generate train/eval error rate charts from training log"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
@@ -426,9 +426,9 @@ $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
 	python plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
 
-.PHONY: lstmeval plot
+.PHONY: evaluation plot
 # run lstmeval on list.eval data for each checkpoint model
-lstmeval: $(FAST_LSTMEVAL_FILES)
+evaluation: $(FAST_LSTMEVAL_FILES)
 # combine TSV files with all required CER values, generated from training log and validation logs, then plot
 plot: $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png
 
