@@ -46,12 +46,12 @@ st = sdf['TrainingIteration']
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
     if z.isnull().values.any():
-          xmin = x[np.argmin(y)]
+          xmin = x.iloc[np.argmin(y)]
           ymin = y.min()
           boxtext= " {:.3f}% at {:,} learning iterations " .format(ymin,xmin)
     else:
-          tmin = z[np.argmin(y)]
-          xmin = x[np.argmin(y)]
+          tmin = z.iloc[np.argmin(y)]
+          xmin = x.iloc[np.argmin(y)]
           ymin = y.min()
           boxtext= " {:.3f}% at {:,} / {:,} " .format(ymin,xmin,tmin)
     ax1.annotate(boxtext, xy=(xmin, ymin), xytext=(xpos,ypos), textcoords='offset points', color='black', fontsize=9,

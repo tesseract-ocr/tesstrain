@@ -46,8 +46,8 @@ lx = ldf['LearningIteration']
 lt = ldf['TrainingIteration']
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
-    tmin = z[np.argmin(y)]
-    xmin = x[np.argmin(y)]
+    tmin = z.iloc[np.argmin(y)]
+    xmin = x.iloc[np.argmin(y)]
     ymin = y.min()
     boxtext= " {:.3f}% at {:,} / {:,} " .format(ymin,xmin,tmin)
     ax1.annotate(boxtext, xy=(tmin, ymin), xytext=(xpos,ypos), textcoords='offset points', color='black', fontsize=9,
