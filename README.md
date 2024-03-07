@@ -143,6 +143,7 @@ Run `make help` to see all the possible targets and variables:
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
     RATIO_TRAIN        Ratio of train / eval training data. Default: 0.90
     TARGET_ERROR_RATE  Stop training if the character error rate (CER in percent) gets below this value. Default: 0.01
+    LOG_FILE           File to copy training output to and read plot figures from. Default: OUTPUT_DIR/training.log
 ```
 
 <!-- END-EVAL -->
@@ -196,13 +197,23 @@ Training and Evaluation Character Error Rate (CER) can be plotted using matplotl
 
 All the variables defined above apply, but there is no explicit dependency on `training`.
 
-Still, the target hinges on the log file intercepted during training (just will not trigger
+Still, the target hinges on the LOG_FILE intercepted during training (just will not trigger
 training itself). Besides the log file, this also evaluates the trained models (for each checkpoint)
 on the eval dataset. The latter is also available as an independent target `evaluation`:
 
     # Make OUTPUT_DIR/eval/MODEL_FILE*.*.log
     make evaluation
 
+Plotting can even be done while training is still running, and  will depict the training status
+up to that point. (It can be rerun any time the LOG_FILE has changed or new checkpoints written.)
+
+As an example, use the training data provided in [ocrd-testset.zip](./ocrd-testset.zip) to do some
+training and generate the plots:
+
+    unzip ocrd-testset.zip -d data/ocrd-ground-truth
+    make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 &
+    # Make data/ocrd/ocrd.plot_cer.png and plot_log.png (repeat during/after training)
+    make plot MODEL_NAME=ocrd
 
 ## License
 
