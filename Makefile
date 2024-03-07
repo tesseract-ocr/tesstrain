@@ -385,7 +385,7 @@ $(TSV_LSTMEVAL): $(FAST_LSTMEVAL_FILES)
 # Make TSV with CER at every 100 iterations.
 TSV_100_ITERATIONS = $(OUTPUT_DIR)/$(MODEL_NAME).iteration.tsv
 .INTERMEDIATE: $(TSV_100_ITERATIONS)
-$(TSV_100_ITERATIONS): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+$(TSV_100_ITERATIONS): $(LOG_FILE)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
 	@grep 'At iteration' $< \
 		| sed -e '/^Sub/d' \
@@ -396,7 +396,7 @@ $(TSV_100_ITERATIONS): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 # Make TSV with Checkpoint CER.
 TSV_CHECKPOINT = $(OUTPUT_DIR)/$(MODEL_NAME).checkpoint.tsv
 .INTERMEDIATE: $(TSV_CHECKPOINT)
-$(TSV_CHECKPOINT): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+$(TSV_CHECKPOINT): $(LOG_FILE)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
 	@grep 'best model' $< \
 		| sed -e 's/^.*\///' \
@@ -405,7 +405,7 @@ $(TSV_CHECKPOINT): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 # Make TSV with Eval CER.
 TSV_EVAL = $(OUTPUT_DIR)/$(MODEL_NAME).eval.tsv
 .INTERMEDIATE: $(TSV_EVAL)
-$(TSV_EVAL): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+$(TSV_EVAL): $(LOG_FILE)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
 	@grep 'BCER eval' $< \
 		| sed -e 's/^.*[0-9]At iteration //' \
@@ -415,7 +415,7 @@ $(TSV_EVAL): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
 # Make TSV with Subtrainer CER.
 TSV_SUB = $(OUTPUT_DIR)/$(MODEL_NAME).sub.tsv
 .INTERMEDIATE: $(TSV_SUB)
-$(TSV_SUB): $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+$(TSV_SUB): $(LOG_FILE)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
 	@grep '^UpdateSubtrainer' $< \
 		| sed -e 's/^.*At iteration \([0-9]*\)\/\([0-9]*\)\/.*BCER train=/\t\t\1\t\2\t\t\t/' \
