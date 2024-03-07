@@ -215,6 +215,10 @@ training and generate the plots:
     # Make data/ocrd/ocrd.plot_cer.png and plot_log.png (repeat during/after training)
     make plot MODEL_NAME=ocrd
 
+Which should then look like this:
+
+![ocrd.plot_cer.png](./ocrd.plot_cer.png)
+
 ## License
 
 Software is provided under the terms of the `Apache 2.0` license.
