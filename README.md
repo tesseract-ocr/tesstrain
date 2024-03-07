@@ -115,7 +115,7 @@ Run `make help` to see all the possible targets and variables:
     traineddata      Create best and fast .traineddata files from each .checkpoint file
     proto-model      Build the proto model
     tesseract-langdata  Download stock unicharsets
-    lstmeval         Evaluate .checkpoint models on eval dataset via lstmeval
+    evaluation       Evaluate .checkpoint models on eval dataset via lstmeval
     plot             Generate train/eval error rate charts from training log
     clean            Clean all generated files
 
@@ -197,7 +197,7 @@ Training and Evaluation Character Error Rate (CER) can be plotted using matplotl
 
 All the variables defined above apply, but there is no explicit dependency on `training`.
 
-Still, the target hinges on the LOG_FILE intercepted during training (just will not trigger
+Still, the target hinges on the `LOG_FILE` intercepted during training (just will not trigger
 training itself). Besides the log file, this also evaluates the trained models (for each checkpoint)
 on the eval dataset. The latter is also available as an independent target `evaluation`:
 
@@ -205,7 +205,7 @@ on the eval dataset. The latter is also available as an independent target `eval
     make evaluation
 
 Plotting can even be done while training is still running, and  will depict the training status
-up to that point. (It can be rerun any time the LOG_FILE has changed or new checkpoints written.)
+up to that point. (It can be rerun any time the `LOG_FILE` has changed or new checkpoints written.)
 
 As an example, use the training data provided in [ocrd-testset.zip](./ocrd-testset.zip) to do some
 training and generate the plots:
