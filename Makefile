@@ -117,7 +117,7 @@ else
     PY_CMD := python3
 endif
 
-LOG_FILE := $(OUTPUT_DIR)/$(MODEL_NAME).training.log
+LOG_FILE = $(OUTPUT_DIR)/training.log
 
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
