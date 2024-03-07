@@ -105,7 +105,7 @@ ax1.set_ylim([-0.5,100])
 # Secondary x axis on top to display Training Iterations
 ax2 = ax1.twiny() # ax1 and ax2 share y-axis
 ax2.set_xlabel("Training Iterations")
-ax2.set_xlim(ax1.get_xlim()) # ensure the independant x-axes now span the same range
+ax2.set_xlim(ax1.get_xlim()) # ensure the independent x-axes now span the same range
 ax2.set_xticks(x) # copy over the locations of the x-ticks from Learning Iterations
 ax2.tick_params(axis='x', labelsize='small')
 ax2.set_xticklabels(matplotlib.ticker.StrMethodFormatter('{x:,.0f}').format_ticks(t)) # But give value of Training Iterations
