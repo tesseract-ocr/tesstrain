@@ -8,13 +8,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-outputdir = sys.argv[1]
+plotfile = sys.argv[1]
 modelname = sys.argv[2]
 
-ytsvfile =  sys.argv[3] # modelname + ".iteration.tsv"
-ctsvfile =  sys.argv[4] # modelname + ".checkpoint.tsv"
-etsvfile =  sys.argv[5] # modelname + ".eval.tsv"
-stsvfile =  sys.argv[6] # modelname + ".sub.tsv"
+ytsvfile =  sys.argv[3] # "iteration.tsv"
+ctsvfile =  sys.argv[4] # "checkpoint.tsv"
+etsvfile =  sys.argv[5] # "eval.tsv"
+stsvfile =  sys.argv[6] # "sub.tsv"
 
 maxticks=4
 
@@ -43,8 +43,6 @@ et = edf['TrainingIteration'] # Not available in training log file
 s = sdf['SubtrainerCER']
 sx = sdf['LearningIteration']
 st = sdf['TrainingIteration']
-
-plotfile = os.path.join(outputdir, modelname + ".plot_log.png")
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
     if z.isnull().values.any():

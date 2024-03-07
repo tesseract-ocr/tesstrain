@@ -394,7 +394,7 @@ $(TSV_100_ITERATIONS): $(LOG_FILE)
 		| sed -e 's|At iteration \([0-9]*\)/\([0-9]*\)/.*BCER train=|\t\t\1\t\2\t\t|' \
 		| sed -e 's/%, BWER.*/\t/' >>  "$@"
 # Make TSV with Checkpoint CER.
-TSV_CHECKPOINT = $(OUTPUT_DIR)/$(MODEL_NAME).checkpoint.tsv
+TSV_CHECKPOINT = $(OUTPUT_DIR)/checkpoint.tsv
 .INTERMEDIATE: $(TSV_CHECKPOINT)
 $(TSV_CHECKPOINT): $(LOG_FILE)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
@@ -422,9 +422,9 @@ $(TSV_SUB): $(LOG_FILE)
 		| sed -e 's/%, BWER.*//' >>  "$@"
 
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
-	$(PY_CMD) plot_log.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+	$(PY_CMD) plot_log.py $@ $(MODEL_NAME) $^
 $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
-	$(PY_CMD) plot_cer.py $(OUTPUT_DIR) $(MODEL_NAME) $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
+	$(PY_CMD) plot_cer.py $@ $(MODEL_NAME) $^
 
 .PHONY: evaluation plot
 # run lstmeval on list.eval data for each checkpoint model

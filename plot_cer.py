@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-outputdir = sys.argv[1]
+plotfile = sys.argv[1]
 modelname = sys.argv[2]
 
-ytsvfile =  sys.argv[3] # modelname + ".iteration.tsv"
-ctsvfile =  sys.argv[4] # modelname + ".checkpoint.tsv"
-etsvfile =  sys.argv[5] # modelname + ".eval.tsv" - Not used as no training iterations number
-stsvfile =  sys.argv[6] # modelname + ".sub.tsv"
-ltsvfile =  sys.argv[7] # modelname + ".lstmeval.tsv"
+ytsvfile =  sys.argv[3] # "iteration.tsv"
+ctsvfile =  sys.argv[4] # "checkpoint.tsv"
+etsvfile =  sys.argv[5] # "eval.tsv" - Not used as no training iterations number
+stsvfile =  sys.argv[6] # "sub.tsv"
+ltsvfile =  sys.argv[7] # "lstmeval.tsv"
 
 maxticks=10
 
@@ -44,8 +44,6 @@ st = sdf['TrainingIteration']
 l = ldf['EvalCER']
 lx = ldf['LearningIteration']
 lt = ldf['TrainingIteration']
-
-plotfile = os.path.join(outputdir, modelname + ".plot_cer.png")
 
 def annot_min(boxcolor, xpos, ypos, x, y, z):
     tmin = z[np.argmin(y)]
