@@ -5,6 +5,8 @@ import setuptools
 
 ROOT_DIRECTORY = Path(__file__).parent.resolve()
 
+installation_requirements = open('requirements.txt', encoding='utf-8').read().split('\n')
+
 setuptools.setup(
     name='tesstrain',
     description='Training utils for Tesseract',
@@ -28,14 +30,11 @@ setuptools.setup(
         'Programming Language :: Python :: 3.11',
     ],
     keywords='Tesseract,tesseract-ocr,OCR,optical character recognition',
-
     python_requires='>=3.7',
-    install_requires=[
-        'tqdm',
-    ],
-
+    install_requires=installation_requirements,
     entry_points={
         'console_scripts': [
+			'tesstrain-extract-sets=tesstrain.training_sets_cli:main',
         ],
     },
 )

@@ -1,0 +1,11 @@
+tqdm
+python-bidi>=0.4
+Pillow>=8
+lxml
+exifread>=2.3.0
+# due https://github.com/opencv/opencv-python/issues/676
+opencv-python-headless>=4.7
+numpy
+Shapely>=1.7.0
+matplotlib
+pandas

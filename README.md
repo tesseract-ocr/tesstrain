@@ -187,6 +187,37 @@ cd ./plot
 ./plot_cer.sh 
 ```
 
+## Extract training data from ALTO/PAGE and images
+
+tesstrain provides a utility `tesstrain-extract-sets` to generate pairs of text lines and corresponding line images from input data in the form of
+[ALTO](https://www.loc.gov/standards/alto/) or
+[PAGE-XML](https://github.com/PRImA-Research-Lab/PAGE-XML) files that represent scanned pages (complete or partial) with existing OCR.
+
+To install `tesstrain-extract-sets`, first set up a virtual environment and install the project via `pip`:
+
+```
+# create virtual environment in subfolder "venv"
+python3 -m venv venv
+# unix
+source venv/bin/activate
+# win
+venv\Scripts\activate.bat
+
+# actual install 
+pip install .
+```
+
+`tesstrain-extract-sets` currently supports OCR data in ALTO V3, PAGE 2013 and PAGE 2019, as well as TIFF, JPEG and PNG images.
+
+Output is written as UTF-8 encoded plain text files and TIFF images. The image frame is produced from the textline coordinates in the OCR data, so please take care of properly annotated geometrical information. Additionally, the tool can add a fixed synthetic padding around the textline or store it binarized (`--binarize`).
+
+By default, several sanitize actions are performed at image line level, like deskewing or removement of top-bottom intruders. To disable this, add flag `--no-sanitze`. 
+
+See `tesstrain-extract-sets --help` for a brief listing of all supported command line flags and options.
+
+**NOTE:** The text of the lines is extracted as-is, no automatic correction takes place. It is strongly recommended to review the generated data before training Tesseract with it.
+
+
 ## License
 
 Software is provided under the terms of the `Apache 2.0` license.
