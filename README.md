@@ -122,8 +122,8 @@ Run `make help` to see all the possible targets and variables:
   Variables
 
     MODEL_NAME         Name of the model to be built. Default: foo
-    START_MODEL        Name of the model to continue from. Default: ''
-    PROTO_MODEL        Name of the proto model. Default: OUTPUT_DIR/MODEL_NAME.traineddata
+    START_MODEL        Name of the model to continue from (i.e. fine-tune). Default: ''
+    PROTO_MODEL        Name of the prototype model. Default: OUTPUT_DIR/MODEL_NAME.traineddata
     WORDLIST_FILE      Optional file for dictionary DAWG. Default: OUTPUT_DIR/MODEL_NAME.wordlist
     NUMBERS_FILE       Optional file for number patterns DAWG. Default: OUTPUT_DIR/MODEL_NAME.numbers
     PUNC_FILE          Optional file for punctuation DAWG. Default: OUTPUT_DIR/MODEL_NAME.punc
@@ -131,13 +131,14 @@ Run `make help` to see all the possible targets and variables:
     OUTPUT_DIR         Output directory for generated files. Default: DATA_DIR/MODEL_NAME
     GROUND_TRUTH_DIR   Ground truth directory. Default: OUTPUT_DIR-ground-truth
     TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: _best
-    TESSDATA           Path to the .traineddata directory to start finetuning from. Default: ./usr/share/tessdata
+    TESSDATA           Path to the directory containing START_MODEL.traineddata
+                       (for example tesseract-ocr/tessdata_best). Default: ./usr/share/tessdata
     MAX_ITERATIONS     Max iterations. Default: 10000
     EPOCHS             Set max iterations based on the number of lines for training. Default: none
     DEBUG_INTERVAL     Debug Interval. Default:  0
     LEARNING_RATE      Learning rate. Default: 0.0001 with START_MODEL, otherwise 0.002
-    NET_SPEC           Network specification. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c\#\#\#]
-    FINETUNE_TYPE      Finetune Training Type - Impact, Plus, Layer or blank. Default: ''
+    NET_SPEC           Network specification (in VGSL) for new model from scratch. Default: [1,36,0,1 Ct3,3,16 Mp3,3 Lfys48 Lfx96 Lrx96 Lfx256 O1c###]
+    FINETUNE_TYPE      Fine-tune Training Type - Impact, Plus, Layer or blank. Default: ''
     LANG_TYPE          Language Type - Indic, RTL or blank. Default: ''
     PSM                Page segmentation mode. Default: 13
     RANDOM_SEED        Random seed for shuffling of the training data. Default: 0
@@ -147,6 +148,14 @@ Run `make help` to see all the possible targets and variables:
 ```
 
 <!-- END-EVAL -->
+
+### Choose training regime
+
+First, decide what [kind of training](https://tesseract-ocr.github.io/tessdoc/tess5/TrainingTesseract-5.html#introduction)
+you want.
+
+* Fine-tuning: select (and install) a `START_MODEL`
+* From scratch: specify a `NET_SPEC` (see [documentation](https://tesseract-ocr.github.io/tessdoc/tess4/VGSLSpecs.html))
 
 ### Change directory assumptions
 
