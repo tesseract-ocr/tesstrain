@@ -15,8 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import getopt
+import sys
 import unicodedata
-import sys, getopt
 
 
 def main(argv):

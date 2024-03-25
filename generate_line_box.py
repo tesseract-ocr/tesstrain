@@ -3,6 +3,7 @@
 import argparse
 import io
 import unicodedata
+
 from PIL import Image
 
 #

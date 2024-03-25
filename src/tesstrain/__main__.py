@@ -17,13 +17,12 @@
 import logging
 
 from tesstrain.arguments import (
-    get_argument_parser,
     TrainingArguments,
+    get_argument_parser,
     verify_parameters_and_handle_defaults,
 )
 from tesstrain.generate import cleanup
 from tesstrain.wrapper import run_from_context
-
 
 log = logging.getLogger()
 

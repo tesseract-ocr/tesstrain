@@ -2,7 +2,6 @@ from pathlib import Path
 
 import setuptools
 
-
 ROOT_DIRECTORY = Path(__file__).parent.resolve()
 
 setuptools.setup(

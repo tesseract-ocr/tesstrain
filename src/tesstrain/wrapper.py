@@ -18,19 +18,19 @@ import logging
 import sys
 from typing import List, Optional
 
+from tesstrain import language_specific
 from tesstrain.arguments import (
     TrainingArguments,
     verify_parameters_and_handle_defaults,
 )
 from tesstrain.generate import (
+    cleanup,
     initialize_fontconfig,
+    make_lstmdata,
+    phase_E_extract_features,
     phase_I_generate_image,
     phase_UP_generate_unicharset,
-    phase_E_extract_features,
-    make_lstmdata,
-    cleanup,
 )
-from tesstrain import language_specific
 
 log = logging.getLogger()
 
