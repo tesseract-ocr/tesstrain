@@ -283,10 +283,10 @@ proto-model: $(PROTO_MODEL)
 
 $(PROTO_MODEL): $(OUTPUT_DIR)/unicharset $(TESSERACT_LANGDATA)
 ifeq (Windows_NT, $(OS))
-	dos2unix "$(NUMBERS_FILE)"
-	dos2unix "$(PUNC_FILE)"
-	dos2unix "$(WORDLIST_FILE)"
-	dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
+	- dos2unix "$(NUMBERS_FILE)"
+	- dos2unix "$(PUNC_FILE)"
+	- dos2unix "$(WORDLIST_FILE)"
+	- dos2unix "$(LANGDATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).config"
 endif
 	$(if $(filter-out $(abspath $@),$(abspath $(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata)),\
 	$(error $@!=$(DATA_DIR)/$(MODEL_NAME)/$(MODEL_NAME).traineddata -- consider setting different values for DATA_DIR, OUTPUT_DIR, or PROTO_MODEL))
