@@ -24,8 +24,8 @@ def split_file(input_file, ratio):
     with open(train_list, 'w', newline='\n') as f1, open(
         eval_list, 'w', newline='\n'
     ) as f2:
-        f1.writelines(lines[:split_point])
-        f2.writelines(lines[split_point:])
+        f1.write('\n'.join(lines[:split_point]))
+        f2.write('\n'.join(lines[split_point:]))
     return True
 
 
