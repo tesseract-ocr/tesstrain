@@ -17,13 +17,12 @@
 import logging
 
 from tesstrain.arguments import (
-    get_argument_parser,
     TrainingArguments,
-    verify_parameters_and_handle_defaults
+    get_argument_parser,
+    verify_parameters_and_handle_defaults,
 )
 from tesstrain.generate import cleanup
 from tesstrain.wrapper import run_from_context
-
 
 log = logging.getLogger()
 
@@ -33,7 +32,7 @@ def setup_logging_console():
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     console_formatter = logging.Formatter(
-        "[%(asctime)s] %(levelname)s - %(message)s", datefmt="%H:%M:%S"
+        '[%(asctime)s] %(levelname)s - %(message)s', datefmt='%H:%M:%S'
     )
     console.setFormatter(console_formatter)
     log.addHandler(console)
@@ -43,7 +42,7 @@ def setup_logging_logfile(logfile):
     logfile = logging.FileHandler(logfile, encoding='utf-8')
     logfile.setLevel(logging.DEBUG)
     logfile_formatter = logging.Formatter(
-        "[%(asctime)s] - %(levelname)s - %(name)s - %(message)s"
+        '[%(asctime)s] - %(levelname)s - %(name)s - %(message)s'
     )
     logfile.setFormatter(logfile_formatter)
     log.addHandler(logfile)
@@ -68,7 +67,7 @@ def main():
     log.removeHandler(logfile)
     logfile.close()
     cleanup(ctx)
-    log.info("All done!")
+    log.info('All done!')
     return 0
 
 

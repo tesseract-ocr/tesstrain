@@ -2,13 +2,14 @@ from pathlib import Path
 
 import setuptools
 
-
 ROOT_DIRECTORY = Path(__file__).parent.resolve()
 
 setuptools.setup(
     name='tesstrain',
     description='Training utils for Tesseract',
-    long_description=(ROOT_DIRECTORY / 'README.md').read_text(encoding='utf-8'),
+    long_description=(ROOT_DIRECTORY / 'README.md').read_text(
+        encoding='utf-8'
+    ),
     long_description_content_type='text/markdown',
     url='https://github.com/tesseract-ocr/tesstrain',
     packages=setuptools.find_packages(),
@@ -28,14 +29,11 @@ setuptools.setup(
         'Programming Language :: Python :: 3.11',
     ],
     keywords='Tesseract,tesseract-ocr,OCR,optical character recognition',
-
     python_requires='>=3.7',
     install_requires=[
         'tqdm',
     ],
-
     entry_points={
-        'console_scripts': [
-        ],
+        'console_scripts': [],
     },
 )
