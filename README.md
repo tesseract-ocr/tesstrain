@@ -20,7 +20,7 @@ and more can be found in the [Tesseract User Manual](https://tesseract-ocr.githu
 
   1. Install the latest tesseract (e.g. from https://digi.bib.uni-mannheim.de/tesseract/), and make sure that tesseract is added to your PATH.
   2. Install [Python 3](https://www.python.org/downloads/)
-  3. Install [Git SCM to Windows](https://gitforwindows.org/) - it provides a lot of linux utilities on Windows (e.g. `find`, `unzip`, `rm`) and put `C:\Program Files\Git\usr\bin` to the beginning of your PATH variable (temporarily you can do it in `cmd` with `set PATH=C:\Program Files\Git\usr\bin;%PATH%` - unfortunately there are several Windows tools with the same name as on linux (`find`, `sort`) with different behaviour/functionality and there is need to avoid them during training.
+  3. Install [Git SCM to Windows](https://gitforwindows.org/) - it provides a lot of linux utilities on Windows (e.g. `find`, `unzip`, `rm`) and put `C:\Program Files\Git\usr\bin` to the beginning of your PATH variable (temporarily you can do it in `cmd` with `set PATH=C:\Program Files\Git\usr\bin;%PATH%` - unfortunately there are several Windows tools with the same name as on linux (`find`, `sort`) with different behavior/functionality and there is need to avoid them during training.
   4. Install winget/[Windows Package Manager](https://github.com/microsoft/winget-cli/releases/) and then run `winget install GnuWin32.Make` and `winget install wget` to install missing tools.
 
 ### Python
@@ -36,18 +36,18 @@ To fetch them:
 
     make tesseract-langdata
 
-(This step is only needed once and already included implicitly in the `training` target,
-but you might want to run explicitly it in advance.)
+(While this step is only needed once and implicitly included in the `training` target,
+you might want to run it explicitly beforehand.)
 
 
-## Choose model name
+## Choose the model name
 
 Choose a name for your model. By convention, Tesseract stack models including
 language-specific resources use (lowercase) three-letter codes defined in
 [ISO 639](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) with additional
 information separated by underscore. E.g., `chi_tra_vert` for **tra**ditional
 Chinese with **vert**ical typesetting. Language-independent (i.e. script-specific)
-models use the capitalized name of the script type as identifier. E.g.,
+models use the capitalized name of the script type as an identifier. E.g.,
 `Hangul_vert` for Hangul script with vertical typesetting. In the following,
 the model name is referenced by `MODEL_NAME`.
 
@@ -58,7 +58,7 @@ Place ground truth consisting of line images and transcriptions in the folder
 evaluation data, the ratio is defined by the `RATIO_TRAIN` variable.
 
 Images must be TIFF and have the extension `.tif` or PNG and have the
-extension `.png`, `.bin.png` or `.nrm.png`.
+extension `.png`, `.bin.png`, or `.nrm.png`.
 
 Transcriptions must be single-line plain text and have the same name as the
 line image but with the image extension replaced by `.gt.txt`.
@@ -79,7 +79,7 @@ Run
     make training MODEL_NAME=name-of-the-resulting-model
 
 
-which is basically a shortcut for
+which is a shortcut for
 
     make unicharset lists proto-model tesseract-langdata training
 
@@ -143,10 +143,10 @@ you are running tesstrain from a script or other makefile), then you can use the
 
 When the training is finished, it will write a `traineddata` file which can be used
 for text recognition with Tesseract. Note that this file does not include a
-dictionary. The `tesseract` executable therefore prints an warning.
+dictionary. The `tesseract` executable therefore prints a warning.
 
 It is also possible to create additional `traineddata` files from intermediate
-training results (the so called checkpoints). This can even be done while the
+training results (the so-called checkpoints). This can even be done while the
 training is still running. Example:
 
     # Add MODEL_NAME and OUTPUT_DIR like for the training.
@@ -166,12 +166,12 @@ It is also possible to create models for selected checkpoints only. Examples:
     # Make traineddata for all checkpoint files with CER better than 1 %.
     make traineddata CHECKPOINT_FILES="$(ls data/foo/checkpoints/*[^1-9]0.*.checkpoint)"
 
-Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` by the output directory if needed.
+Add `MODEL_NAME` and `OUTPUT_DIR` and replace `data/foo` with the output directory if needed.
 
 ## Plotting CER (experimental)
 
-Training and Evaluation CER can be plotted using matplotlib. A couple of scripts are provided
-as a starting point in `plot` subdirectory for plotting of different training scenarios. The training
+Training and Evaluation CER can be plotted using Matplotlib. A couple of scripts are provided
+as a starting point in the `plot` subdirectory for plotting different training scenarios. The training
 log is expected to be saved in `plot/TESSTRAIN.LOG`.
 
 As an example, use the training data provided in 
@@ -179,7 +179,7 @@ As an example, use the training data provided in
 Plotting can be done while training is running also to depict the training status till then.
 ```
 unzip ocrd-testset.zip -d data/ocrd-ground-truth
-nohup make training MODEL_NAME=ocrd START_MODEL=frk TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > plot/TESSTRAIN.LOG &
+nohup make training MODEL_NAME=ocrd START_MODEL=deu_latf TESSDATA=~/tessdata_best MAX_ITERATIONS=10000 > plot/TESSTRAIN.LOG &
 ```
 ```
 cd ./plot
