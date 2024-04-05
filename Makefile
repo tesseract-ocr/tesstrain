@@ -368,9 +368,9 @@ endif
 
 # plotting
 
-# Build lstmeval files list based on respective fast traineddata models
-FAST_LSTMEVAL_FILES = $(subst tessdata_fast,eval,$(FASTMODEL_FILES:%.traineddata=%.eval.log))
-$(FAST_LSTMEVAL_FILES): $(OUTPUT_DIR)/eval/%.eval.log: $(OUTPUT_DIR)/tessdata_fast/%.traineddata | $(OUTPUT_DIR)/eval
+# Build lstmeval files list based on respective best traineddata models
+BEST_LSTMEVAL_FILES = $(subst tessdata_best,eval,$(BESTMODEL_FILES:%.traineddata=%.eval.log))
+$(BEST_LSTMEVAL_FILES): $(OUTPUT_DIR)/eval/%.eval.log: $(OUTPUT_DIR)/tessdata_best/%.traineddata | $(OUTPUT_DIR)/eval
 	time -p lstmeval  \
 		--verbosity=0 \
 		--model $< \
@@ -378,7 +378,7 @@ $(FAST_LSTMEVAL_FILES): $(OUTPUT_DIR)/eval/%.eval.log: $(OUTPUT_DIR)/tessdata_fa
 # Make TSV with lstmeval CER and checkpoint filename parts
 TSV_LSTMEVAL = $(OUTPUT_DIR)/lstmeval.tsv
 .INTERMEDIATE: $(TSV_LSTMEVAL)
-$(TSV_LSTMEVAL): $(FAST_LSTMEVAL_FILES)
+$(TSV_LSTMEVAL): $(BEST_LSTMEVAL_FILES)
 	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
 	@{ $(foreach F,$^,echo -n "$F "; grep BCER $F;) } | sort -rn | \
 	sed -e 's|^$(OUTPUT_DIR)/eval/$(MODEL_NAME)_\([0-9.]*\)_\([0-9]*\)_\([0-9]*\).eval.log BCER eval=\([0-9.]*\).*$$|\t\1\t\2\t\3\t\4\t\t|' >>  "$@"
@@ -428,7 +428,7 @@ $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT
 
 .PHONY: evaluation plot
 # run lstmeval on list.eval data for each checkpoint model
-evaluation: $(FAST_LSTMEVAL_FILES)
+evaluation: $(BEST_LSTMEVAL_FILES)
 # combine TSV files with all required CER values, generated from training log and validation logs, then plot
 plot: $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png
 
