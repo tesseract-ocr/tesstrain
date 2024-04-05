@@ -18,29 +18,29 @@ import logging
 import sys
 from typing import List, Optional
 
+from tesstrain import language_specific
 from tesstrain.arguments import (
     TrainingArguments,
-    verify_parameters_and_handle_defaults
+    verify_parameters_and_handle_defaults,
 )
 from tesstrain.generate import (
+    cleanup,
     initialize_fontconfig,
+    make_lstmdata,
+    phase_E_extract_features,
     phase_I_generate_image,
     phase_UP_generate_unicharset,
-    phase_E_extract_features,
-    make_lstmdata,
-    cleanup,
 )
-from tesstrain import language_specific
 
 log = logging.getLogger()
 
 
 def run_from_context(ctx):
     if not ctx.linedata:
-        log.error("--linedata_only is required since only LSTM is supported")
+        log.error('--linedata_only is required since only LSTM is supported')
         sys.exit(1)
 
-    log.info(f"=== Starting training for language {ctx.lang_code}")
+    log.info(f'=== Starting training for language {ctx.lang_code}')
     ctx = language_specific.set_lang_specific_parameters(ctx, ctx.lang_code)
 
     initialize_fontconfig(ctx)
@@ -48,28 +48,28 @@ def run_from_context(ctx):
     phase_UP_generate_unicharset(ctx)
 
     if ctx.linedata:
-        phase_E_extract_features(ctx, ["lstm.train"], "lstmf")
+        phase_E_extract_features(ctx, ['lstm.train'], 'lstmf')
         make_lstmdata(ctx)
 
 
 def run(
-        fonts: List[str],
-        langdata_directory: str,
-        maximum_pages: int,
-        fonts_directory: Optional[str] = None,
-        temporary_directory: Optional[str] = None,
-        language_code: Optional[str] = None,
-        output_directory: Optional[str] = None,
-        overwrite: bool = False,  # TODO: Not required anymore.
-        save_box_tiff: bool = False,
-        linedata_only: bool = False,
-        training_text: Optional[str] = None,
-        wordlist_file: Optional[str] = None,
-        extract_font_properties: bool = True,
-        distort_image: bool = False,
-        tessdata_directory: Optional[str] = None,
-        exposures: Optional[List[int]] = None,
-        point_size: int = 12
+    fonts: List[str],
+    langdata_directory: str,
+    maximum_pages: int,
+    fonts_directory: Optional[str] = None,
+    temporary_directory: Optional[str] = None,
+    language_code: Optional[str] = None,
+    output_directory: Optional[str] = None,
+    overwrite: bool = False,  # TODO: Not required anymore.
+    save_box_tiff: bool = False,
+    linedata_only: bool = False,
+    training_text: Optional[str] = None,
+    wordlist_file: Optional[str] = None,
+    extract_font_properties: bool = True,
+    distort_image: bool = False,
+    tessdata_directory: Optional[str] = None,
+    exposures: Optional[List[int]] = None,
+    point_size: int = 12,
 ):
     """
     :param fonts: A list of font names to train on. These need to be recognizable by
@@ -127,5 +127,5 @@ def run(
 
     run_from_context(ctx)
     cleanup(ctx)
-    log.info("All done!")
+    log.info('All done!')
     return 0
