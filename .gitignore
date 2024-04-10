@@ -1,25 +1,4 @@
-data/*ground-truth/*
-data/langdata/*
-!data/ground-truth/.gitkeep
-data/all-*
-data/list.*
-data/unicharset
-dta19-reduced
-dta19-reduced.tar.gz
+/data/
 *.built
 *.BAK
-/usr
-data/checkpoints
-9ae97508aed1e5508458f1181b08501f984bf4e2.zip
-langdata-*
-data/test/*
-data/*.traineddata
-wackenroder_herzensergiessungen_*.gt.txt
-wackenroder_herzensergiessungen_*.tif
-master.zip
-main.zip
-plot/*.LOG
-plot/ocrd*
-
-# ignore temporary training data
-*checkpoints*
+*~

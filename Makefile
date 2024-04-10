@@ -11,7 +11,7 @@ SHELL := /bin/bash
 LOCAL := $(PWD)/usr
 PATH := $(LOCAL)/bin:$(PATH)
 
-# Path to the .traineddata directory with traineddata suitable for training 
+# Path to the .traineddata directory with traineddata suitable for training
 # (for example from tesseract-ocr/tessdata_best). Default: $(LOCAL)/share/tessdata
 TESSDATA =  $(LOCAL)/share/tessdata
 
@@ -117,6 +117,8 @@ else
     PY_CMD := python3
 endif
 
+LOG_FILE = $(OUTPUT_DIR)/training.log
+
 # BEGIN-EVAL makefile-parser --make-help Makefile
 
 help:
@@ -126,10 +128,12 @@ help:
 	@echo "    unicharset       Create unicharset"
 	@echo "    charfreq         Show character histogram"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
-	@echo "    training         Start training"
+	@echo "    training         Start training (i.e. create .checkpoint files)"
 	@echo "    traineddata      Create best and fast .traineddata files from each .checkpoint file"
 	@echo "    proto-model      Build the proto model"
 	@echo "    tesseract-langdata  Download stock unicharsets"
+	@echo "    evaluation       Evaluate .checkpoint models on eval dataset via lstmeval"
+	@echo "    plot             Generate train/eval error rate charts from training log"
 	@echo "    clean-box        Clean generated .box files"
 	@echo "    clean-lstmf      Clean generated .lstmf files"
 	@echo "    clean-output     Clean generated output files"
@@ -137,8 +141,8 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
-	@echo "    TESSDATA           Path to the .traineddata directory with traineddata suitable for training "
-	@echo "                       (for example from tesseract-ocr/tessdata_best). Default: $(TESSDATA)"
+	@echo "    TESSDATA           Path to the directory containing START_MODEL.traineddata"
+	@echo "                       (for example tesseract-ocr/tessdata_best). Default: $(TESSDATA)"
 	@echo "    MODEL_NAME         Name of the model to be built. Default: $(MODEL_NAME)"
 	@echo "    DATA_DIR           Data directory for output files, proto model, start model, etc. Default: $(DATA_DIR)"
 	@echo "    LANGDATA_DIR       Data directory for langdata (downloaded from Tesseract langdata repo). Default: $(LANGDATA_DIR)"
@@ -147,19 +151,20 @@ help:
 	@echo "    WORDLIST_FILE      Optional Wordlist file for Dictionary dawg. Default: $(WORDLIST_FILE)"
 	@echo "    NUMBERS_FILE       Optional Numbers file for number patterns dawg. Default: $(NUMBERS_FILE)"
 	@echo "    PUNC_FILE          Optional Punc file for Punctuation dawg. Default: $(PUNC_FILE)"
-	@echo "    START_MODEL        Name of the model to continue from. Default: '$(START_MODEL)'"
-	@echo "    PROTO_MODEL        Name of the proto model. Default: '$(PROTO_MODEL)'"
+	@echo "    START_MODEL        Name of the model to continue from (i.e. fine-tune). Default: $(START_MODEL)"
+	@echo "    PROTO_MODEL        Name of the prototype model. Default: $(PROTO_MODEL)"
 	@echo "    TESSDATA_REPO      Tesseract model repo to use (_fast or _best). Default: $(TESSDATA_REPO)"
 	@echo "    MAX_ITERATIONS     Max iterations. Default: $(MAX_ITERATIONS)"
 	@echo "    EPOCHS             Set max iterations based on the number of lines for the training. Default: none"
 	@echo "    DEBUG_INTERVAL     Debug Interval. Default:  $(DEBUG_INTERVAL)"
 	@echo "    LEARNING_RATE      Learning rate. Default: $(LEARNING_RATE)"
-	@echo "    NET_SPEC           Network specification. Default: $(NET_SPEC)"
+	@echo "    NET_SPEC           Network specification (in VGSL) for new model from scratch. Default: $(NET_SPEC)"
 	@echo "    LANG_TYPE          Language Type - Indic, RTL or blank. Default: '$(LANG_TYPE)'"
 	@echo "    PSM                Page segmentation mode. Default: $(PSM)"
 	@echo "    RANDOM_SEED        Random seed for shuffling of the training data. Default: $(RANDOM_SEED)"
 	@echo "    RATIO_TRAIN        Ratio of train / eval training data. Default: $(RATIO_TRAIN)"
 	@echo "    TARGET_ERROR_RATE  Default Target Error Rate. Default: $(TARGET_ERROR_RATE)"
+	@echo "    LOG_FILE           File to copy training output to and read plot figures from. Default: $(LOG_FILE)"
 
 # END-EVAL
 
@@ -254,15 +259,14 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 %.lstmf: %.tif %.box
 	tesseract "$<" $* --psm $(PSM) lstm.train
 
-CHECKPOINT_FILES := $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
 .PHONY: traineddata
-
+CHECKPOINT_FILES = $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
+BESTMODEL_FILES = $(subst checkpoints,tessdata_best,$(CHECKPOINT_FILES:%.checkpoint=%.traineddata))
+FASTMODEL_FILES = $(subst checkpoints,tessdata_fast,$(CHECKPOINT_FILES:%.checkpoint=%.traineddata))
 # Create best and fast .traineddata files from each .checkpoint file
-traineddata: $(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast
-
-traineddata: $(subst checkpoints,tessdata_best,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
-traineddata: $(subst checkpoints,tessdata_fast,$(patsubst %.checkpoint,%.traineddata,$(CHECKPOINT_FILES)))
-$(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast:
+traineddata: $(BESTMODEL_FILES)
+traineddata: $(FASTMODEL_FILES)
+$(OUTPUT_DIR)/tessdata_best $(OUTPUT_DIR)/tessdata_fast $(OUTPUT_DIR)/eval:
 	@mkdir -p $@
 $(OUTPUT_DIR)/tessdata_best/%.traineddata: $(OUTPUT_DIR)/checkpoints/%.checkpoint | $(OUTPUT_DIR)/tessdata_best
 	lstmtraining \
@@ -314,7 +318,8 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
-	  --target_error_rate $(TARGET_ERROR_RATE)
+	  --target_error_rate $(TARGET_ERROR_RATE) \
+	2>&1 | tee -a $(LOG_FILE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -335,7 +340,8 @@ $(LAST_CHECKPOINT): unicharset lists $(PROTO_MODEL)
 	  --train_listfile $(OUTPUT_DIR)/list.train \
 	  --eval_listfile $(OUTPUT_DIR)/list.eval \
 	  --max_iterations $(MAX_ITERATIONS) \
-	  --target_error_rate $(TARGET_ERROR_RATE)
+	  --target_error_rate $(TARGET_ERROR_RATE) \
+	2>&1 | tee -a $(LOG_FILE)
 $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	@echo
 	lstmtraining \
@@ -344,6 +350,73 @@ $(OUTPUT_DIR).traineddata: $(LAST_CHECKPOINT)
 	--traineddata $(PROTO_MODEL) \
 	--model_output $@
 endif
+
+# plotting
+
+# Build lstmeval files list based on respective best traineddata models
+BEST_LSTMEVAL_FILES = $(subst tessdata_best,eval,$(BESTMODEL_FILES:%.traineddata=%.eval.log))
+$(BEST_LSTMEVAL_FILES): $(OUTPUT_DIR)/eval/%.eval.log: $(OUTPUT_DIR)/tessdata_best/%.traineddata | $(OUTPUT_DIR)/eval
+	time -p lstmeval  \
+		--verbosity=0 \
+		--model $< \
+		--eval_listfile $(OUTPUT_DIR)/list.eval 2>&1 | grep "^BCER eval" > $@
+# Make TSV with lstmeval CER and checkpoint filename parts
+TSV_LSTMEVAL = $(OUTPUT_DIR)/lstmeval.tsv
+.INTERMEDIATE: $(TSV_LSTMEVAL)
+$(TSV_LSTMEVAL): $(BEST_LSTMEVAL_FILES)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@{ $(foreach F,$^,echo -n "$F "; grep BCER $F;) } | sort -rn | \
+	sed -e 's|^$(OUTPUT_DIR)/eval/$(MODEL_NAME)_\([0-9.]*\)_\([0-9]*\)_\([0-9]*\).eval.log BCER eval=\([0-9.]*\).*$$|\t\1\t\2\t\3\t\4\t\t|' >>  "$@"
+# Make TSV with CER at every 100 iterations.
+TSV_100_ITERATIONS = $(OUTPUT_DIR)/iteration.tsv
+.INTERMEDIATE: $(TSV_100_ITERATIONS)
+$(TSV_100_ITERATIONS): $(LOG_FILE)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'At iteration' $< \
+		| sed -e '/^Sub/d' \
+		| sed -e '/^Update/d' \
+		| sed -e '/^ New worst BCER/d' \
+		| sed -e 's|At iteration \([0-9]*\)/\([0-9]*\)/.*BCER train=|\t\t\1\t\2\t\t|' \
+		| sed -e 's/%, BWER.*/\t/' >>  "$@"
+# Make TSV with Checkpoint CER.
+TSV_CHECKPOINT = $(OUTPUT_DIR)/checkpoint.tsv
+.INTERMEDIATE: $(TSV_CHECKPOINT)
+$(TSV_CHECKPOINT): $(LOG_FILE)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'best model' $< \
+		| sed -e 's/^.*\///' \
+		| sed -e 's/\.checkpoint.*$$/\t\t\t/' \
+		| sed -e 's/_/\t/g' >>  "$@"
+# Make TSV with Eval CER.
+TSV_EVAL = $(OUTPUT_DIR)/eval.tsv
+.INTERMEDIATE: $(TSV_EVAL)
+$(TSV_EVAL): $(LOG_FILE)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep 'BCER eval' $< \
+		| sed -e 's/^.*[0-9]At iteration //' \
+		| sed -e 's/,.* BCER eval=/\t\t/'  \
+		| sed -e 's/, BWER.*$$/\t\t/' \
+		| sed -e 's/^/\t\t/' >>  "$@"
+# Make TSV with Subtrainer CER.
+TSV_SUB = $(OUTPUT_DIR)/sub.tsv
+.INTERMEDIATE: $(TSV_SUB)
+$(TSV_SUB): $(LOG_FILE)
+	@echo "Name	CheckpointCER	LearningIteration	TrainingIteration	EvalCER	IterationCER	SubtrainerCER" > "$@"
+	@grep '^UpdateSubtrainer' $< \
+		| sed -e 's/^.*At iteration \([0-9]*\)\/\([0-9]*\)\/.*BCER train=/\t\t\1\t\2\t\t\t/' \
+		| sed -e 's/%, BWER.*//' >>  "$@"
+
+$(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB)
+	$(PY_CMD) plot_log.py $@ $(MODEL_NAME) $^
+$(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png: $(TSV_100_ITERATIONS) $(TSV_CHECKPOINT) $(TSV_EVAL) $(TSV_SUB) $(TSV_LSTMEVAL)
+	$(PY_CMD) plot_cer.py $@ $(MODEL_NAME) $^
+
+.PHONY: evaluation plot
+# run lstmeval on list.eval data for each checkpoint model
+evaluation: $(BEST_LSTMEVAL_FILES)
+# combine TSV files with all required CER values, generated from training log and validation logs, then plot
+plot: $(OUTPUT_DIR)/$(MODEL_NAME).plot_cer.png $(OUTPUT_DIR)/$(MODEL_NAME).plot_log.png
+
 
 tesseract-langdata: $(TESSERACT_LANGDATA)
 
