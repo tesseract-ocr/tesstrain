@@ -14,6 +14,7 @@
 Set some language specific variables.
 """
 
+import itertools
 import logging
 import os
 
@@ -911,7 +912,7 @@ def set_lang_specific_parameters(ctx, lang):
     MIX_LANG = 'eng'
     FONTS = ctx.fonts
     TEXT2IMAGE_EXTRA_ARGS = []
-    EXPOSURES = []
+    EXPOSURES = list(map(int, itertools.chain(*ctx.exposures or [])))
 
     GENERATE_WORD_BIGRAMS = None
     WORD_DAWG_SIZE = None
