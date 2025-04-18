@@ -58,7 +58,7 @@ else
 MAX_ITERATIONS := -$(EPOCHS)
 endif
 
-# Debug Interval. Default:  $(DEBUG_INTERVAL)
+# Debug Interval. Default:	$(DEBUG_INTERVAL)
 DEBUG_INTERVAL := 0
 
 # Learning rate. Default: $(LEARNING_RATE)
@@ -125,6 +125,7 @@ help:
 	@echo ""
 	@echo "  Targets"
 	@echo ""
+	@echo "	   prepare-data     Prepare all data files (all-gt, all-lstmf, list.train, list.eval) recursively"
 	@echo "    unicharset       Create unicharset"
 	@echo "    charfreq         Show character histogram"
 	@echo "    lists            Create lists of lstmf filenames for training and eval"
@@ -177,12 +178,14 @@ endif
 
 .PRECIOUS: $(LAST_CHECKPOINT)
 
-.PHONY: clean help lists proto-model tesseract-langdata training unicharset charfreq
+.PHONY: clean help lists proto-model tesseract-langdata training unicharset charfreq prepare-data
 
-ALL_FILES = $(and $(wildcard $(GROUND_TRUTH_DIR)),$(shell find -L $(GROUND_TRUTH_DIR) -name '*.gt.txt'))
-unexport ALL_FILES # prevent adding this to envp in recipes (which can cause E2BIG if too long; cf. make #44853)
+ALL_FILES = $(shell find -L $(GROUND_TRUTH_DIR) -type f -name '*.gt.txt')
+unexport ALL_FILES
 ALL_GT = $(OUTPUT_DIR)/all-gt
 ALL_LSTMF = $(OUTPUT_DIR)/all-lstmf
+LIST_TRAIN = $(OUTPUT_DIR)/list.train
+LIST_EVAL = $(OUTPUT_DIR)/list.eval
 
 # Create unicharset
 unicharset: $(OUTPUT_DIR)/unicharset
@@ -192,14 +195,53 @@ charfreq: $(ALL_GT)
 	LC_ALL=C.UTF-8 grep -P -o "\X" $< | sort | uniq -c | sort -rn
 
 # Create lists of lstmf filenames for training and eval
-lists: $(OUTPUT_DIR)/list.train $(OUTPUT_DIR)/list.eval
+lists: $(LIST_TRAIN) $(LIST_EVAL)
+
+# New target to prepare data files before training
+prepare-data: $(ALL_GT) $(ALL_LSTMF) $(LIST_TRAIN) $(LIST_EVAL)
 
 $(OUTPUT_DIR):
 	@mkdir -p $@
 
-$(OUTPUT_DIR)/list.eval \
-$(OUTPUT_DIR)/list.train: $(ALL_LSTMF) | $(OUTPUT_DIR)
-	$(PY_CMD) generate_eval_train.py $(ALL_LSTMF) $(RATIO_TRAIN)
+# Generate ALL_GT recursively from ground truth directory
+$(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
+	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
+	$(file >$@) $(foreach F,$^,$(file >>$@,$(file <$F)))
+
+# Generate ALL_LSTMF recursively
+$(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf) | $(OUTPUT_DIR)
+	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.lstmf for $@))
+	@mkdir -p $(@D)
+	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
+
+# Modified list generation with per-subfolder splitting
+$(LIST_TRAIN) $(LIST_EVAL): $(ALL_LSTMF) | $(OUTPUT_DIR)
+	@if [ ! -f $(LIST_TRAIN) ] || [ ! -f $(LIST_EVAL) ]; then \
+		echo "Generating new train/eval lists with per-subfolder splitting"; \
+		rm -f $(LIST_TRAIN) $(LIST_EVAL) $(LIST_TRAIN).tmp $(LIST_EVAL).tmp; \
+		find -L $(GROUND_TRUTH_DIR) -type f -name '*.lstmf' | while IFS= read -r file; do \
+			dir=$$(dirname "$$file"); \
+			echo "$$file" >> "$$dir/all-lstmf.tmp"; \
+		done; \
+		find -L $(GROUND_TRUTH_DIR) -type f -name 'all-lstmf.tmp' | while IFS= read -r lstmf; do \
+			$(PY_CMD) shuffle.py $(RANDOM_SEED) "$$lstmf"; \
+			total=$$(wc -l < "$$lstmf"); \
+			if [ $$total -le 1 ]; then \
+				train_count=0; \
+			else \
+				train_count=$$(echo "$$total * $(RATIO_TRAIN)" | bc | cut -d. -f1); \
+				[ "$$train_count" -eq "$$total" ] && train_count=$$((total-1)); \
+			fi; \
+			head -n $$train_count "$$lstmf" >> $(LIST_TRAIN).tmp; \
+			tail -n +$$((train_count + 1)) "$$lstmf" >> $(LIST_EVAL).tmp; \
+		done; \
+		find $(GROUND_TRUTH_DIR) -type f -name 'all-lstmf.tmp' -exec rm -f {} \;; \
+		mv $(LIST_TRAIN).tmp $(LIST_TRAIN); \
+		mv $(LIST_EVAL).tmp $(LIST_EVAL); \
+		cat $(LIST_TRAIN) $(LIST_EVAL) | sort > $(ALL_LSTMF); \
+	else \
+		echo "Using existing train/eval lists"; \
+	fi
 
 ifdef START_MODEL
 $(DATA_DIR)/$(START_MODEL)/$(MODEL_NAME).lstm-unicharset:
@@ -214,12 +256,14 @@ $(OUTPUT_DIR)/unicharset: $(ALL_GT) | $(OUTPUT_DIR)
 	unicharset_extractor --output_unicharset "$@" --norm_mode $(NORM_MODE) "$(ALL_GT)"
 endif
 
-# Start training
+# Modified training target
 training: $(OUTPUT_DIR).traineddata
-
-$(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
-	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.gt.txt for $@))
-	$(file >$@) $(foreach F,$^,$(file >>$@,$(file <$F)))
+	@if [ -f $(LIST_TRAIN) ] && [ -f $(LIST_EVAL) ] && [ -f $(ALL_GT) ] && [ -f $(ALL_LSTMF) ]; then \
+		echo "Using existing data files for training"; \
+	else \
+		echo "Generating required data files before training"; \
+		$(MAKE) prepare-data; \
+	fi
 
 .PRECIOUS: %.box
 %.box: %.png %.gt.txt
@@ -236,12 +280,6 @@ $(ALL_GT): $(ALL_FILES) | $(OUTPUT_DIR)
 
 %.box: %.tif %.gt.txt
 	PYTHONIOENCODING=utf-8 $(PY_CMD) $(GENERATE_BOX_SCRIPT) -i "$*.tif" -t "$*.gt.txt" > "$@"
-
-$(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
-	$(if $^,,$(error found no $(GROUND_TRUTH_DIR)/*.lstmf for $@))
-	@mkdir -p $(@D)
-	$(file >$@) $(foreach F,$^,$(file >>$@,$F))
-	$(PY_CMD) shuffle.py $(RANDOM_SEED) "$@"
 
 .PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
