@@ -245,19 +245,19 @@ $(ALL_LSTMF): $(ALL_FILES:%.gt.txt=%.lstmf)
 
 .PRECIOUS: %.lstmf
 %.lstmf: %.png %.box
-	tesseract "$<" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) --tessdata-dir $(TESSDATA) -l $(START_MODEL) lstm.train
 
 %.lstmf: %.bin.png %.box
-	tesseract "$<" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) --tessdata-dir $(TESSDATA) -l $(START_MODEL) lstm.train
 
 %.lstmf: %.nrm.png %.box
-	tesseract "$<" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) --tessdata-dir $(TESSDATA) -l $(START_MODEL) lstm.train
 
 %.lstmf: %.raw.png %.box
-	tesseract "$<" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) --tessdata-dir $(TESSDATA) -l $(START_MODEL) lstm.train
 
 %.lstmf: %.tif %.box
-	tesseract "$<" $* --psm $(PSM) lstm.train
+	tesseract "$<" $* --psm $(PSM) --tessdata-dir $(TESSDATA) -l $(START_MODEL) lstm.train
 
 .PHONY: traineddata
 CHECKPOINT_FILES = $(wildcard $(OUTPUT_DIR)/checkpoints/$(MODEL_NAME)*.checkpoint)
